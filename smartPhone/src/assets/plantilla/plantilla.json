@@ -1,0 +1,473 @@
+[{
+        "uid": "39f736d2-7fc4-49f3-ab0e-feefe1405d62",
+        "type": "COMPUESTA",
+        "name": "APP CORONAVIRUS",
+        "gps": "required",
+        "notifications": [
+            {
+                "date":"2019-08-05",
+                "time":"13:15"
+            },
+            {
+                "date":"2019-08-05",
+                "time":"13:16"
+            }
+        ],
+        "data": {
+            "initial": {
+                "children": [
+                    {
+                        "label":"ANTECEDENTES",
+                        "type":"collapseList",
+                        "initialShow":true,
+                        "children":[
+                            {
+                                "label":"INFORMACIÓN PERSONAL",
+                                "icon":"md-person",
+                                "type":"collapseList",
+                                "initialShow":false,
+                                "children":[
+                                    {
+                                        "label":"DIRECCIÓN DE RESIDENCIA HABITUAL",
+                                        "type":"input_text",
+                                        "show":true,
+                                        "id":"direccion_residencia",
+                                        "blurFunction":"{}",
+                                        "error":"",
+                                        "value":""
+                                    },
+                                    {
+                                        "type":"select",
+                                        "id":"provincia",
+                                        "value":"",
+                                        "placeholder":"PROVINCIA",
+                                        "blurFunction":"{}",
+                                        "show":true,
+                                        "okText":"ACEPTAR",
+                                        "cancelText":"CANCELAR",
+                                        "options":[
+                                            {
+                                                "label":"AZUAY"
+                                            },
+                                            {
+                                                "label":"BOLÍVAR"
+                                            },
+                                            {
+                                                "label":"CAÑAR"
+                                            },
+                                            {
+                                                "label":"CARCHI"
+                                            },
+                                            {
+                                                "label":"CHIMBORAZO"
+                                            },
+                                            {
+                                                "label":"COTOPAXI"
+                                            },
+                                            {
+                                                "label":"EL ORO"
+                                            },
+                                            {
+                                                "label":"ESMERALDAS"
+                                            },
+                                            {
+                                                "label":"GALÁPAGOS"
+                                            },
+                                            {
+                                                "label":"GUAYAS"
+                                            },
+                                            {
+                                                "label":"IMBABURA"
+                                            },
+                                            {
+                                                "label":"LOJA"
+                                            },
+                                            {
+                                                "label":"LOS RÍOS"
+                                            },
+                                            {
+                                                "label":"MANABÍ"
+                                            },
+                                            {
+                                                "label":"MORONA SANTIAGO"
+                                            },
+                                            {
+                                                "label":"NAPO"
+                                            },
+                                            {
+                                                "label":"ORELLANA"
+                                            },
+                                            {
+                                                "label":"PASTAZA"
+                                            },
+                                            {
+                                                "label":"PICHINCHA"
+                                            },
+                                            {
+                                                "label":"SANTA ELENA"
+                                            },
+                                            {
+                                                "label":"SANTO DOMINGO DE LOS TSÁCHILAS"
+                                            },
+                                            {
+                                                "label":"SUCUMBÍOS"
+                                            },
+                                            {
+                                                "label":"TUNGURAHUA"
+                                            },
+                                            {
+                                                "label":"ZAMORA CHINCHIPE"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type":"select",
+                                        "id":"sexo",
+                                        "value":"",
+                                        "show":true,
+                                        "placeholder":"SEXO",
+                                        "blurFunction":"{}",
+                                        "okText":"ACEPTAR",
+                                        "cancelText":"CANCELAR",
+                                        "options":[
+                                            {
+                                                "label":"MASCULINO"
+                                            },
+                                            {
+                                                "label":"FEMENINO"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "label":"EDAD",
+                                        "type":"input_number",
+                                        "id":"edad",
+                                        "show":true,
+                                        "blurFunction":"{\"validateIntegerPositiveNumber\":[\"edad\"]}",
+                                        "error":"",
+                                        "value":""
+                                    },
+                                    {
+                                        "label":"¿HA TENIDO CONTACTO CON UN CASO CONFIRMADO O SOSPECHOSO?",
+                                        "type":"toggle",
+                                        "checked":false,
+                                        "show":true,
+                                        "id":"caso_confirmado_sospechoso",
+                                        "blurFunction":"{\"mostrarPregunta\":[\"caso_confirmado_sospechoso\",\"dias_contacto\"]}",
+                                        "error":"",
+                                        "value":""
+                                    },
+                                    {
+                                        "label":"¿HACE CUÁNTOS DÍAS?",
+                                        "type":"input_number",
+                                        "id":"dias_contacto",
+                                        "show":false,
+                                        "blurFunction":"{\"validateIntegerPositiveNumber\":[\"dias_contacto\"]}",
+                                        "error":"",
+                                        "value":""
+                                    },
+                                    {
+                                        "label":"¿LLEGÓ AL ECUADOR DEL EXTRANJERO EN LOS ÚLTIMOS 14 DÍAS?",
+                                        "type":"toggle",
+                                        "checked":false,
+                                        "show":true,
+                                        "id":"llego_extranjero",
+                                        "blurFunction":"{\"mostrarPregunta\":[\"llego_extranjero\",\"dias_llego_extranjero\"]}",
+                                        "error":"",
+                                        "value":""
+                                    },
+                                    {
+                                        "label":"¿HACE CUÁNTOS DÍAS?",
+                                        "type":"input_number",
+                                        "id":"dias_llego_extranjero",
+                                        "show":false,
+                                        "blurFunction":"{\"validateIntegerPositiveNumber\":[\"dias_llego_extranjero\"]}",
+                                        "error":"",
+                                        "value":""
+                                    },
+                                    {
+                                        "label":"CONDICIONES PREEXISTENTES",
+                                        "type":"checkbox_group",
+                                        "id":"condiciones_preexistentes",
+                                        "blurFunction":"{}",
+                                        "show":true,
+                                        "children":[
+                                            {
+                                                "label":"DIABETES",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"SOBREPESO",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"HIPERTENSIÓN",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"ARTRITIS",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"ENFERMEDAD AUTOINMUNE",
+                                                "checked":false
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "label":"MOVILIDAD",
+                                "icon":"md-person",
+                                "type":"collapseList",
+                                "initialShow":false,
+                                "children":[
+                                    {
+                                        "label":"¿SE DESPLAZA REGULARMENTE FUERA DE SU CASA DURANTE LA EMERGENCIA?",
+                                        "type":"toggle",
+                                        "checked":false,
+                                        "show":true,
+                                        "id":"desplazamiento_fuera",
+                                        "blurFunction":"{\"mostrarPregunta2\":[\"desplazamiento_fuera\",\"razon_desplazamiento_fuera\",\"frecuencia_desplazamiento_fuera\"]}",
+                                        "error":"",
+                                        "value":""
+                                    },
+                                    {
+                                        "type":"select",
+                                        "id":"razon_desplazamiento_fuera",
+                                        "value":"",
+                                        "show":false,
+                                        "placeholder":"¿POR QUÉ RAZÓN SE DESPLAZA FUERA DE SU HOGAR?",
+                                        "blurFunction":"{}",
+                                        "okText":"ACEPTAR",
+                                        "cancelText":"CANCELAR",
+                                        "options":[
+                                            {
+                                                "label":"CONSEGUIR PROVISIONES"
+                                            },
+                                            {
+                                                "label":"TRABAJO"
+                                            },
+                                            {
+                                                "label":"PERSONAL DE EMERGENCIA (GOBIERNO, MILITAR, POLICÍA, SALUD, ETC.)"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type":"select",
+                                        "id":"frecuencia_desplazamiento_fuera",
+                                        "value":"",
+                                        "show":false,
+                                        "placeholder":"FRECUENCIA CON LA QUE SALE DE SU HOGAR",
+                                        "blurFunction":"{}",
+                                        "okText":"ACEPTAR",
+                                        "cancelText":"CANCELAR",
+                                        "options":[
+                                            {
+                                                "label":"DIARIO"
+                                            },
+                                            {
+                                                "label":"SEMANAL"
+                                            },
+                                            {
+                                                "label":"SEGÚN RESTRICCIONES DE MOVILIDAD"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "follow_up": {
+                "children": [
+                    {
+                        "label":"FORMULARIO DE AUTO DIAGNÓSTICO DIARIO",
+                        "type":"collapseList",
+                        "initialShow":true,
+                        "children":[
+                            {
+                                "label":"SÍNTOMAS",
+                                "icon":"md-person",
+                                "type":"collapseList",
+                                "initialShow":false,
+                                "children":[
+                                    {
+                                        "label":"¿HOY SIENTE FIEBRE?",
+                                        "type":"toggle",
+                                        "checked":false,
+                                        "show":true,
+                                        "id":"siente_fiebre",
+                                        "blurFunction":"{\"mostrarPregunta\":[\"siente_fiebre\",\"temperatura_actual\"]}",
+                                        "error":"",
+                                        "value":""
+                                    },
+                                    {
+                                        "type":"select",
+                                        "id":"temperatura_actual",
+                                        "value":"",
+                                        "show":false,
+                                        "placeholder":"¿CUÁL ES SU TEMPERATURA?",
+                                        "blurFunction":"{\"validateEmptyShowedInput\":[\"temperatura_actual\"]}",
+                                        "okText":"ACEPTAR",
+                                        "cancelText":"CANCELAR",
+                                        "options":[
+                                            {
+                                                "label":"NORMAL"
+                                            },
+                                            {
+                                                "label":"ENTRE 37.5° Y 38°"
+                                            },
+                                            {
+                                                "label":"ENTRE 38° Y 39°"
+                                            },
+                                            {
+                                                "label":"MAYOR A 39°"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type":"select",
+                                        "id":"tos_actual",
+                                        "value":"",
+                                        "show":true,
+                                        "placeholder":"¿HOY TIENE TOS?",
+                                        "blurFunction":"{\"validateEmptyShowedInput\":[\"tos_actual\"]}",
+                                        "okText":"ACEPTAR",
+                                        "cancelText":"CANCELAR",
+                                        "options":[
+                                            {
+                                                "label":"NO"
+                                            },
+                                            {
+                                                "label":"SÍ, TOS SECA"
+                                            },
+                                            {
+                                                "label":"SÍ, TOS CON LÍQUIDO"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type":"select",
+                                        "id":"dolor_cabeza_actual",
+                                        "value":"",
+                                        "show":true,
+                                        "placeholder":"¿HOY TIENE DOLOR DE CABEZA?",
+                                        "blurFunction":"{\"validateEmptyShowedInput\":[\"dolor_cabeza_actual\"]}",
+                                        "okText":"ACEPTAR",
+                                        "cancelText":"CANCELAR",
+                                        "options":[
+                                            {
+                                                "label":"NO"
+                                            },
+                                            {
+                                                "label":"SÍ, DOLOR LEVE"
+                                            },
+                                            {
+                                                "label":"SÍ, DOLOR AGUDO"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type":"select",
+                                        "id":"dificultad_respirar_actual",
+                                        "value":"",
+                                        "show":true,
+                                        "placeholder":"¿HOY TIENE DIFICULTAD PARA RESPIRAR?",
+                                        "blurFunction":"{\"validateEmptyShowedInput\":[\"dificultad_respirar_actual\"]}",
+                                        "okText":"ACEPTAR",
+                                        "cancelText":"CANCELAR",
+                                        "options":[
+                                            {
+                                                "label":"NO"
+                                            },
+                                            {
+                                                "label":"SÍ, DIFICULTAD LEVE"
+                                            },
+                                            {
+                                                "label":"SÍ, DIFICULTAD AGUDA"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "label":"MEDIDAS TOMADAS",
+                                "icon":"md-person",
+                                "type":"collapseList",
+                                "initialShow":false,
+                                "children":[
+                                    {
+                                        "label":"¿SE ENCUENTRA EN AISLAMIENTO?",
+                                        "type":"toggle",
+                                        "checked":false,
+                                        "show":true,
+                                        "id":"aislamiento",
+                                        "blurFunction":"{\"mostrarPregunta3\":[\"aislamiento\",\"tipo_aislamiento\",\"lugar_aislamiento\",\"dias_aislamiento\"]}",
+                                        "error":"",
+                                        "value":""
+                                    },
+                                    {
+                                        "type":"select",
+                                        "id":"tipo_aislamiento",
+                                        "value":"",
+                                        "show":false,
+                                        "placeholder":"TIPO DE AISLAMIENTO",
+                                        "blurFunction":"{\"validateEmptyShowedInput\":[\"tipo_aislamiento\"]}",
+                                        "okText":"ACEPTAR",
+                                        "cancelText":"CANCELAR",
+                                        "options":[
+                                            {
+                                                "label":"AUTOIMPUESTO"
+                                            },
+                                            {
+                                                "label":"ORDENADO POR MÉDICO"
+                                            },
+                                            {
+                                                "label":"HOSPITALARIO"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type":"select",
+                                        "id":"lugar_aislamiento",
+                                        "value":"",
+                                        "show":false,
+                                        "placeholder":"LUGAR DEL AISLAMIENTO",
+                                        "blurFunction":"{\"validateEmptyShowedInput\":[\"lugar_aislamiento\"]}",
+                                        "okText":"ACEPTAR",
+                                        "cancelText":"CANCELAR",
+                                        "options":[
+                                            {
+                                                "label":"NINGUNO"
+                                            },
+                                            {
+                                                "label":"DOMICILIO"
+                                            },
+                                            {
+                                                "label":"DOMICILIO DE UN TERCERO"
+                                            },
+                                            {
+                                                "label":"HOSPITAL"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "label":"¿CUÁNTOS DÍAS LLEVA EN AISLAMIENTO?",
+                                        "type":"input_number",
+                                        "id":"dias_aislamiento",
+                                        "show":false,
+                                        "blurFunction":"{\"validateIntegerPositiveNumber\":[\"dias_aislamiento\"], \"validateEmptyShowedInput\":[\"dias_aislamiento\"]}",
+                                        "error":"",
+                                        "value":""
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]

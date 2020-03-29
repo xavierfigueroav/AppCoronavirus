@@ -1,0 +1,34 @@
+<ion-header>
+    <ion-navbar color='navbar'>
+        <ion-title text-center>
+            Iniciar Sesión
+        </ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content padding>
+    <div padding text-center>
+        <br>
+        <img src="./assets/imgs/logo_auth.png">
+        <br>
+        <br>
+        <ion-item class="input-username" margin-top color="light">
+            <ion-icon color="navbar" name="person"></ion-icon>
+            <ion-input type="number" class="ion-text-center" placeholder="Cédula de identidad" [(ngModel)]="cedula" name="cedula"></ion-input>
+        </ion-item>
+        <!--button class="input-username" ion-item color="light" margin-top *ngIf="linkedUser">
+            <ion-icon color="navbar" name="person" item-start></ion-icon>
+            <ion-label color="navbar" margin-left item-start>{{linkedUser.cedula}}</ion-label>
+            <ion-note item-end color="menuItemSelected"></ion-note>
+        </button-->
+        <!--ion-item class="input-password" margin-top color="light">
+            <ion-label color="navbar" fixed>
+                <ion-icon color="navbar" name="key" md="md-key"></ion-icon>
+            </ion-label>
+            <ion-input type="password" placeholder="Clave" [(ngModel)]="user.password" name="password"></ion-input>
+        </ion-item-->
+        <br>
+        <button class="btn-login" color="button" [disabled]="!cedula" ion-button block (click)="attemptAuth()">Ingresar</button>
+        <!--button class="btn-login" ion-button icon-start size="small" *ngIf="linkedUser" block (click)="attemptAuth()">Ingresar</button>
+        <button class="btn-unlink" ion-button icon-end size="small" *ngIf="linkedUser" block (click)="desvincular()">Ingresar con otra identificación</button-->
+    </div>
+</ion-content>
