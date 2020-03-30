@@ -1,0 +1,904 @@
+{
+  "miscelaneos": {
+    "nacional": [
+      {
+        "FECHA": 1585458000.0,
+        "INFOGRAFIA": 30,
+        "CERCO EPIDEMIOLOGICO": 0,
+        "CASOS CONFIRMADOS": 1890,
+        "MUESTRAS TOMADAS": 6884,
+        "FALLECIDOS": 57,
+        "RECUPERADOS": 3,
+        "AISLAMIENTO DOMILICIARIO": 1596,
+        "HOSPITALIZADOS ESTABLES": 120,
+        "HOSPITALIZADOS PRON. RESERV.": 114,
+        "CASOS SOSPECHOSOS": 2835
+      }
+    ],
+    "provincia": [
+      {
+        "PROVINCIA": "AZUAY",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 53,
+        "ID_PROVINCIA": 1
+      },
+      {
+        "PROVINCIA": "BOLIVAR",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 14,
+        "ID_PROVINCIA": 2
+      },
+      {
+        "PROVINCIA": "CANAR",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 25,
+        "ID_PROVINCIA": 3
+      },
+      {
+        "PROVINCIA": "CARCHI",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 5,
+        "ID_PROVINCIA": 4
+      },
+      {
+        "PROVINCIA": "CHIMBORAZO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 15,
+        "ID_PROVINCIA": 6
+      },
+      {
+        "PROVINCIA": "COTOPAXI",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 5,
+        "ID_PROVINCIA": 5
+      },
+      {
+        "PROVINCIA": "EL ORO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 25,
+        "ID_PROVINCIA": 7
+      },
+      {
+        "PROVINCIA": "ESMERALDAS",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 4,
+        "ID_PROVINCIA": 8
+      },
+      {
+        "PROVINCIA": "GALAPAGOS",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 4,
+        "ID_PROVINCIA": 20
+      },
+      {
+        "PROVINCIA": "GUAYAS",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1376,
+        "ID_PROVINCIA": 9
+      },
+      {
+        "PROVINCIA": "IMBABURA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 9,
+        "ID_PROVINCIA": 10
+      },
+      {
+        "PROVINCIA": "LOJA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 15,
+        "ID_PROVINCIA": 11
+      },
+      {
+        "PROVINCIA": "LOS RIOS",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 60,
+        "ID_PROVINCIA": 12
+      },
+      {
+        "PROVINCIA": "MANABI",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 46,
+        "ID_PROVINCIA": 13
+      },
+      {
+        "PROVINCIA": "MORONA SANTIAGO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 9,
+        "ID_PROVINCIA": 14
+      },
+      {
+        "PROVINCIA": "ORELLANA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1,
+        "ID_PROVINCIA": 22
+      },
+      {
+        "PROVINCIA": "PASTAZA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 5,
+        "ID_PROVINCIA": 16
+      },
+      {
+        "PROVINCIA": "PICHINCHA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 171,
+        "ID_PROVINCIA": 17
+      },
+      {
+        "PROVINCIA": "SANTA ELENA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 10,
+        "ID_PROVINCIA": 24
+      },
+      {
+        "PROVINCIA": "SANTO DOMINGO TSACHILAS",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 15,
+        "ID_PROVINCIA": 23
+      },
+      {
+        "PROVINCIA": "SUCUMBIOS",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 18,
+        "ID_PROVINCIA": 21
+      },
+      {
+        "PROVINCIA": "TUNGURAHUA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 4,
+        "ID_PROVINCIA": 18
+      },
+      {
+        "PROVINCIA": "ZAMORA CHINCHIPE",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1,
+        "ID_PROVINCIA": 19
+      }
+    ],
+    "canton": [
+      {
+        "ID_PROVINCIA": 7,
+        "ID_CANTON": 702,
+        "CANTON": "ARENILLAS",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 7,
+        "ID_CANTON": 707,
+        "CANTON": "HUAQUILLAS",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 3
+      },
+      {
+        "ID_PROVINCIA": 7,
+        "ID_CANTON": 701,
+        "CANTON": "MACHALA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 8
+      },
+      {
+        "ID_PROVINCIA": 7,
+        "ID_CANTON": 709,
+        "CANTON": "PASAJE",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 7,
+        "ID_CANTON": 712,
+        "CANTON": "SANTA ROSA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 8
+      },
+      {
+        "ID_PROVINCIA": 7,
+        "ID_CANTON": 703,
+        "CANTON": "ATAHUALPA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 7,
+        "ID_CANTON": 713,
+        "CANTON": "ZARUMA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 7,
+        "ID_CANTON": 706,
+        "CANTON": "EL GUABO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 8,
+        "ID_CANTON": 801,
+        "CANTON": "ESMERALDAS",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 4
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 902,
+        "CANTON": "ALFREDO BAQUERIZO MORENO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 904,
+        "CANTON": "BALZAR",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 4
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 905,
+        "CANTON": "COLIMES",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 906,
+        "CANTON": "DAULE",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 101
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 907,
+        "CANTON": "DURAN",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 67
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 908,
+        "CANTON": "EL EMPALME",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 5
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 901,
+        "CANTON": "GUAYAQUIL",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 963
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 910,
+        "CANTON": "MILAGRO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 50
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 911,
+        "CANTON": "NARANJAL",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 6
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 914,
+        "CANTON": "PEDRO CARBO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 6
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 919,
+        "CANTON": "SALITRE",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 11
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 916,
+        "CANTON": "SAMBORONDON",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 130
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 918,
+        "CANTON": "SANTA LUCIA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 8
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 921,
+        "CANTON": "PLAYAS",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 8
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 920,
+        "CANTON": "YAGUACHI",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 9
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 909,
+        "CANTON": "EL TRIUNFO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 912,
+        "CANTON": "NARANJITO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 925,
+        "CANTON": "NOBOL",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 9,
+        "ID_CANTON": 927,
+        "CANTON": "GENERAL ANTONIO ELIZALDE",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 12,
+        "ID_CANTON": 1201,
+        "CANTON": "BABAHOYO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 32
+      },
+      {
+        "ID_PROVINCIA": 12,
+        "ID_CANTON": 1210,
+        "CANTON": "BUENA FE",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 12,
+        "ID_CANTON": 1212,
+        "CANTON": "MOCACHE",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 12,
+        "ID_CANTON": 1203,
+        "CANTON": "MONTALVO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 12,
+        "ID_CANTON": 1205,
+        "CANTON": "QUEVEDO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 16
+      },
+      {
+        "ID_PROVINCIA": 12,
+        "ID_CANTON": 1206,
+        "CANTON": "URDANETA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 12,
+        "ID_CANTON": 1207,
+        "CANTON": "VENTANAS",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 5
+      },
+      {
+        "ID_PROVINCIA": 12,
+        "ID_CANTON": 1208,
+        "CANTON": "VINCES",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 13,
+        "ID_CANTON": 402,
+        "CANTON": "BOLIVAR",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 13,
+        "ID_CANTON": 1306,
+        "CANTON": "JIPIJAPA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 13,
+        "ID_CANTON": 1308,
+        "CANTON": "MANTA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 23
+      },
+      {
+        "ID_PROVINCIA": 13,
+        "ID_CANTON": 1309,
+        "CANTON": "MONTECRISTI",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 13,
+        "ID_CANTON": 1301,
+        "CANTON": "PORTOVIEJO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 17
+      },
+      {
+        "ID_PROVINCIA": 13,
+        "ID_CANTON": 1313,
+        "CANTON": "SANTA ANA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 13,
+        "ID_CANTON": 1314,
+        "CANTON": "SUCRE",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 13,
+        "ID_CANTON": 1321,
+        "CANTON": "JARAMIJO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 24,
+        "ID_CANTON": 2401,
+        "CANTON": "SANTA ELENA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 5
+      },
+      {
+        "ID_PROVINCIA": 24,
+        "ID_CANTON": 2402,
+        "CANTON": "LIBERTAD",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 5
+      },
+      {
+        "ID_PROVINCIA": 23,
+        "ID_CANTON": 808,
+        "CANTON": "LA CONCORDIA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 23,
+        "ID_CANTON": 2301,
+        "CANTON": "SANTO DOMINGO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 13
+      },
+      {
+        "ID_PROVINCIA": 1,
+        "ID_CANTON": 101,
+        "CANTON": "CUENCA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 46
+      },
+      {
+        "ID_PROVINCIA": 1,
+        "ID_CANTON": 103,
+        "CANTON": "GUALACEO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 1,
+        "ID_CANTON": 108,
+        "CANTON": "SANTA ISABEL",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 3
+      },
+      {
+        "ID_PROVINCIA": 1,
+        "ID_CANTON": 105,
+        "CANTON": "PAUTE",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 2,
+        "ID_CANTON": 202,
+        "CANTON": "CHILLANES",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 2,
+        "ID_CANTON": 203,
+        "CANTON": "CHIMBO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 2,
+        "ID_CANTON": 201,
+        "CANTON": "GUARANDA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 9
+      },
+      {
+        "ID_PROVINCIA": 2,
+        "ID_CANTON": 204,
+        "CANTON": "ECHEANDIA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 3,
+        "ID_CANTON": 301,
+        "CANTON": "AZOGUES",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 10
+      },
+      {
+        "ID_PROVINCIA": 3,
+        "ID_CANTON": 303,
+        "CANTON": "CAÑAR",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 3,
+        "ID_CANTON": 304,
+        "CANTON": "LA TRONCAL",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 9
+      },
+      {
+        "ID_PROVINCIA": 3,
+        "ID_CANTON": 305,
+        "CANTON": "EL TAMBO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 3,
+        "ID_CANTON": 302,
+        "CANTON": "BIBLIAN",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 3
+      },
+      {
+        "ID_PROVINCIA": 4,
+        "ID_CANTON": 401,
+        "CANTON": "TULCAN",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 3
+      },
+      {
+        "ID_PROVINCIA": 4,
+        "ID_CANTON": 405,
+        "CANTON": "MONTUFAR",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 4,
+        "ID_CANTON": 404,
+        "CANTON": "MIRA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 6,
+        "ID_CANTON": 603,
+        "CANTON": "COLTA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 6
+      },
+      {
+        "ID_PROVINCIA": 6,
+        "ID_CANTON": 601,
+        "CANTON": "RIOBAMBA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 6
+      },
+      {
+        "ID_PROVINCIA": 6,
+        "ID_CANTON": 610,
+        "CANTON": "CUMANDA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 6,
+        "ID_CANTON": 607,
+        "CANTON": "GUANO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 6,
+        "ID_CANTON": 604,
+        "CANTON": "CHAMBO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 5,
+        "ID_CANTON": 505,
+        "CANTON": "SALCEDO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 5,
+        "ID_CANTON": 502,
+        "CANTON": "LA MANA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 5,
+        "ID_CANTON": 501,
+        "CANTON": "LATACUNGA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 5,
+        "ID_CANTON": 506,
+        "CANTON": "SAQUISILI",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 10,
+        "ID_CANTON": 1001,
+        "CANTON": "IBARRA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 8
+      },
+      {
+        "ID_PROVINCIA": 10,
+        "ID_CANTON": 1004,
+        "CANTON": "OTAVALO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 11,
+        "ID_CANTON": 1102,
+        "CANTON": "CALVAS",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 3
+      },
+      {
+        "ID_PROVINCIA": 11,
+        "ID_CANTON": 1101,
+        "CANTON": "LOJA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 9
+      },
+      {
+        "ID_PROVINCIA": 11,
+        "ID_CANTON": 1108,
+        "CANTON": "MACARA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 11,
+        "ID_CANTON": 1103,
+        "CANTON": "CATAMAYO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 11,
+        "ID_CANTON": 1105,
+        "CANTON": "CHAGUARPAMBA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 17,
+        "ID_CANTON": 1703,
+        "CANTON": "MEJIA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 17,
+        "ID_CANTON": 1708,
+        "CANTON": "PEDRO VICENTE MALDONADO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 17,
+        "ID_CANTON": 1701,
+        "CANTON": "QUITO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 161
+      },
+      {
+        "ID_PROVINCIA": 17,
+        "ID_CANTON": 1705,
+        "CANTON": "RUMIÑAHUI",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 8
+      },
+      {
+        "ID_PROVINCIA": 18,
+        "ID_CANTON": 1801,
+        "CANTON": "AMBATO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 4
+      },
+      {
+        "ID_PROVINCIA": 14,
+        "ID_CANTON": 1402,
+        "CANTON": "GUALAQUIZA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 14,
+        "ID_CANTON": 1401,
+        "CANTON": "MORONA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 14,
+        "ID_CANTON": 1406,
+        "CANTON": "SUCUA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 14,
+        "ID_CANTON": 1404,
+        "CANTON": "PALORA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 4
+      },
+      {
+        "ID_PROVINCIA": 14,
+        "ID_CANTON": 1409,
+        "CANTON": "TAISHA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 22,
+        "ID_CANTON": 2201,
+        "CANTON": "ORELLANA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 16,
+        "ID_CANTON": 1601,
+        "CANTON": "PASTAZA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 4
+      },
+      {
+        "ID_PROVINCIA": 16,
+        "ID_CANTON": 1602,
+        "CANTON": "MERA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 21,
+        "ID_CANTON": 2107,
+        "CANTON": "CUYABENO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 3
+      },
+      {
+        "ID_PROVINCIA": 21,
+        "ID_CANTON": 2101,
+        "CANTON": "LAGO AGRIO",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 15
+      },
+      {
+        "ID_PROVINCIA": 19,
+        "ID_CANTON": 1905,
+        "CANTON": "YANTZAZA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 20,
+        "ID_CANTON": 2001,
+        "CANTON": "SAN CRISTOBAL",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "ID_PROVINCIA": 20,
+        "ID_CANTON": 2002,
+        "CANTON": "ISABELA",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "ID_PROVINCIA": 20,
+        "ID_CANTON": 2003,
+        "CANTON": "SANTA CRUZ",
+        "FECHA": 1585458000.0,
+        "CASOS CONFIRMADOS": 1
+      }
+    ]
+  },
+  "edades": [
+    {
+      "BOLETIN MSP": 27,
+      "FECHA": 1585458000.0,
+      "RANGO EDAD": "<1 año",
+      "FALLECIDO": 1
+    },
+    {
+      "BOLETIN MSP": 27,
+      "FECHA": 1585458000.0,
+      "RANGO EDAD": "1 - 4 años",
+      "FALLECIDO": 0
+    },
+    {
+      "BOLETIN MSP": 27,
+      "FECHA": 1585458000.0,
+      "RANGO EDAD": "5 - 9 años",
+      "FALLECIDO": 0
+    },
+    {
+      "BOLETIN MSP": 27,
+      "FECHA": 1585458000.0,
+      "RANGO EDAD": "10 - 14 años",
+      "FALLECIDO": 0
+    },
+    {
+      "BOLETIN MSP": 27,
+      "FECHA": 1585458000.0,
+      "RANGO EDAD": "15 - 19 años",
+      "FALLECIDO": 0
+    },
+    {
+      "BOLETIN MSP": 27,
+      "FECHA": 1585458000.0,
+      "RANGO EDAD": "20 - 49 años",
+      "FALLECIDO": 10
+    },
+    {
+      "BOLETIN MSP": 27,
+      "FECHA": 1585458000.0,
+      "RANGO EDAD": "50 - 64 años",
+      "FALLECIDO": 22
+    },
+    {
+      "BOLETIN MSP": 27,
+      "FECHA": 1585458000.0,
+      "RANGO EDAD": "> 65 años",
+      "FALLECIDO": 25
+    }
+  ]
+}
