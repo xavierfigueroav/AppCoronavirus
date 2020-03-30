@@ -1,0 +1,82 @@
+<ion-card>
+    <ion-card-content>
+        <ion-item>
+            <ion-label>Parámetro</ion-label>
+            <ion-select [(ngModel)]="selectedParameter">
+                <ion-option *ngFor="let parameter of parameters" [value]="parameter">{{ parameter }}</ion-option>
+            </ion-select>
+        </ion-item>
+        <time-series-plot [data]="nacionalInfo" [parameter]="selectedParameter"></time-series-plot>
+    </ion-card-content>
+</ion-card>
+
+<ion-card>
+    <ion-card-content>
+        <ion-item>
+            <ion-label>Provincia</ion-label>
+            <ion-select [(ngModel)]="selectedProvincia">
+                <ion-option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</ion-option>
+            </ion-select>
+        </ion-item>
+        <time-series-plot [data]="provinciasInfo" [parameter]="'CASOS CONFIRMADOS'" [area]="selectedProvincia"></time-series-plot>
+    </ion-card-content>
+</ion-card>
+
+<ion-card>
+    <ion-card-content>
+        <ion-item>
+            <ion-label>Cantón</ion-label>
+            <ion-select [(ngModel)]="selectedCanton">
+                <ion-option *ngFor="let canton of cantones" [value]="canton">{{ canton }}</ion-option>
+            </ion-select>
+        </ion-item>
+        <time-series-plot [data]="cantonesInfo" [parameter]="'CASOS CONFIRMADOS'" [area]="selectedCanton"></time-series-plot>
+    </ion-card-content>
+</ion-card>
+
+<ion-card>
+    <ion-card-content>
+        <ion-item>
+            <ion-label>Lugar 1</ion-label>
+            <ion-select [(ngModel)]="selectedPlace1">
+                <ion-option *ngFor="let place of getAvailablePlaces(selectedPlace2)" [value]="place">{{ place }}</ion-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-label>Lugar 2</ion-label>
+            <ion-select [(ngModel)]="selectedPlace2">
+                <ion-option *ngFor="let place of getAvailablePlaces(selectedPlace1)" [value]="place">{{ place }}</ion-option>
+            </ion-select>
+        </ion-item>
+        <time-series-compare-plot
+        [place1]="selectedPlace1"
+        [place2]="selectedPlace2"
+        [data]="fullInfo"
+        [parameter1]="'CASOS CONFIRMADOS'"
+        [parameter2]="'CASOS CONFIRMADOS'"></time-series-compare-plot>
+    </ion-card-content>
+</ion-card>
+
+<ion-card>
+    <ion-card-content>
+        <ion-item>
+            <ion-label>Parámetro 1</ion-label>
+            <ion-select [(ngModel)]="selectedParameter1">
+                <ion-option *ngFor="let place of getAvailableParameters(selectedParameter2)" [value]="place">{{ place }}</ion-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-label>Parámetro 2</ion-label>
+            <ion-select [(ngModel)]="selectedParameter2">
+                <ion-option *ngFor="let place of getAvailableParameters(selectedParameter1)" [value]="place">{{ place }}</ion-option>
+            </ion-select>
+        </ion-item>
+        <time-series-compare-plot
+        [place1]="'NACIONAL'"
+        [place2]="'NACIONAL'"
+        [data]="nacionalInfo"
+        [parameter1]="selectedParameter1"
+        [parameter2]="selectedParameter2"
+        ></time-series-compare-plot>
+    </ion-card-content>
+</ion-card>
