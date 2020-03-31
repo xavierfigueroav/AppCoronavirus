@@ -1,4 +1,10 @@
-<!-- Generated template for the MapsSegmentComponent component -->
-<div>
-  {{text}}
-</div>
+
+
+<ion-card style="height: 75%;">
+    <ion-card-header>
+        <p>Mapa del Ecuador</p>
+    </ion-card-header>
+    <ion-spinner [hidden]="mapIsVisible" id="spinner" style="margin: auto;" color="primary"></ion-spinner>
+    <div id="map" style="width: 100%; height: 100% !important;" [hidden]="!mapIsVisible"></div>
+
+</ion-card>
