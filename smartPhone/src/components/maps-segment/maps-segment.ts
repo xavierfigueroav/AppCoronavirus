@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 
 import * as provinciasMap from '../../data/provincias.json';
 import * as lastMeasures from '../../data/last_measures.json';
+import * as general from '../../data/general.json';
 
 import * as L from 'leaflet';
 
@@ -22,6 +23,9 @@ export class MapsSegmentComponent implements OnInit, AfterViewInit {
   mapIsVisible: boolean;
   popup: any;
   provincias: any;
+  generalInfo = (<any>general);
+  lastMeasuresInfo = (<any>lastMeasures);
+  maxCasosConfirmados = this.lastMeasuresInfo.miscelaneos.nacional[0]['CASOS CONFIRMADOS'];
 
   constructor() {
 
@@ -37,7 +41,7 @@ export class MapsSegmentComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.mapIsVisible = false;
 
-    const originalProvincias = (<any>lastMeasures).miscelaneos.provincia;
+    const originalProvincias = this.lastMeasuresInfo.miscelaneos.provincia;
     originalProvincias.forEach((provincia: any) => {
         this.provincias[provincia['ID_PROVINCIA']] = provincia;
     })
@@ -51,22 +55,24 @@ export class MapsSegmentComponent implements OnInit, AfterViewInit {
         click: (event: any) => {
             const properties = event.target.feature.properties;
             this.popup.setContent(`<center><b>${properties['PROVINCIA']}</b></center>
-            <center>Casos confirmados: ${properties['CASOS CONFIRMADOS']}</center>`)
+            <center>Casos confirmados: ${properties['CASOS CONFIRMADOS']}</center>
+            <center>Fallecidos: ${properties['FALLECIDOS']}</center>`)
             .setLatLng(event.latlng).openOn(this.map);
         }
     });
 }
 
   getFeatureFillColor = (value: number) => {
-    return value > 1000 ? '#800026' :
-       value > 500  ? '#BD0026' :
-       value > 200  ? '#E31A1C' :
-       value > 100  ? '#FC4E2A' :
-       value > 50   ? '#FD8D3C' :
-       value > 20   ? '#FEB24C' :
-       value > 10   ? '#FED976' :
-       value == 0  ? '#999999' :
-                      '#FFEDA0';
+      const proportion = value / this.maxCasosConfirmados;
+    return proportion > 0.7 ? '#b50000' :
+       //proportion > 0.6  ? '#bf1d1d' :
+       proportion > 0.3  ? '#c63030' :
+       //proportion > 0.1  ? '#cc4242' :
+       proportion > 0.01   ? '#db6b6b' :
+       //proportion > 0.005   ? '#e88e8e' :
+       proportion > 0.001   ? '#f4b0b0' :
+       proportion == 0  ? '#999999' :
+                                                '#ffcfcf';
 };
 
 applyStylesToFeature = (feature) => {
@@ -75,7 +81,7 @@ applyStylesToFeature = (feature) => {
         weight: 1,
         opacity: 1,
         color: '#555555',
-        fillOpacity: 0.7
+        fillOpacity: 0.8
     };
 };
 
@@ -85,8 +91,10 @@ addPropertiesToFeatures() {
         const provinciaId = properties['ID_PROVINC'];
         if (provinciaId in this.provincias){
             properties['CASOS CONFIRMADOS'] = this.provincias[provinciaId]['CASOS CONFIRMADOS'];
+            properties['FALLECIDOS'] = this.provincias[provinciaId]['FALLECIDOS'] || 0;
         } else {
             properties['CASOS CONFIRMADOS'] = 0;
+            properties['FALLECIDOS'] = 0;
         }
     })
 }
@@ -117,6 +125,11 @@ addPropertiesToFeatures() {
             resolve();
           }, 0);
       });
+  }
+
+  getDateFromeTimestamp(timestamp: number) {
+    const date = new Date(timestamp * 1000);
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   }
 
 }
