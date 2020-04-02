@@ -23,13 +23,15 @@ export class StatsSegmentComponent implements OnInit {
     cantonesInfo = this.misc.canton;
     fullInfo = [...this.nacionalInfo, ...this.provinciasInfo, ...this.cantonesInfo];
 
-    cantones = (<any>general).CANTONES;
-    provincias = (<any>general).PROVINCIAS;
+    generalInfo = (<any>general);
+    cantones = new Set<string>(this.generalInfo.CANTONES);
+    provincias = new Set<string>(this.generalInfo.PROVINCIAS);
 
-    places = ['NACIONAL', ...this.cantones, ...this.provincias];
+    places = ['NACIONAL', ...this.provincias, ...this.cantones];
 
     selectedCanton: string;
     selectedProvincia: string;
+    selectedPlace: string;
 
     parameters: any[];
     selectedParameter: string;
@@ -47,6 +49,7 @@ export class StatsSegmentComponent implements OnInit {
 
     ngOnInit() {
 
+        this.selectedPlace = 'NACIONAL';
         this.selectedCanton = 'GUAYAQUIL';
         this.selectedProvincia = this.provincias[0];
 
@@ -64,8 +67,41 @@ export class StatsSegmentComponent implements OnInit {
         return this.places.filter(place => place !== selectedPlace);
     }
 
-    getAvailableParameters(selectedParameter: string){
+    getAvailableParametersBySelectedParameter(selectedParameter: string){
         return this.parameters.filter(parameter => parameter !== selectedParameter);
     }
 
+    getAvailableParametersByPlace(selectedPlace: string){
+
+        if (selectedPlace === 'NACIONAL') {
+            return this.parameters;
+        }
+
+        if (this.provincias.has(selectedPlace)) {
+            return ['CASOS CONFIRMADOS', 'FALLECIDOS'];
+        }
+
+        return ['CASOS CONFIRMADOS'];
+    }
+
+    getInfoByPlace(selectedPlace: string) {
+        if (selectedPlace === 'NACIONAL') {
+            return this.nacionalInfo;
+        }
+
+        if (this.provincias.has(selectedPlace)) {
+            return this.provinciasInfo;
+        }
+
+        return this.cantonesInfo;
+    }
+
+    getDateFromeTimestamp(timestamp: number) {
+        const date = new Date(timestamp * 1000);
+        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    }
+
+    placeChangeHandler() {
+        this.selectedParameter = '<seleccione un parámetro>';
+    }
 }
