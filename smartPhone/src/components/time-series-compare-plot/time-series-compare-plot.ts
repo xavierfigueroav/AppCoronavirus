@@ -12,7 +12,7 @@ import { Chart } from 'chart.js';
   selector: 'time-series-compare-plot',
   templateUrl: 'time-series-compare-plot.html'
 })
-export class TimeSeriesComparePlotComponent implements OnInit, OnChanges, AfterViewInit {
+export class TimeSeriesComparePlotComponent implements OnChanges {
 
   @ViewChild('canvas') canvas: ElementRef;
   @Input() data: any[];
@@ -24,15 +24,6 @@ export class TimeSeriesComparePlotComponent implements OnInit, OnChanges, AfterV
 
   constructor() {
     console.log('Hello TimeSeriesComparePlotComponent Component');
-  }
-
-  ngOnInit() {
-      console.log('init-ts');
-  }
-
-  ngAfterViewInit() {
-      console.log('content-init-ts');
-      this.generateGraph();
   }
 
   ngOnChanges() {
@@ -58,7 +49,7 @@ export class TimeSeriesComparePlotComponent implements OnInit, OnChanges, AfterV
       return transformed;
   }
 
-  generateGraph() {
+  async generateGraph() {
       console.log('ts');
 
       let chartData1: any[];
@@ -75,7 +66,6 @@ export class TimeSeriesComparePlotComponent implements OnInit, OnChanges, AfterV
             datasets: [
                 {
                     label: fixedPlace ? this.parameter1 : this.place1,
-                    yAxisID: fixedPlace ? this.parameter1 : this.place1,
                     data: chartData1,
                     fill: false,
                     borderColor: 'RGBA(219, 68, 55, 1)',
@@ -83,7 +73,6 @@ export class TimeSeriesComparePlotComponent implements OnInit, OnChanges, AfterV
                 },
                 {
                     label: fixedPlace ? this.parameter2 : this.place2,
-                    yAxisID: fixedPlace ? this.parameter2 : this.place2,
                     data: chartData2,
                     fill: false,
                     borderColor: 'RGBA(15, 157, 88, 1)',
@@ -93,19 +82,7 @@ export class TimeSeriesComparePlotComponent implements OnInit, OnChanges, AfterV
         },
         options: {
             scales: {
-                xAxes: [{ type: 'time' }],
-                yAxes: [
-                    {
-                        id: fixedPlace ? this.parameter1 : this.place1,
-                        type: 'linear',
-                        position: 'left'
-                    },
-                    {
-                        id: fixedPlace ? this.parameter2 : this.place2,
-                        type: 'linear',
-                        position: 'right'
-                    }
-                ]
+                xAxes: [{ type: 'time' }]
             },
             legend: { position: 'bottom' }
         }
