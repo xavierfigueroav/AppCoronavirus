@@ -100,4 +100,5 @@
     <allow-navigation href="http://192.168.0.5:8100" />
     <plugin name="cordova-plugin-request-location-accuracy" spec="^2.2.3" />
     <engine name="android" spec="6.4.0" />
+    <engine name="browser" spec="6.0.0" />
 </widget>

@@ -1,0 +1,19 @@
+
+
+<ion-card style="height: 75%;">
+    <ion-card-header>
+        <p style="text-align: center; font-weight: bold;">Últimas cifras por provincia</p>
+        <p style="text-align: center;">Actualizadas al {{ getDateFromeTimestamp(generalInfo['LAST INFOGRAFIA']['FECHA']) }} (INFOGRAFÍA N° {{ generalInfo['LAST INFOGRAFIA']['NÚMERO'] }})</p>
+    </ion-card-header>
+    <ion-spinner [hidden]="mapIsVisible" id="spinner" style="margin: auto;" color="primary"></ion-spinner>
+    <div id="map" style="width: 100%; height: 100% !important;" [hidden]="!mapIsVisible"></div>
+</ion-card>
+
+<ion-card>
+    <ion-card-content>
+        <p style="text-align: center; font-weight: bold;">Cantidad de fallecidos por edad</p>
+        <bar-plot [data]="lastMeasuresInfo.edades" [parameter]="'FALLECIDO'"></bar-plot>
+        <br />
+        <p style="text-align: center; color: #777777;">Actualizado al {{ getDateFromeTimestamp(generalInfo['LAST BOLETIN']['FECHA']) }} (BOLETÍN MSP N° {{ generalInfo['LAST BOLETIN']['NÚMERO'] }})</p>
+    </ion-card-content>
+</ion-card>

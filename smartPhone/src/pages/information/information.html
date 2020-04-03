@@ -6,9 +6,20 @@
 				<ion-icon name="log-out"></ion-icon>
 			</button>
 		</ion-buttons>
-	</ion-navbar>
+    </ion-navbar>
+    <ion-toolbar>
+        <ion-segment [(ngModel)]="segment">
+            <ion-segment-button value="maps">
+              Lo último
+            </ion-segment-button>
+            <ion-segment-button value="stats">
+              Evolución
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
-	<p>Datos y gráficos</p>
+<ion-content>
+    <maps-segment  [hidden]="segment === 'stats'"></maps-segment>
+    <stats-segment [hidden]="segment === 'maps'"></stats-segment>
 </ion-content>

@@ -36,6 +36,7 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { PopoverPage } from '../pages/form/popover';
 import { PopoverPage2 } from '../pages/form/popover2';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-nati
     BrowserModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(),
-    HttpClientModule
+    HttpClientModule,
+    ComponentsModule
 
     //LongPressModule
   ],
