@@ -33,6 +33,7 @@ export class SurveyPage {
     linkedUser;
     notifications;
     id;
+    j = -1; 
 
 	constructor(private diagnostic: Diagnostic,
         private events: Events,
@@ -94,6 +95,21 @@ export class SurveyPage {
 
 	ionViewDidEnter() {
         try {
+            this.storage.get('sentForms').then((sentForms) => {
+                this.sentForms = sentForms;
+                if(this.sentForms != null && this.sentForms.length >0) {
+                    console.log("HAY SENTFORMS");
+                    var m = -1;
+                    for(let sentForm of this.sentForms) {
+                        m++;
+                        if(sentForm.formData.type=='initial') {
+                            this.j = m;
+                            console.log("SE CAMBIÓ EL J");
+                        }
+                    }
+                }
+            });
+
             this.storage.get('pendingForms').then((pendingForms) => {
                 this.pendingForms = pendingForms;
             });
@@ -113,6 +129,21 @@ export class SurveyPage {
         this.storage.get('infoTemplates').then((templates) => {
             this.infoTemplates = templates;
             this.selectedSection = templates[0];
+        });
+
+        this.storage.get('sentForms').then((sentForms) => {
+            this.sentForms = sentForms;
+            if(this.sentForms != null && this.sentForms.length >0) {
+                console.log("HAY SENTFORMS");
+                var m = -1;
+                for(let sentForm of this.sentForms) {
+                    m++;
+                    if(sentForm.formData.type=='initial') {
+                        this.j = m;
+                        console.log("SE CAMBIÓ EL J");
+                    }
+                }
+            }
         });
     }
 
@@ -148,6 +179,42 @@ export class SurveyPage {
         });
     }
 
+    obtenerFechaActual() {
+        var fecha_actual = new Date();
+        var dia = fecha_actual.getDate();
+        if(dia < 10) {
+            var dia_actual = "0" + dia.toString();
+        } else {
+            var dia_actual = dia.toString();
+        }
+        var mes = Number(fecha_actual.getMonth()) + 1;
+        if(mes < 10) {
+            var mes_actual = "0" + mes.toString();
+        } else {
+            var mes_actual = mes.toString();
+        }
+        var hora = fecha_actual.getHours();
+        if(hora < 10) {
+            var hora_actual = "0" + hora.toString();
+        } else {
+            var hora_actual = hora.toString();
+        }
+        var minutos = fecha_actual.getMinutes();
+        if(minutos < 10) {
+            var minutos_actual = "0" + minutos.toString();
+        } else {
+            var minutos_actual = minutos.toString();
+        }
+        var segundos = fecha_actual.getSeconds();
+        if(segundos < 10) {
+            var segundos_actual = "0" + segundos.toString();
+        } else {
+            var segundos_actual = segundos.toString();
+        }
+        var fecha = dia_actual + "-" + mes_actual + "-" + fecha_actual.getFullYear() + "_" + hora_actual + "-"+ minutos_actual + "-" + segundos_actual;
+        return fecha;
+    }
+
     subirArchivo(pendingForm, id_dataset) {
         var tipo_form = pendingForm.formData.type;
         if(tipo_form == 'initial') {
@@ -155,9 +222,8 @@ export class SurveyPage {
         } else {
             var nombre_archivo = 'AUTODIAGNÓSTICO';
         }
-        var fecha_actual = new Date();
-        var mes_actual = Number(fecha_actual.getMonth()) + 1;
-        var fecha_formateada = fecha_actual.getDate() + "-" + mes_actual + "-" + fecha_actual.getFullYear() + "_" + fecha_actual.getHours() + "-"+ fecha_actual.getMinutes();
+        
+        var fecha_formateada = this.obtenerFechaActual();
         var nombre_archivo = nombre_archivo + "_" + fecha_formateada + ".json";
         var string_form = JSON.stringify(pendingForm, null, 2);
         
@@ -171,7 +237,7 @@ export class SurveyPage {
                 var ruta_completa = carpeta + nombre_archivo;
                 console.log("RUTA ARCHIVO:", ruta_completa);
 
-                this.http.uploadFile(url, {package_id: id_dataset}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
+                this.http.uploadFile(url, {package_id: id_dataset, name: nombre_archivo}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
                     var respuesta = JSON.parse(response.data);
                     console.log("ID RECURSO: ", respuesta.result.id);
                     console.log('SE ENVIÓ EL ARCHIVO');
@@ -325,6 +391,71 @@ export class SurveyPage {
                 });
             });
         });
+    }
+
+    async clickEditForm(j) {
+        try{
+            let pendingForms = await this.storage.get("sentForms");
+            let pendingForm = pendingForms[j];
+            let currentF = pendingForm.formData;
+            let templateUuid = pendingForm.template;
+            let template;
+            let selectedTemplate;
+            let infoTemplateIndex;
+            let formsData = await this.storage.get("formsData");
+            let forms = formsData[templateUuid];
+            let currentForm;
+            for (let form of forms){
+              if(form.uuid == currentF.uuid){
+                currentForm = form;
+                break;
+              }
+            }
+            let infoTemplates = await this.storage.get("infoTemplates");
+            console.log("pendingForm: ",pendingForm);
+            console.log("infoTemplates: ",infoTemplates);
+            console.log("currentForm: ",currentForm);
+            for (let k = 0; k < infoTemplates.length; k++) {
+                let temp = infoTemplates[k];
+                if (temp.uuid == templateUuid) {
+                    template = temp;
+                    infoTemplateIndex = k;
+                    break;
+                }
+            }
+            template.data = JSON.parse(JSON.stringify(currentForm.data));
+            selectedTemplate = JSON.parse(JSON.stringify(currentForm.data)); 
+
+            if (template.gps == "required") {
+                this.navCtrl.push(FormPage, {
+                    template: template,
+                    selectedTemplate: selectedTemplate,
+                    formData: selectedTemplate,
+                    currentForm: currentForm,
+                    forms: forms,
+                    formsData: formsData,
+                    pendingForms: pendingForms,
+                    geolocationAuth: "GRANTED",
+                    infoTemplates: infoTemplates,
+                    infoTemplateIndex: infoTemplateIndex,
+                });
+            } else {
+                this.navCtrl.push(FormPage, {
+                    template: template,
+                    selectedTemplate: selectedTemplate,
+                    formData: selectedTemplate,
+                    currentForm: currentForm,
+                    forms: forms,
+                    formsData: formsData,
+                    pendingForms: pendingForms,
+                    geolocationAuth: "GRANTED",
+                    infoTemplates: infoTemplates,
+                    infoTemplateIndex: infoTemplateIndex,
+                });
+            }
+        }catch (err) {
+            console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
+        }
     }
 
     requestLocationAuthorization(template, templateUuid, type, index) {
