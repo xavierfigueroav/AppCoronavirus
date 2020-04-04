@@ -5,17 +5,20 @@ import { MapsSegmentComponent } from './maps-segment/maps-segment';
 import { IonicModule } from 'ionic-angular';
 import { TimeSeriesComparePlotComponent } from './time-series-compare-plot/time-series-compare-plot';
 import { BarPlotComponent } from './bar-plot/bar-plot';
+import { MapComponent } from './map/map';
 @NgModule({
 	declarations: [TimeSeriesPlotComponent,
     StatsSegmentComponent,
     MapsSegmentComponent,
     TimeSeriesComparePlotComponent,
-    BarPlotComponent],
+    BarPlotComponent,
+    MapComponent],
 	imports: [IonicModule],
 	exports: [TimeSeriesPlotComponent,
     StatsSegmentComponent,
     MapsSegmentComponent,
     TimeSeriesComparePlotComponent,
-    BarPlotComponent]
+    BarPlotComponent,
+    MapComponent]
 })
 export class ComponentsModule {}
