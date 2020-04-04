@@ -31,6 +31,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
 import { UserPage } from '../pages/user/user';
 import { NetworkPage } from '../pages/network/network';
 import { SurveyPage } from '../pages/survey/survey';
+import { DiagnosticPage } from '../pages/diagnostic/diagnostic';
 import { InformationPage } from '../pages/information/information';
 import { TabsPage } from '../pages/tabs/tabs';
 import { PopoverPage } from '../pages/form/popover';
@@ -56,6 +57,7 @@ import { ComponentsModule } from '../components/components.module';
     SurveyPage,
     InformationPage,
     TabsPage,
+    DiagnosticPage,
     PopoverPage,
     PopoverPage2
   ],
@@ -84,6 +86,7 @@ import { ComponentsModule } from '../components/components.module';
     UserPage,
     NetworkPage,
     SurveyPage,
+    DiagnosticPage,
     InformationPage,
     TabsPage,
     PopoverPage,
