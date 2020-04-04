@@ -232,8 +232,6 @@ export class HomePage {
         var nombre_archivo = nombre_archivo + "_" + fecha_formateada + ".json";
         var string_form = JSON.stringify(pendingForm, null, 2);
         
-        //this.blob = new Blob([string_form], { type: 'application/json;charset=UTF-8' });
-        //this.blob = new Blob( [ data ], { type: 'application/octet-stream'});
         this.file.createFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, true).then((response) => {
             console.log('SE CREÓ EL ARCHIVO');
             this.file.writeFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, string_form, {replace:true, append:false}).then((response) => {

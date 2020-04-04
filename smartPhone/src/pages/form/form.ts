@@ -109,11 +109,6 @@ export class FormPage extends PopoverPage {
                     errores += this.validateBlurFunction("", pa.blurFunction);
                 }
                 if (errores == 0) {
-                    /*if(this.viewCtrl.index == 1) {
-                        this.appCtrl.getRootNav().setRoot(Page);
-                    } else {
-                        this.navCtrl.pop();    
-                    }*/
                     this.navCtrl.pop();
                 }
             }
@@ -121,40 +116,6 @@ export class FormPage extends PopoverPage {
             console.log("ionViewDidEnter");
         }
     }
-
-    /*increase_done_quantity(template, formType, index) {
-        try {
-            if (formType == "SIMPLE") {
-                template.done_quantity += 1;
-            } else {
-                for (let type of template.quantity) {
-                    if (type.type == formType)
-                        type.done_quantity += 1;
-                }
-            }
-            this.infoTemplates[index] = this.template;
-            this.storage.set('infoTemplates', this.infoTemplates);
-        } catch(e){
-            console.log("increase_done_quantity");
-        }
-    }*/
-
-    /*decrease_remain_quantity(template, formType, index) {
-        try {
-            if (formType == "SIMPLE") {
-                template.remain_quantity -= 1;
-            } else {
-                for (let type of template.quantity) {
-                    if (type.type == formType)
-                        type.remain_quantity -= 1;
-                }
-            }
-            this.infoTemplates[index] = this.template;
-            this.storage.set('infoTemplates', this.infoTemplates);
-        } catch(e){
-            console.log("decrease_remain_quantity");
-        }
-    }*/
 
     save(index, pending_form_index) {
         try {    
@@ -179,12 +140,6 @@ export class FormPage extends PopoverPage {
             let currentFormExists = false;
             let pending_form_index = this.pendingForms.length - 1;
             if (formsDataIsNull || !formDataExists) {
-                /*this.decrease_remain_quantity(this.template,
-                    this.currentForm.type,
-                    this.infoTemplateIndex);
-                this.increase_done_quantity(this.template,
-                    this.currentForm.type,
-                    this.infoTemplateIndex);*/
                 this.save(this.forms.length - 1, pending_form_index);
             }
             else {
@@ -198,6 +153,7 @@ export class FormPage extends PopoverPage {
                     }
                 }
                 pending_form_index = 0;
+
                 for (let pendingForm of this.pendingForms) {
                     if (pendingForm.formData.uuid == this.currentForm.uuid) {
                         break;
@@ -205,33 +161,19 @@ export class FormPage extends PopoverPage {
                         pending_form_index += 1;
                     }
                 }
-
+                
                 if (!currentFormExists) {
                     //CREATE
                     this.storage.set("pendingForms", this.pendingForms);
-                    /*this.decrease_remain_quantity(this.template,
-                        this.currentForm.type,
-                        this.infoTemplateIndex);
-                    this.increase_done_quantity(this.template,
-                        this.currentForm.type,
-                        this.infoTemplateIndex);*/
                     this.save(this.forms.length - 1, pending_form_index);
                 } else {
                     //EDIT
                     this.save(index, pending_form_index);
                 }
             }
-
         } catch(e){
             console.log("saveForm");
         }
-
-    }
-
-    editForm(index) {
-        this.currentForm.data = this.formData;
-        this.forms[index] = this.currentForm;
-        this.storage.set(this.templateUuid, this.forms);
     }
 
     saveCoordinates() {

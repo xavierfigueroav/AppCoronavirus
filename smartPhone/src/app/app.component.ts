@@ -18,6 +18,7 @@ import { Diagnostic } from '@ionic-native/diagnostic';
 import { FormPage } from '../pages/form/form';
 import { FollowUpPage } from '../pages/followUp/followUp';
 import { TabsPage } from '../pages/tabs/tabs';
+import { DiagnosticPage } from '../pages/diagnostic/diagnostic';
 
 @Component({
     templateUrl: 'app.html'

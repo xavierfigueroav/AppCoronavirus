@@ -222,8 +222,7 @@ export class AuthPage {
                     console.log("SE GUARDÓ EL ID DATASET");
                     this.storage.set('linkedUser', {
                         cedula: this.cedula,
-                        sesion: true,
-                        uid: '111111'
+                        sesion: true
                     }).then((data) => {
                         //loader.dismiss();
                         this.getInfoPlantilla().then((result) => {

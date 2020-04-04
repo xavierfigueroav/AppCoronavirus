@@ -14,11 +14,11 @@ import { FollowUpPage } from '../followUp/followUp';
 import uuid from 'uuid/v4';
 
 @Component({
-	selector: 'page-survey',
-	templateUrl: 'survey.html',
+	selector: 'page-diagnostic',
+	templateUrl: 'diagnostic.html',
 })
 
-export class SurveyPage {
+export class DiagnosticPage {
 	sentForms;
     templates;
     infoTemplates = [];
