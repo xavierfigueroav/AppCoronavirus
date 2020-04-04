@@ -148,6 +148,42 @@ export class DiagnosticPage {
         });
     }
 
+    obtenerFechaActual() {
+        var fecha_actual = new Date();
+        var dia = fecha_actual.getDate();
+        if(dia < 10) {
+            var dia_actual = "0" + dia.toString();
+        } else {
+            var dia_actual = dia.toString();
+        }
+        var mes = Number(fecha_actual.getMonth()) + 1;
+        if(mes < 10) {
+            var mes_actual = "0" + mes.toString();
+        } else {
+            var mes_actual = mes.toString();
+        }
+        var hora = fecha_actual.getHours();
+        if(hora < 10) {
+            var hora_actual = "0" + hora.toString();
+        } else {
+            var hora_actual = hora.toString();
+        }
+        var minutos = fecha_actual.getMinutes();
+        if(minutos < 10) {
+            var minutos_actual = "0" + minutos.toString();
+        } else {
+            var minutos_actual = minutos.toString();
+        }
+        var segundos = fecha_actual.getSeconds();
+        if(segundos < 10) {
+            var segundos_actual = "0" + segundos.toString();
+        } else {
+            var segundos_actual = segundos.toString();
+        }
+        var fecha = dia_actual + "-" + mes_actual + "-" + fecha_actual.getFullYear() + "_" + hora_actual + "-"+ minutos_actual + "-" + segundos_actual;
+        return fecha;
+    }
+
     subirArchivo(pendingForm, id_dataset) {
         var tipo_form = pendingForm.formData.type;
         if(tipo_form == 'initial') {
@@ -155,9 +191,8 @@ export class DiagnosticPage {
         } else {
             var nombre_archivo = 'AUTODIAGNÓSTICO';
         }
-        var fecha_actual = new Date();
-        var mes_actual = Number(fecha_actual.getMonth()) + 1;
-        var fecha_formateada = fecha_actual.getDate() + "-" + mes_actual + "-" + fecha_actual.getFullYear() + "_" + fecha_actual.getHours() + "-"+ fecha_actual.getMinutes();
+
+        var fecha_formateada = this.obtenerFechaActual();
         var nombre_archivo = nombre_archivo + "_" + fecha_formateada + ".json";
         var string_form = JSON.stringify(pendingForm, null, 2);
         
@@ -171,7 +206,7 @@ export class DiagnosticPage {
                 var ruta_completa = carpeta + nombre_archivo;
                 console.log("RUTA ARCHIVO:", ruta_completa);
 
-                this.http.uploadFile(url, {package_id: id_dataset}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
+                this.http.uploadFile(url, {package_id: id_dataset, name: nombre_archivo}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
                     var respuesta = JSON.parse(response.data);
                     console.log("ID RECURSO: ", respuesta.result.id);
                     console.log('SE ENVIÓ EL ARCHIVO');

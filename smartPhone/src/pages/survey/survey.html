@@ -30,9 +30,16 @@
             </ion-card-content>
         </ion-card-->
         <h3>Formulario de datos personales</h3>
-    	<p>Este formulario permite conocer datos básicos sobre usted. Por favor, llene estos datos sólo cuando se encuentre en su casa</p>
-    	<div *ngFor="let template of infoTemplates;let i = index">
-        	<button ion-button size="small" (click)="startForm(template, 'initial', i)">Nuevo formulario</button>
+    	<p>Este formulario permite conocer datos básicos sobre usted. Por favor, llene estos datos sólo cuando se encuentre en casa.</p>
+    	<div *ngIf="j == -1">
+	    	<div *ngFor="let template of infoTemplates;let i = index">
+	        	<button ion-button size="small" (click)="startForm(template, 'initial', i)">Nuevo formulario</button>
+	    	</div>
+    	</div>
+    	<div *ngIf="j != -1">
+    		<div>
+	        	<button ion-button size="small" (click)="clickEditForm(j)">Editar formulario</button>
+	    	</div>
     	</div>
     </div>
 </ion-content>
