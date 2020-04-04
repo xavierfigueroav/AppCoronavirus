@@ -1,12 +1,9 @@
-
-
-<ion-card style="height: 75%;">
+<ion-card>
     <ion-card-header>
         <p style="text-align: center; font-weight: bold;">Últimas cifras por provincia</p>
         <p style="text-align: center;">Actualizadas al {{ getDateFromeTimestamp(generalInfo['LAST INFOGRAFIA']['FECHA']) }} (INFOGRAFÍA N° {{ generalInfo['LAST INFOGRAFIA']['NÚMERO'] }})</p>
     </ion-card-header>
-    <ion-spinner [hidden]="mapIsVisible" id="spinner" style="margin: auto;" color="primary"></ion-spinner>
-    <div id="map" style="width: 100%; height: 100% !important;" [hidden]="!mapIsVisible"></div>
+    <map [colors]="colors" [data]="provincias" [parameters]="['CASOS CONFIRMADOS', 'FALLECIDOS']"></map>
 </ion-card>
 
 <ion-card>
