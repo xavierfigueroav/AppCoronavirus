@@ -11,31 +11,25 @@
 
 <ion-content style="text-align: center;" padding>
 
+    <h2 style="font-weight: bold;">Nivel de exposición</h2>
+
     <div class="circle-container">
         <svg id="svg0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50%" height="50%" viewBox="0, 0, 400,400">
             <g id="svgg">
-                <text x="50%" y="50%" text-anchor="middle" style="font-size: 40px;">{{ counter.toFixed(2) }}</text>
-                <path id="path0" stroke="none" [attr.fill]="color0" fill-rule="evenodd" d="M184.000 0.438 C 60.298 11.121,-24.063 128.609,5.862 248.524 C 32.599 355.662,141.307 420.894,248.524 394.138 C 365.703 364.895,430.494 238.821,386.120 126.400 C 353.970 44.949,270.553 -7.037,184.000 0.438 M216.371 67.769 C 300.590 78.997,352.967 162.420,326.182 242.670 C 304.327 308.151,234.662 346.094,167.400 329.150 C 92.186 310.203,49.160 231.207,73.818 157.330 C 90.058 108.673,134.814 72.696,185.400 67.636 C 187.820 67.394,190.340 67.122,191.000 67.031 C 193.700 66.661,212.068 67.195,216.371 67.769 "></path>
+                <text x="50%" y="50%" text-anchor="middle" style="font-size: 40px;">Ahora: {{ counter.toFixed(2) }}</text>
+                <path id="path0" stroke="none" [attr.fill]="ringColor" fill-rule="evenodd" d="M184.000 0.438 C 60.298 11.121,-24.063 128.609,5.862 248.524 C 32.599 355.662,141.307 420.894,248.524 394.138 C 365.703 364.895,430.494 238.821,386.120 126.400 C 353.970 44.949,270.553 -7.037,184.000 0.438 M216.371 67.769 C 300.590 78.997,352.967 162.420,326.182 242.670 C 304.327 308.151,234.662 346.094,167.400 329.150 C 92.186 310.203,49.160 231.207,73.818 157.330 C 90.058 108.673,134.814 72.696,185.400 67.636 C 187.820 67.394,190.340 67.122,191.000 67.031 C 193.700 66.661,212.068 67.195,216.371 67.769 "></path>
             </g>
         </svg>
-        <p style="font-weight: bold; font-size: 16px;">Mi cuarentena</p>
     </div>
 
     <hr/>
 
-    <div class="circle-container">
-        <svg id="svg1" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50%" height="50%" viewBox="0, 0, 400,400">
-            <text x="50%" y="50%" text-anchor="middle" style="font-size: 40px;">{{ counter.toFixed(2) }}</text>
-            <g id="svgg">
-                <path id="path1" stroke="none" [attr.fill]="color1" fill-rule="evenodd" d="M184.000 0.438 C 60.298 11.121,-24.063 128.609,5.862 248.524 C 32.599 355.662,141.307 420.894,248.524 394.138 C 365.703 364.895,430.494 238.821,386.120 126.400 C 353.970 44.949,270.553 -7.037,184.000 0.438 M216.371 67.769 C 300.590 78.997,352.967 162.420,326.182 242.670 C 304.327 308.151,234.662 346.094,167.400 329.150 C 92.186 310.203,49.160 231.207,73.818 157.330 C 90.058 108.673,134.814 72.696,185.400 67.636 C 187.820 67.394,190.340 67.122,191.000 67.031 C 193.700 66.661,212.068 67.195,216.371 67.769 "></path>
-                <text x="91%" y="50%" text-anchor="middle" style="font-size: 40px;">10</text>
-                <path id="path2" stroke="none" [attr.fill]="color2" fill-rule="evenodd" d="M193.800 67.041 C 134.226 70.627,85.299 110.692,70.998 167.600 C 49.911 251.510,113.436 332.917,200.000 332.917 C 295.892 332.917,360.020 234.841,321.834 146.589 C 300.301 96.824,247.193 63.828,193.800 67.041 M206.058 133.623 C 256.380 138.757,283.037 195.232,254.860 237.017 C 226.573 278.965,163.113 274.862,140.409 229.617 C 117.088 183.144,154.549 128.367,206.058 133.623 "></path>
-                <text x="74%" y="50%" text-anchor="middle" style="font-size: 40px;">5</text>
-                <path id="path3" stroke="none" [attr.fill]="color3" fill-rule="evenodd" d="M193.000 133.640 C 143.195 138.832,116.741 195.496,144.740 237.017 C 173.027 278.965,236.487 274.862,259.191 229.617 C 282.625 182.919,244.908 128.229,193.000 133.640 "></path>
-                <text x="50%" y="50%" text-anchor="middle" style="font-size: 40px;">1</text>
-            </g>
-        </svg>
-        <p style="font-weight: bold; font-size: 16px;">Riesgo</p>
+    <div id="score-bar">
+        <div>
+            <div class="day1">1 hora</div><div class="days">6 horas</div><div class="days">12 horas</div><div class="days">18 horas</div><div class="day24"></div>
+        </div>
+        <div class="score-square" *ngFor="let score of scores"  [ngStyle]="{ 'background-color': score.color }"></div>
+
     </div>
 
     <ion-fab bottom left>
@@ -49,45 +43,3 @@
         </button>
     </ion-fab>
 </ion-content>
-<!--
-<ion-content>
-    <ion-card>
-        <ion-card-content style="text-align: center;">
-            <svg id="svg" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60%" height="60%" viewBox="0, 0, 400,400">
-                <g id="svgg">
-                    <text x="50%" y="50%" text-anchor="middle" style="font-size: 40px;">{{ counter.toFixed(2) }}</text>
-                    <path id="path0" stroke="none" [attr.fill]="color0" fill-rule="evenodd" d="M184.000 0.438 C 60.298 11.121,-24.063 128.609,5.862 248.524 C 32.599 355.662,141.307 420.894,248.524 394.138 C 365.703 364.895,430.494 238.821,386.120 126.400 C 353.970 44.949,270.553 -7.037,184.000 0.438 M216.371 67.769 C 300.590 78.997,352.967 162.420,326.182 242.670 C 304.327 308.151,234.662 346.094,167.400 329.150 C 92.186 310.203,49.160 231.207,73.818 157.330 C 90.058 108.673,134.814 72.696,185.400 67.636 C 187.820 67.394,190.340 67.122,191.000 67.031 C 193.700 66.661,212.068 67.195,216.371 67.769 "></path>
-                </g>
-            </svg>
-            <p style="font-weight: bold; font-size: 16px;">Mi cuarentena</p>
-        </ion-card-content>
-    </ion-card>
-
-    <ion-card>
-        <ion-card-content style="text-align: center;">
-            <svg id="svg" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60%" height="60%" viewBox="0, 0, 400,400">
-                <text x="50%" y="50%" text-anchor="middle" style="font-size: 40px;">{{ counter.toFixed(2) }}</text>
-                <g id="svgg">
-                    <path id="path1" stroke="none" [attr.fill]="color1" fill-rule="evenodd" d="M184.000 0.438 C 60.298 11.121,-24.063 128.609,5.862 248.524 C 32.599 355.662,141.307 420.894,248.524 394.138 C 365.703 364.895,430.494 238.821,386.120 126.400 C 353.970 44.949,270.553 -7.037,184.000 0.438 M216.371 67.769 C 300.590 78.997,352.967 162.420,326.182 242.670 C 304.327 308.151,234.662 346.094,167.400 329.150 C 92.186 310.203,49.160 231.207,73.818 157.330 C 90.058 108.673,134.814 72.696,185.400 67.636 C 187.820 67.394,190.340 67.122,191.000 67.031 C 193.700 66.661,212.068 67.195,216.371 67.769 "></path>
-                    <text x="91%" y="50%" text-anchor="middle" style="font-size: 40px;">10</text>
-                    <path id="path2" stroke="none" [attr.fill]="color2" fill-rule="evenodd" d="M193.800 67.041 C 134.226 70.627,85.299 110.692,70.998 167.600 C 49.911 251.510,113.436 332.917,200.000 332.917 C 295.892 332.917,360.020 234.841,321.834 146.589 C 300.301 96.824,247.193 63.828,193.800 67.041 M206.058 133.623 C 256.380 138.757,283.037 195.232,254.860 237.017 C 226.573 278.965,163.113 274.862,140.409 229.617 C 117.088 183.144,154.549 128.367,206.058 133.623 "></path>
-                    <text x="74%" y="50%" text-anchor="middle" style="font-size: 40px;">5</text>
-                    <path id="path3" stroke="none" [attr.fill]="color3" fill-rule="evenodd" d="M193.000 133.640 C 143.195 138.832,116.741 195.496,144.740 237.017 C 173.027 278.965,236.487 274.862,259.191 229.617 C 282.625 182.919,244.908 128.229,193.000 133.640 "></path>
-                    <text x="50%" y="50%" text-anchor="middle" style="font-size: 40px;">1</text>
-                </g>
-            </svg>
-            <p style="font-weight: bold; font-size: 16px;">Riesgo</p>
-        </ion-card-content>
-    </ion-card>
-
-    <ion-fab bottom left>
-        <button ion-fab color="warning">
-            <ion-icon name="warning"></ion-icon>
-        </button>
-    </ion-fab>
-    <ion-fab bottom right>
-        <button ion-fab color="danger">
-            <ion-icon name="alert"></ion-icon>
-        </button>
-    </ion-fab>
-</ion-content> -->
