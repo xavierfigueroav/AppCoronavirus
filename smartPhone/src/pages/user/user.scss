@@ -1,3 +1,46 @@
 page-user {
 
+    .circle-container {
+        margin-top: 10%;
+    }
+
+    #score-bar {
+        height: 5%;
+        width: 100%;
+        background-color: transparent;
+        border: 0;
+    }
+
+    .score-square {
+        display: inline-block;
+        height: 100%;
+        width: 4.15%;
+        margin: 0;
+        color: #ffffff  ;
+        border: 1px solid #ffffff;
+    }
+
+    .days {
+
+        display: inline-block;
+        width: 25%;
+        text-align: left;
+
+    }
+    .day1 {
+
+        display: inline-block;
+        width: 21%;
+        text-align: left;
+
+    }
+
+    .day24 {
+
+        display: inline-block;
+        width: 4%;
+        text-align: left;
+
+    }
+
 }
