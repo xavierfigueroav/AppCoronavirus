@@ -1,10 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 
-import * as provinciasMap from '../../data/provincias.json';
 import * as lastMeasures from '../../data/last_measures.json';
 import * as general from '../../data/general.json';
-
-import * as L from 'leaflet';
 
 /**
  * Generated class for the MapsSegmentComponent component.

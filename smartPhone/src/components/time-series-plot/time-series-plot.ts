@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, Input, OnInit, OnChanges, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, Input, OnChanges } from '@angular/core';
 
 import { Chart } from 'chart.js';
 
