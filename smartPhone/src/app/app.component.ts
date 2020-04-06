@@ -37,9 +37,6 @@ export class MyApp {
     observacionPage;
     fenomenosPage;
     sendingForms = false;
-    //urlServerEnvioFormulario = "https://insavit.espol.edu.ec/api/send_form/";
-    //urlServerPlantilla = "https://insavit.espol.edu.ec/api/templates/";
-    //urlServerCalculos = "https://insavit.espol.edu.ec/api/validations/";
 
     constructor(private diagnostic: Diagnostic,
         private locationAccuracy: LocationAccuracy,
