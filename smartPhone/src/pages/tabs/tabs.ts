@@ -4,6 +4,7 @@ import { InformationPage } from '../information/information';
 import { NetworkPage } from '../network/network';
 import { SurveyPage } from '../survey/survey';
 import { DiagnosticPage } from '../diagnostic/diagnostic';
+import { ProfilePage } from '../profile/profile';
 
 @Component({
 	templateUrl: 'tabs.html'
@@ -15,6 +16,7 @@ export class TabsPage {
 	network = NetworkPage;
 	survey = SurveyPage;
 	//survey = HomePage;
-	diagnostic = DiagnosticPage;
+    diagnostic = DiagnosticPage;
+    profile = ProfilePage;
 	constructor() {}
 }
