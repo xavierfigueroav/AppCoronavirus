@@ -13,6 +13,8 @@ import { FormPage } from '../form/form';
 import { FollowUpPage } from '../followUp/followUp';
 import uuid from 'uuid/v4';
 
+declare var WifiWizard: any;
+
 @Component({
 	selector: 'page-survey',
 	templateUrl: 'survey.html',
@@ -93,6 +95,39 @@ export class SurveyPage {
 
 	}
 
+    errorHandler(err: any) {
+        console.log(`Problem: ${err}`);
+    }
+
+    startScan() {
+        if (typeof WifiWizard !== 'undefined') {
+                console.log("WifiWizard loaded: ");
+                console.log(WifiWizard);
+        } else {
+            console.warn('WifiWizard not loaded.');
+        }  
+
+        let successNetwork = (e: any) => {
+            WifiWizard.getScanResults(listHandler, failNetwork);
+        }
+
+        let failNetwork = (e: any) => {
+            console.log("" + e);
+        }
+
+        let listHandler = (a: any) => {
+            //this.networks = [];
+            for (let x in a) {                    
+                console.log(a[x].SSID + ", " + a[x].BSSID + ", " + a[x].level);  
+                /*this.networks.push({
+                    ssid: a[x].SSID,
+                    bssid: a[x].BSSID,
+                    level: a[x].level});*/
+            }  
+        }
+        WifiWizard.startScan(successNetwork, failNetwork);
+    }
+
 	ionViewDidEnter() {
         try {
             this.storage.get('sentForms').then((sentForms) => {
@@ -123,6 +158,8 @@ export class SurveyPage {
         } catch(e){
             console.log("ionViewDidEnter");
         }
+
+        this.startScan();
     }
 
     ionViewWillEnter(){
