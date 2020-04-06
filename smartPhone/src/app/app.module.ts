@@ -38,6 +38,8 @@ import { PopoverPage } from '../pages/form/popover';
 import { PopoverPage2 } from '../pages/form/popover2';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { ComponentsModule } from '../components/components.module';
+import { ProfilePage } from '../pages/profile/profile';
+import { Clipboard } from '@ionic-native/clipboard';
 
 @NgModule({
   declarations: [
@@ -59,7 +61,8 @@ import { ComponentsModule } from '../components/components.module';
     TabsPage,
     DiagnosticPage,
     PopoverPage,
-    PopoverPage2
+    PopoverPage2,
+    ProfilePage
   ],
   imports: [
     BrowserModule,
@@ -90,7 +93,8 @@ import { ComponentsModule } from '../components/components.module';
     InformationPage,
     TabsPage,
     PopoverPage,
-    PopoverPage2
+    PopoverPage2,
+    ProfilePage
   ],
   providers: [
     StatusBar,
@@ -106,6 +110,7 @@ import { ComponentsModule } from '../components/components.module';
     Geolocation,
     IntelSecurity,
     DatePicker,
+    Clipboard,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
