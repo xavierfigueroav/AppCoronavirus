@@ -10,7 +10,7 @@
         <br>
         <br>
         <br>
-        <p style="font-size:50px">Qvid</p>
+        <p style="font-size:50px">Auto Salud</p>
         <ion-item style="margin-top:90px;" class="input-username" margin-top color="light">
             <ion-icon color="navbar" name="person"></ion-icon>
             <ion-input type="number" class="ion-text-center" placeholder="Cédula de identidad" [(ngModel)]="cedula" name="cedula"></ion-input>
@@ -30,5 +30,9 @@
         <button class="btn-login" color="button" [disabled]="!cedula" ion-button block (click)="attemptAuth()">Ingresar</button>
         <!--button class="btn-login" ion-button icon-start size="small" *ngIf="linkedUser" block (click)="attemptAuth()">Ingresar</button>
         <button class="btn-unlink" ion-button icon-end size="small" *ngIf="linkedUser" block (click)="desvincular()">Ingresar con otra identificación</button-->
+        <br>
+        <br>
+        <p style="font-size:10px; margin-bottom: 0">Powered By</p>
+        <img src="./assets/imgs/logo_auth.png" width="110" height="50">
     </div>
 </ion-content>
