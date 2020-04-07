@@ -148,6 +148,63 @@
                                         "value":""
                                     },
                                     {
+                                        "label":"¿ES USTED FUMADOR/A?",
+                                        "type":"toggle",
+                                        "checked":false,
+                                        "show":true,
+                                        "id":"fumador",
+                                        "blurFunction":"{}",
+                                        "error":"",
+                                        "value":""
+                                    },
+                                    {
+                                        "label":"¿TIENE USTED UN TRABAJO DONDE INTERACTÚA CON MUCHAS PERSONAS?",
+                                        "type":"toggle",
+                                        "checked":false,
+                                        "show":true,
+                                        "id":"trabajo_alto_riesgo",
+                                        "blurFunction":"{\"mostrarPregunta\":[\"trabajo_alto_riesgo\",\"opciones_trabajo_alto_riesgo\"]}",
+                                        "error":"",
+                                        "value":""
+                                    },
+                                    {
+                                        "label":"¿CUÁL TRABAJO TIENE USTED?",
+                                        "type":"checkbox_group",
+                                        "id":"opciones_trabajo_alto_riesgo",
+                                        "blurFunction":"{}",
+                                        "show":true,
+                                        "children":[
+                                            {
+                                                "label":"PROFESIONAL DE LA SALUD",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"POLICÍA/MILITAR",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"CAJERO",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"VENDEDOR",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"REPARTIDOR",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"TRANSPORTISTA",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"OTRO",
+                                                "checked":false
+                                            }
+                                        ]
+                                    },
+                                    {
                                         "label":"¿HA TENIDO CONTACTO CON UN CASO CONFIRMADO O SOSPECHOSO?",
                                         "type":"toggle",
                                         "checked":false,
@@ -210,6 +267,18 @@
                                             },
                                             {
                                                 "label":"ENFERMEDAD AUTOINMUNE",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"ENFERMEDAD CARDIACA",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"ENFERMEDAD PULMONAR",
+                                                "checked":false
+                                            },
+                                            {
+                                                "label":"CÁNCER",
                                                 "checked":false
                                             }
                                         ]
@@ -398,6 +467,16 @@
                                 "type":"collapseList",
                                 "initialShow":false,
                                 "children":[
+                                    {
+                                        "label":"¿SE LAVA LAS MANOS REGULARMENTE?",
+                                        "type":"toggle",
+                                        "checked":false,
+                                        "show":true,
+                                        "id":"lavar_manos_regularmente",
+                                        "blurFunction":"{\"validateEmptyShowedInput\":[\"lavar_manos_regularmente\"]}",
+                                        "error":"",
+                                        "value":""
+                                    },
                                     {
                                         "label":"¿SE ENCUENTRA EN AISLAMIENTO?",
                                         "type":"toggle",

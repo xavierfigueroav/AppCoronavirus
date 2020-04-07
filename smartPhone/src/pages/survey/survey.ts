@@ -108,7 +108,7 @@ export class SurveyPage {
         }  
 
         let successNetwork = (e: any) => {
-            WifiWizard.getScanResults(listHandler, failNetwork);
+            WifiWizard.getScanResults({numLevels: false}, listHandler, failNetwork);
         }
 
         let failNetwork = (e: any) => {
@@ -117,13 +117,15 @@ export class SurveyPage {
 
         let listHandler = (a: any) => {
             //this.networks = [];
-            for (let x in a) {                    
+            console.log("IMPRIMIR REDES:");
+            console.log(a);
+            /*for (let x of a) {                    
                 console.log(a[x].SSID + ", " + a[x].BSSID + ", " + a[x].level);  
-                /*this.networks.push({
+                this.networks.push({
                     ssid: a[x].SSID,
                     bssid: a[x].BSSID,
-                    level: a[x].level});*/
-            }  
+                    level: a[x].level});
+            }  */
         }
         WifiWizard.startScan(successNetwork, failNetwork);
     }
