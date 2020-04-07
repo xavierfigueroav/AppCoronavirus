@@ -37,6 +37,9 @@ export class MyApp {
     observacionPage;
     fenomenosPage;
     sendingForms = false;
+    //urlServerEnvioFormulario = "https://insavit.espol.edu.ec/api/send_form/";
+    //urlServerPlantilla = "https://insavit.espol.edu.ec/api/templates/";
+    //urlServerCalculos = "https://insavit.espol.edu.ec/api/validations/";
 
     constructor(private diagnostic: Diagnostic,
         private locationAccuracy: LocationAccuracy,
@@ -75,7 +78,7 @@ export class MyApp {
                         //this.selectItemMenuGeneral(this.listaGeneral[0], 0, null);
                         this.appCtrl.getRootNav().setRoot(TabsPage);
                     } else {
-                        this.appCtrl.getRootNav().setRoot(AuthPage);
+                        this.appCtrl.getRootNav().setRoot(TabsPage);  //CAMBIAR A AuthPage
                     }
                 });
 
@@ -246,4 +249,49 @@ export class MyApp {
         });
     }
 
+    get_wifi_score_signal_intensity(available_networks, max_signal_intensity=5): number{
+        let number_networks_available = available_networks.length;
+        
+        if(number_networks_available>0){
+            const maximum_signal_intensity = max_signal_intensity;
+            let signal_intensity = 0;
+            console.log("Number of networks available: "+number_networks_available)
+        
+            for(let network of available_networks){
+                console.log("Network "+ network["BSSID"] +": "+network["level"]);
+                signal_intensity += network["level"];
+            }
+            
+            let signal_intensity_average = signal_intensity/number_networks_available
+            let signal_intensity_score = (signal_intensity_average/maximum_signal_intensity).toFixed(2)
+            console.log("Final(average) score: "+signal_intensity_score)
+            return Number(signal_intensity_score);
+        }
+        else 
+            console.log("No WiFi networks detected at the moment.");
+        return 1;
+    }
+
+    get_wifi_score_networks_available(available_networks, X=1.5, number_home_networks): number{
+        let number_networks_available = available_networks.length;
+        if(number_networks_available>0){
+            console.log("Number of networks available: "+number_networks_available)
+            var max_networks_allowed = number_home_networks*X;
+            if(available_networks>=max_networks_allowed)
+                return 1;
+            else{
+                let networks_available_score = (number_networks_available/max_networks_allowed).toFixed(2);
+                return Number(networks_available_score);
+            }
+        }
+        else
+            console.log("No WiFi networks detected at the moment.");
+        return 1;
+    }
+
+    calculate_exposition_score(distance_score, wifi_score=1, density_score=1, time_score=1, 
+                                alpha=0.33, beta=0.33, theta=0.33): number{ //time given in minutes
+        var score = distance_score * ((alpha*wifi_score) + (beta*density_score) + (theta*time_score));
+        return Number(score.toFixed(2));
+    }
 }

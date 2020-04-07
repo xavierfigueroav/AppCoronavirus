@@ -13,7 +13,7 @@ import { FormPage } from '../form/form';
 import { FollowUpPage } from '../followUp/followUp';
 import uuid from 'uuid/v4';
 
-declare var WifiWizard: any;
+declare var WifiWizard2: any;
 
 @Component({
 	selector: 'page-survey',
@@ -23,6 +23,7 @@ declare var WifiWizard: any;
 export class SurveyPage {
 	sentForms;
     templates;
+    networks = [];
     infoTemplates = [];
     pendingForms = [];
     formsData = {};
@@ -100,32 +101,35 @@ export class SurveyPage {
     }
 
     startScan() {
-        if (typeof WifiWizard !== 'undefined') {
-                console.log("WifiWizard loaded: ");
-                console.log(WifiWizard);
+        if (typeof WifiWizard2 !== 'undefined') {
+                console.log("WifiWizard2 loaded: ");
+                console.log(WifiWizard2);
         } else {
-            console.warn('WifiWizard not loaded.');
+            console.warn('WifiWizard2 not loaded.');
         }  
-
-        let successNetwork = (e: any) => {
-            WifiWizard.getScanResults(listHandler, failNetwork);
-        }
-
-        let failNetwork = (e: any) => {
-            console.log("" + e);
-        }
-
-        let listHandler = (a: any) => {
-            //this.networks = [];
-            for (let x in a) {                    
-                console.log(a[x].SSID + ", " + a[x].BSSID + ", " + a[x].level);  
-                /*this.networks.push({
-                    ssid: a[x].SSID,
-                    bssid: a[x].BSSID,
-                    level: a[x].level});*/
+        WifiWizard2.scan().then(function(results){
+            console.log("Inside Scan function");
+            console.log(results);
+            this.network.push(results);
+            for (let x of results) {   
+                var level = x["level"];
+                var ssid = x["SSID"];      
+                var bssid = x["BSSID"];
+                var frequency = x["frequency"];
+                var capabilities = x["capabilities"];
+                var timestamp = x["timestamp"];
+                console.log("Level: "+level+", SSID: "+ssid+", BSSID: "+bssid+"\n"
+                            +"Frequency: "+frequency+", Capabilities: "+capabilities+"\n"
+                            +"Timestamp: "+timestamp);  
+                // this.networks.push({
+                //     "SSID": ssid,
+                //     "BSSID": bssid,
+                //     "level": level,
+                //     "frequency": frequency,
+                //     "capabilities":capabilities,
+                //     "timestamp":timestamp});
             }  
-        }
-        WifiWizard.startScan(successNetwork, failNetwork);
+        }).catch();
     }
 
 	ionViewDidEnter() {
