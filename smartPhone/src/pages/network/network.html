@@ -10,18 +10,20 @@
 </ion-header>
 
 <ion-content>
-	<div class="status-container" padding>
-        <span class="status-label">Mi estado</span><span class="status">CASO ASINTOMÁTICO</span>
+
+    <div class="section">
+        <h2 margin>Nivel de exposición en tu grupo</h2>
+        <p class="description" margin>A continuación se muestra el nivel de exposición que cada una de las personas de tu grupo tuvo en las últimas 24 horas.</p>
+        <ion-card *ngFor="let person of people" style="text-align: center;">
+
+            <ion-card-header>
+                <h3 class="person-name">{{ person.name }}</h3>
+            </ion-card-header>
+
+            <ion-card-content>
+                    <score-scale></score-scale>
+            </ion-card-content>
+        </ion-card>
+
     </div>
-
-    <ion-card *ngFor="let person of people" style="text-align: center;">
-
-        <ion-card-header>
-            <h3 class="person-name">{{ person.name }}</h3>
-        </ion-card-header>
-
-        <ion-card-content>
-                <score-scale></score-scale>
-        </ion-card-content>
-    </ion-card>
 </ion-content>
