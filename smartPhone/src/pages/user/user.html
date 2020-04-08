@@ -9,22 +9,54 @@
 	</ion-navbar>
 </ion-header>
 
-<ion-content style="text-align: center;" padding>
+<ion-content padding>
+    <div class="identity-container">
 
-    <h2 style="font-weight: bold;">Nivel de exposición</h2>
+        <h2 style="text-align: center;">¿Cómo te identificas?</h2>
+        <p class="description" style="text-align: justify;">La forma en la que identificas nos ayuda a calcular tu nivel de exposición frente al virus.</p>
+        <ion-item>
+            <ion-select [(ngModel)]="status">
+            <ion-option value="asi" selected>CASO ASINTOMÁTICO</ion-option>
+            <ion-option value="sos">CASO SOSPECHOSO</ion-option>
+            <ion-option value="con">CASO CONFIRMADO</ion-option>
+            <ion-option value="rec">CASO RECUPERADO</ion-option>
+            <ion-option value="sin">CON SÍNTOMAS</ion-option>
+            </ion-select>
+        </ion-item>
 
-    <div class="circle-container">
-        <svg id="svg0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50%" height="50%" viewBox="0, 0, 400,400">
+    </div>
+
+    <hr/>
+
+    <h3 style="text-align: center;" >Nivel de exposición</h3>
+    <p class="description" style="text-align: center;">
+        Este es su nivel de exposición actual.
+        <button ion-button icon-only round color="primary" (click)="infoActual()" clear>
+            <ion-icon name="ios-information-circle"></ion-icon>
+        </button>
+    </p>
+    
+    <div class="circle-container" style="text-align: center;">
+        
+        <svg id="svg0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+            width="50%" height="50%" viewBox="0, 0, 400,400">
             <g id="svgg">
                 <text x="50%" y="50%" text-anchor="middle" style="font-size: 40px;">Ahora: {{ counter.toFixed(2) }}</text>
                 <path id="path0" stroke="none" [attr.fill]="ringColor" fill-rule="evenodd" d="M184.000 0.438 C 60.298 11.121,-24.063 128.609,5.862 248.524 C 32.599 355.662,141.307 420.894,248.524 394.138 C 365.703 364.895,430.494 238.821,386.120 126.400 C 353.970 44.949,270.553 -7.037,184.000 0.438 M216.371 67.769 C 300.590 78.997,352.967 162.420,326.182 242.670 C 304.327 308.151,234.662 346.094,167.400 329.150 C 92.186 310.203,49.160 231.207,73.818 157.330 C 90.058 108.673,134.814 72.696,185.400 67.636 C 187.820 67.394,190.340 67.122,191.000 67.031 C 193.700 66.661,212.068 67.195,216.371 67.769 "></path>
             </g>
         </svg>
     </div>
+    <!-- <p class="description">Verde representa un nivel bajo, naranja un nivel medio y rojo un nivel alto de exposición.</p> -->
 
     <hr/>
 
     <div id="score-bar">
+        <p class="description" style="text-align: center;">
+            Nivel de exposición a lo largo del día.
+            <button ion-button icon-only round color="primary" (click)="infoAllDay()" clear>
+                <ion-icon name="ios-information-circle"></ion-icon>
+            </button>
+        </p>
         <div>
             <div class="day1">1 hora</div><div class="days">6 horas</div><div class="days">12 horas</div><div class="days">18 horas</div><div class="day24"></div>
         </div>
@@ -32,7 +64,9 @@
 
     </div>
 
-    <ion-fab bottom left>
+   
+
+    <!-- <ion-fab bottom left>
         <button ion-fab color="warning">
             <ion-icon name="warning"></ion-icon>
         </button>
@@ -41,5 +75,5 @@
         <button ion-fab color="danger">
             <ion-icon name="alert"></ion-icon>
         </button>
-    </ion-fab>
+    </ion-fab> -->
 </ion-content>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { AuthPage } from '../auth/auth';
+import { AlertController } from 'ionic-angular';
 
 @Component({
 	selector: 'page-user',
@@ -13,8 +14,10 @@ export class UserPage implements OnInit{
     counter: number;
     ringColor: string;
     scores: any;
+    status: string;
 
-	constructor(public navCtrl: NavController, public navParams: NavParams, public appCtrl: App, private storage: Storage) {
+    constructor(public navCtrl: NavController, public navParams: NavParams, public appCtrl: App, 
+                private storage: Storage, public alertCtrl: AlertController) {
     }
 
     ngOnInit() {
@@ -56,6 +59,7 @@ export class UserPage implements OnInit{
 
     }
 
+
     getColorByScore(score: number) {
         if(score <= 0.5) {
             const red = 55 + Math.round(score*400);
@@ -72,5 +76,23 @@ export class UserPage implements OnInit{
                 this.appCtrl.getRootNav().setRoot(AuthPage);
             });
         });
+    }
+
+    infoActual() {
+        const alert = this.alertCtrl.create({
+          title: 'Exposicion actual',
+          subTitle: 'El valor que se muestra aquí es el nivel de exposición de contagio en la hora actual, mientras más se acerque al 1 hay máyor riesgo de contagio.',
+          buttons: ['OK']
+        });
+        alert.present();
+    }
+
+    infoAllDay(){
+        const alert = this.alertCtrl.create({
+            title: 'Exposición durante las últimas 24 horas',
+            subTitle: 'Esta barra muestra el nivel de exposición por cada hora del día, de este modo usted podrá tomar las medidas necesarias.',
+            buttons: ['OK']
+          });
+          alert.present();
     }
 }
