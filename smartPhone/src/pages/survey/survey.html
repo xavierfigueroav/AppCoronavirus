@@ -33,12 +33,12 @@
     	<p>Este formulario permite conocer datos básicos sobre usted. Por favor, llene estos datos sólo cuando se encuentre en casa.</p>
     	<div *ngIf="j == -1">
 	    	<div *ngFor="let template of infoTemplates;let i = index">
-	        	<button ion-button size="small" (click)="startForm(template, 'initial', i)">Nuevo formulario</button>
+	        	<button ion-button size="small" (click)="startForm(template, 'initial', i)" color="green">Nuevo formulario</button>
 	    	</div>
     	</div>
     	<div *ngIf="j != -1">
     		<div>
-	        	<button ion-button size="small" (click)="clickEditForm(j)">Editar formulario</button>
+	        	<button ion-button size="small" (click)="clickEditForm(j)" color="green">Editar formulario</button>
 	    	</div>
     	</div>
     </div>
