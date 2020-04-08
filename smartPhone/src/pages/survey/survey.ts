@@ -110,7 +110,7 @@ export class SurveyPage {
         WifiWizard2.scan().then(function(results){
             console.log("Inside Scan function");
             console.log(results);
-            this.network.push(results);
+            //this.network.push(results);
             for (let x of results) {   
                 var level = x["level"];
                 var ssid = x["SSID"];      
