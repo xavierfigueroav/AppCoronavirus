@@ -11,17 +11,13 @@
 
 <ion-content>
 	<div class="status-container" padding>
-        <p>Mi estado</p><span class="status"><p>Saludable</p></span>
+        <span class="status-label">Mi estado</span><span class="status">CASO ASINTOMÁTICO</span>
     </div>
-    <!--div *ngFor="let person of people" class="person-container">
-        <p>{{ person.name }}</p>
-        <score-scale></score-scale>
-    </div-->
 
     <ion-card *ngFor="let person of people" style="text-align: center;">
 
         <ion-card-header>
-            <h3>{{ person.name }}</h3>
+            <h3 class="person-name">{{ person.name }}</h3>
         </ion-card-header>
 
         <ion-card-content>
