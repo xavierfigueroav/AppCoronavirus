@@ -54,7 +54,7 @@ export class StatsSegmentComponent implements OnInit {
         this.selectedProvincia = this.provincias[0];
 
         this.parameters = ['CERCO EPIDEMIOLOGICO', 'CASOS CONFIRMADOS', 'MUESTRAS TOMADAS', 'FALLECIDOS', 'RECUPERADOS', 'AISLAMIENTO DOMILICIARIO', 'HOSPITALIZADOS ESTABLES', 'HOSPITALIZADOS PRON. RESERV.', 'CASOS SOSPECHOSOS'];
-        this.selectedParameter = this.parameters[0];
+        this.selectedParameter = this.parameters[1];
 
         this.selectedParameter1 = 'CASOS CONFIRMADOS';
         this.selectedParameter2 = 'CASOS SOSPECHOSOS';
