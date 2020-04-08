@@ -1,5 +1,6 @@
 {
   "CANTONES": [
+    "24 DE MAYO",
     "ALFREDO BAQUERIZO MORENO",
     "AMBATO",
     "ANTONIO ANTE",
@@ -7,7 +8,9 @@
     "ATACAMES",
     "ATAHUALPA",
     "AZOGUES",
+    "BABA",
     "BABAHOYO",
+    "BALAO",
     "BALZAR",
     "BIBLIAN",
     "BUENA FE",
@@ -21,10 +24,12 @@
     "CANTON PASTAZA",
     "CANTON SANTA ELENA",
     "CATAMAYO",
+    "CAYAMBE",
     "CHAGUARPAMBA",
     "CHAMBO",
     "CHILLANES",
     "CHIMBO",
+    "CHONE",
     "COLIMES",
     "COLTA",
     "CUENCA",
@@ -42,6 +47,7 @@
     "GENERAL ANTONIO ELIZALDE",
     "GUALACEO",
     "GUALAQUIZA",
+    "GUAMOTE",
     "GUANO",
     "GUARANDA",
     "GUAYAQUIL",
@@ -52,6 +58,7 @@
     "JARAMIJO",
     "JIPIJAPA",
     "LA CONCORDIA",
+    "LA JOYA DE LOS SACHAS",
     "LA LIBERTAD",
     "LA MANA",
     "LA TRONCAL",
@@ -71,6 +78,7 @@
     "MONTECRISTI",
     "MONTUFAR",
     "MORONA",
+    "NABON",
     "NARANJAL",
     "NARANJITO",
     "NOBOL",
@@ -85,12 +93,15 @@
     "PLAYAS",
     "PORTOVELO",
     "PORTOVIEJO",
+    "PUEBLOVIEJO",
+    "PUJILI",
     "QUEVEDO",
     "QUININDE",
     "QUINSALOMA",
     "QUITO",
     "RIOBAMBA",
     "RIOVERDE",
+    "ROCAFUERTE",
     "RUMIÑAHUI",
     "SALCEDO",
     "SALINAS",
@@ -98,6 +109,7 @@
     "SAMBORONDON",
     "SAN CRISTOBAL",
     "SAN JACINTO DE YAGUACHI",
+    "SAN MIGUEL",
     "SAN PEDRO DE HUACA",
     "SAN PEDRO DE PELILEO",
     "SANTA ANA",
@@ -109,6 +121,7 @@
     "SANTO DOMINGO",
     "SAQUISILI",
     "SEVILLA DE ORO",
+    "SHUSHUFINDI",
     "SIGCHOS",
     "SIGSIG",
     "SIMON BOLIVAR",
@@ -117,6 +130,7 @@
     "SUSCAL",
     "TAISHA",
     "TENA",
+    "TIWINTZA",
     "TULCAN",
     "URDANETA",
     "VENTANAS",
@@ -153,11 +167,11 @@
     "ZAMORA CHINCHIPE"
   ],
   "LAST INFOGRAFIA": {
-    "FECHA": 1585717200.0,
-    "NÚMERO": 37
+    "FECHA": 1586149200.0,
+    "NÚMERO": 42
   },
   "LAST BOLETIN": {
-    "FECHA": 1585630800.0,
-    "NÚMERO": 31
+    "FECHA": 1586149200.0,
+    "NÚMERO": 38
   }
 }
