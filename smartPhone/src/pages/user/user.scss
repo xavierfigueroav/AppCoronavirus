@@ -1,7 +1,8 @@
 page-user {
 
     .circle-container {
-        margin-top: 10%;
+        margin-top: 5%;
+        margin-bottom: 3%;
     }
 
     #score-bar {
@@ -9,6 +10,7 @@ page-user {
         width: 100%;
         background-color: transparent;
         border: 0;
+        margin-bottom: 30%;
     }
 
     .score-square {
@@ -43,4 +45,21 @@ page-user {
 
     }
 
+    .identity-container {
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    .description {
+        font-size: 16px;
+    }
+
+    ion-select {
+        margin: 0 auto;
+        max-width: 70% !important;
+    }
+
+    button{
+        shape-margin: round($number: 0);
+    }
 }
