@@ -26,6 +26,7 @@
     "@capacitor/core": "1.1.0",
     "@ionic-native/aes-256": "^4.20.0",
     "@ionic-native/android-permissions": "^4.11.0",
+    "@ionic-native/background-geolocation": "^4.20.0",
     "@ionic-native/clipboard": "^4.20.0",
     "@ionic-native/core": "4.8.0",
     "@ionic-native/date-picker": "^4.11.0",
@@ -33,7 +34,7 @@
     "@ionic-native/file": "^4.9.1",
     "@ionic-native/file-transfer": "^4.20.0",
     "@ionic-native/geolocation": "^4.9.2",
-    "@ionic-native/http": "^4.9.0",
+    "@ionic-native/http": "^4.20.0",
     "@ionic-native/intel-security": "^4.11.0",
     "@ionic-native/local-notifications": "^4.20.0",
     "@ionic-native/location-accuracy": "^4.16.0",
@@ -61,6 +62,7 @@
     "cordova-plugin-ionic-keyboard": "^2.1.3",
     "cordova-plugin-ionic-webview": "^1.2.1",
     "cordova-plugin-local-notification": "^0.9.0-beta.2",
+    "cordova-plugin-mauron85-background-geolocation": "3.0.1",
     "cordova-plugin-network-information": "^2.0.1",
     "cordova-plugin-request-location-accuracy": "^2.3.0",
     "cordova-plugin-secure-storage": "^2.6.8",
@@ -114,7 +116,17 @@
       "cordova-plugin-file-transfer": {},
       "cordova-clipboard": {},
       "com.pylonproducts.wifiwizard": {},
-      "wifiwizard2": {}
+      "wifiwizard2": {},
+      "cordova-plugin-mauron85-background-geolocation": {
+        "GOOGLE_PLAY_SERVICES_VERSION": "11+",
+        "ANDROID_SUPPORT_LIBRARY_VERSION": "26+",
+        "ICON": "@mipmap/icon",
+        "SMALL_ICON": "@mipmap/icon",
+        "ACCOUNT_NAME": "@string/app_name",
+        "ACCOUNT_LABEL": "@string/app_name",
+        "ACCOUNT_TYPE": "$PACKAGE_NAME.account",
+        "CONTENT_AUTHORITY": "$PACKAGE_NAME"
+      }
     },
     "platforms": [
       "browser",

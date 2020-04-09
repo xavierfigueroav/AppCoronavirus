@@ -20,6 +20,13 @@ import { FollowUpPage } from '../pages/followUp/followUp';
 import { TabsPage } from '../pages/tabs/tabs';
 import { DiagnosticPage } from '../pages/diagnostic/diagnostic';
 
+import {
+    BackgroundGeolocation,
+    BackgroundGeolocationConfig,
+    BackgroundGeolocationResponse,
+    BackgroundGeolocationEvents
+  } from "@ionic-native/background-geolocation";
+
 @Component({
     templateUrl: 'app.html'
 })
@@ -54,7 +61,8 @@ export class MyApp {
         private events: Events,
         platform: Platform,
         statusBar: StatusBar,
-        splashScreen: SplashScreen) {
+        splashScreen: SplashScreen,
+        private backgroundGeolocation: BackgroundGeolocation) {
             platform.ready().then(() => {
 
                 this.events.subscribe('pendingForms:editarFormulario', (fechaFormulario) => {
@@ -83,6 +91,8 @@ export class MyApp {
                 });
 
             });
+
+            this.startBackgroundGeolocation();
     }
 
     promesaEnvioFormulario(linkedUser, formulario, templateUuid, setId) {
@@ -251,23 +261,23 @@ export class MyApp {
 
     get_wifi_score_signal_intensity(available_networks, max_signal_intensity=5): number{
         let number_networks_available = available_networks.length;
-        
+
         if(number_networks_available>0){
             const maximum_signal_intensity = max_signal_intensity;
             let signal_intensity = 0;
             console.log("Number of networks available: "+number_networks_available)
-        
+
             for(let network of available_networks){
                 console.log("Network "+ network["BSSID"] +": "+network["level"]);
                 signal_intensity += network["level"];
             }
-            
+
             let signal_intensity_average = signal_intensity/number_networks_available
             let signal_intensity_score = (signal_intensity_average/maximum_signal_intensity).toFixed(2)
             console.log("Final(average) score: "+signal_intensity_score)
             return Number(signal_intensity_score);
         }
-        else 
+        else
             console.log("No WiFi networks detected at the moment.");
         return 1;
     }
@@ -289,9 +299,36 @@ export class MyApp {
         return 1;
     }
 
-    calculate_exposition_score(distance_score, wifi_score=1, density_score=1, time_score=1, 
+    calculate_exposition_score(distance_score, wifi_score=1, density_score=1, time_score=1,
                                 alpha=0.33, beta=0.33, theta=0.33): number{ //time given in minutes
         var score = distance_score * ((alpha*wifi_score) + (beta*density_score) + (theta*time_score));
         return Number(score.toFixed(2));
     }
+
+    startBackgroundGeolocation() {
+        console.log('startB');
+        const config: BackgroundGeolocationConfig = {
+          desiredAccuracy: 10,
+          stationaryRadius: 20,
+          distanceFilter: 1,
+          debug: true, //  enable this hear sounds for background-geolocation life-cycle.
+          stopOnTerminate: false // enable this to clear background location settings when the app terminates
+        };
+
+        this.backgroundGeolocation.configure(config).then(() => {
+            console.log('startX');
+          this.backgroundGeolocation
+            .on(BackgroundGeolocationEvents.location)
+            .subscribe((location: BackgroundGeolocationResponse) => {
+              console.log(location);
+              this.backgroundGeolocation.getLocations().then((locations) => {
+                console.log('locations', locations);
+
+              })
+            });
+        });
+        // start recording location
+        this.backgroundGeolocation.start();
+        console.log('startE');
+      }
 }
