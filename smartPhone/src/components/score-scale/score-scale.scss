@@ -1,23 +1,15 @@
-page-user {
-
-    .circle-container {
-        margin-top: 5%;
-        margin-bottom: 3%;
-    }
+score-scale {
 
     #score-bar {
-        height: 5%;
+        height: 25px;
         width: 100%;
-        background-color: transparent;
         border: 0;
-        margin-bottom: 30%;
     }
 
     .score-square {
         display: inline-block;
         height: 100%;
         width: 4.15%;
-        margin: 0;
         color: #ffffff  ;
         border: 1px solid #ffffff;
     }
@@ -45,21 +37,4 @@ page-user {
 
     }
 
-    .identity-container {
-        margin-top: 15px;
-        margin-bottom: 10px;
-    }
-
-    .description {
-        font-size: 16px;
-    }
-
-    ion-select {
-        margin: 0 auto;
-        max-width: 70% !important;
-    }
-
-    .info-button{
-        shape-margin: round($number: 0);
-    }
 }

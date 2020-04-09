@@ -2,1212 +2,1316 @@
   "miscelaneos": {
     "nacional": [
       {
-        "INFOGRAFIA": 37,
-        "FECHA": 1585717200.0,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "FECHA": 1586149200.0,
+        "HORA": "10:00",
         "CERCO EPIDEMIOLOGICO": null,
-        "CASOS CONFIRMADOS": 2758,
-        "MUESTRAS TOMADAS": 9019,
-        "FALLECIDOS": 98,
-        "RECUPERADOS": 58,
-        "AISLAMIENTO DOMILICIARIO": 2301,
-        "HOSPITALIZADOS ESTABLES": 191,
-        "HOSPITALIZADOS PRON. RESERV.": 110,
-        "CASOS SOSPECHOSOS": 3428
+        "CASOS CONFIRMADOS": 3747,
+        "MUESTRAS TOMADAS": 13039,
+        "FALLECIDOS": 191,
+        "RECUPERADOS": 100,
+        "AISLAMIENTO DOMILICIARIO": 3066,
+        "HOSPITALIZADOS ESTABLES": 234,
+        "HOSPITALIZADOS PRON. RESERV.": 156,
+        "CASOS SOSPECHOSOS": null
       }
     ],
     "provincia": [
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "PROVINCIA": "AZUAY",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 1,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 94,
-        "FALLECIDOS": 3.0
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "BOLIVAR",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 2,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 20,
-        "FALLECIDOS": null
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "CARCHI",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 4,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 6,
-        "FALLECIDOS": null
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "CAÑAR",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 3,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 49,
-        "FALLECIDOS": 2.0
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "CHIMBORAZO",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 6,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 18,
-        "FALLECIDOS": null
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "COTOPAXI",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 5,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 10,
-        "FALLECIDOS": 1.0
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "EL ORO",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 7,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 52,
-        "FALLECIDOS": 9.0
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "ESMERALDAS",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 8,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 10,
-        "FALLECIDOS": null
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "GALAPAGOS",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 20,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 7,
-        "FALLECIDOS": null
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "GUAYAS",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 9,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 1941,
-        "FALLECIDOS": 63.0
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "IMBABURA",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 10,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 15,
-        "FALLECIDOS": 1.0
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "LOJA",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 11,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 27,
-        "FALLECIDOS": null
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "LOS RIOS",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 12,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 100,
-        "FALLECIDOS": 6.0
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "MANABI",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 13,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 56,
-        "FALLECIDOS": 2.0
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "MORONA SANTIAGO",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 14,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 10,
-        "FALLECIDOS": null
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "NAPO",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 15,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 1,
-        "FALLECIDOS": null
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "ORELLANA",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 22,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 1,
-        "FALLECIDOS": null
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "PASTAZA",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 16,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 5,
-        "FALLECIDOS": null
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "PICHINCHA",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 17,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 248,
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 1.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 99,
         "FALLECIDOS": 5.0
       },
       {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "SANTA ELENA",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 24,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 30,
-        "FALLECIDOS": 4.0
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "SANTO DOMINGO TSACHILAS",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 23,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 19,
-        "FALLECIDOS": null
-      },
-      {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "SUCUMBIOS",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 21,
-        "HORA": "17:00",
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "BOLIVAR",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 2.0,
+        "HORA": "10:00",
         "CASOS CONFIRMADOS": 27,
         "FALLECIDOS": 1.0
       },
       {
-        "FECHA": 1585717200.0,
-        "PROVINCIA": "TUNGURAHUA",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 18,
-        "HORA": "17:00",
-        "CASOS CONFIRMADOS": 10,
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "CARCHI",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 4.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 12,
+        "FALLECIDOS": null
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "CAÑAR",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 3.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 59,
+        "FALLECIDOS": 2.0
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "CHIMBORAZO",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 6.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 46,
+        "FALLECIDOS": 2.0
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "COTOPAXI",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 5.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 23,
         "FALLECIDOS": 1.0
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "EL ORO",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 7.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 58,
+        "FALLECIDOS": 14.0
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "ESMERALDAS",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 8.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 17,
+        "FALLECIDOS": null
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "GALAPAGOS",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 20.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 11,
+        "FALLECIDOS": 1.0
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "GUAYAS",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 9.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 2534,
+        "FALLECIDOS": 130.0
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "IMBABURA",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 10.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 21,
+        "FALLECIDOS": 2.0
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "LOJA",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 11.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 27,
+        "FALLECIDOS": null
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "LOS RIOS",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 12.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 158,
+        "FALLECIDOS": 10.0
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "MANABI",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 13.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 88,
+        "FALLECIDOS": 3.0
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "MORONA SANTIAGO",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 14.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 11,
+        "FALLECIDOS": null
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "NAPO",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 15.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 2,
+        "FALLECIDOS": null
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "ORELLANA",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 22.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 4,
+        "FALLECIDOS": null
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "PASTAZA",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 16.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 12,
+        "FALLECIDOS": null
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "PICHINCHA",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 17.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 395,
+        "FALLECIDOS": 10.0
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "SANTA ELENA",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 24.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 52,
+        "FALLECIDOS": 4.0
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "SANTO DOMINGO TSACHILAS",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 23.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 36,
+        "FALLECIDOS": 2.0
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "SUCUMBIOS",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 21.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 30,
+        "FALLECIDOS": 1.0
+      },
+      {
+        "FECHA": 1586149200.0,
+        "PROVINCIA": "TUNGURAHUA",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 18.0,
+        "HORA": "10:00",
+        "CASOS CONFIRMADOS": 22,
+        "FALLECIDOS": 3.0
+      },
+      {
+        "FECHA": 1586149200.0,
         "PROVINCIA": "ZAMORA CHINCHIPE",
-        "INFOGRAFIA": 37,
-        "ID_PROVINCIA": 19,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "ID_PROVINCIA": 19.0,
+        "HORA": "10:00",
         "CASOS CONFIRMADOS": 2,
         "FALLECIDOS": null
       }
     ],
     "canton": [
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "24 DE MAYO",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1316,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "ALFREDO BAQUERIZO MORENO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 902,
         "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "AMBATO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1801,
-        "CASOS CONFIRMADOS": 9
+        "CASOS CONFIRMADOS": 20
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "ANTONIO ANTE",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1002,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "ARENILLAS",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 702,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "ATACAMES",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 806,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "ATAHUALPA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 703,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "AZOGUES",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 301,
         "CASOS CONFIRMADOS": 15
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "BABA",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1202,
+        "CASOS CONFIRMADOS": 3
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "BABAHOYO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1201,
-        "CASOS CONFIRMADOS": 48
+        "CASOS CONFIRMADOS": 70
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "BALAO",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 903,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "BALZAR",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 904,
-        "CASOS CONFIRMADOS": 5
+        "CASOS CONFIRMADOS": 10
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "BIBLIAN",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 302,
         "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "BUENA FE",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1210,
-        "CASOS CONFIRMADOS": 1
+        "CASOS CONFIRMADOS": 7
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CALUMA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 206,
-        "CASOS CONFIRMADOS": 1
+        "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CALVAS",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1102,
         "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CANTON BOLIVAR",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 402,
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1306,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CANTON CAÑAR",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 303,
-        "CASOS CONFIRMADOS": 4
+        "CASOS CONFIRMADOS": 5
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CANTON ESMERALDAS",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 801,
-        "CASOS CONFIRMADOS": 7
+        "CASOS CONFIRMADOS": 14
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CANTON LOJA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1101,
         "CASOS CONFIRMADOS": 20
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CANTON ORELLANA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 2201,
-        "CASOS CONFIRMADOS": 1
+        "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CANTON PASTAZA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1601,
-        "CASOS CONFIRMADOS": 4
+        "CASOS CONFIRMADOS": 11
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CANTON SANTA ELENA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 2401,
-        "CASOS CONFIRMADOS": 12
+        "CASOS CONFIRMADOS": 23
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CATAMAYO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1103,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "CAYAMBE",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1702,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "CHAGUARPAMBA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1105,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CHAMBO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 604,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CHILLANES",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 202,
-        "CASOS CONFIRMADOS": 4
+        "CASOS CONFIRMADOS": 7
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CHIMBO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 203,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "CHONE",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1303,
+        "CASOS CONFIRMADOS": 4
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "COLIMES",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 905,
-        "CASOS CONFIRMADOS": 1
+        "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "COLTA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 603,
-        "CASOS CONFIRMADOS": 7
+        "CASOS CONFIRMADOS": 10
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CUENCA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 101,
-        "CASOS CONFIRMADOS": 83
+        "CASOS CONFIRMADOS": 88
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CUMANDA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 610,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "CUYABENO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 2107,
         "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "DAULE",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 906,
-        "CASOS CONFIRMADOS": 135
+        "CASOS CONFIRMADOS": 172
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "DELEG",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 306,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "DURAN",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 907,
-        "CASOS CONFIRMADOS": 89
+        "CASOS CONFIRMADOS": 104
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "ECHEANDIA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 204,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "EL CARMEN",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1304,
-        "CASOS CONFIRMADOS": 1
+        "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "EL EMPALME",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 908,
-        "CASOS CONFIRMADOS": 6
+        "CASOS CONFIRMADOS": 15
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "EL GUABO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 706,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "EL TAMBO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 305,
-        "CASOS CONFIRMADOS": 4
+        "CASOS CONFIRMADOS": 5
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "EL TRIUNFO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 909,
-        "CASOS CONFIRMADOS": 2
+        "CASOS CONFIRMADOS": 8
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "GENERAL ANTONIO ELIZALDE",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 927,
-        "CASOS CONFIRMADOS": 2
+        "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "GUALACEO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 103,
         "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "GUALAQUIZA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1402,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
-        "CANTON": "GUANO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 607,
-        "CASOS CONFIRMADOS": 1
-      },
-      {
-        "FECHA": 1585717200.0,
-        "CANTON": "GUARANDA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 201,
-        "CASOS CONFIRMADOS": 11
-      },
-      {
-        "FECHA": 1585717200.0,
-        "CANTON": "GUAYAQUIL",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 901,
-        "CASOS CONFIRMADOS": 1304
-      },
-      {
-        "FECHA": 1585717200.0,
-        "CANTON": "HUAQUILLAS",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 707,
+        "FECHA": 1586149200.0,
+        "CANTON": "GUAMOTE",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 606,
         "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
-        "CANTON": "IBARRA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 1001,
+        "FECHA": 1586149200.0,
+        "CANTON": "GUANO",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 607,
+        "CASOS CONFIRMADOS": 3
+      },
+      {
+        "FECHA": 1586149200.0,
+        "CANTON": "GUARANDA",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 201,
         "CASOS CONFIRMADOS": 13
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "GUAYAQUIL",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 901,
+        "CASOS CONFIRMADOS": 1732
+      },
+      {
+        "FECHA": 1586149200.0,
+        "CANTON": "HUAQUILLAS",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 707,
+        "CASOS CONFIRMADOS": 4
+      },
+      {
+        "FECHA": 1586149200.0,
+        "CANTON": "IBARRA",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1001,
+        "CASOS CONFIRMADOS": 19
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "ISABELA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 2002,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "ISIDRO AYORA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 928,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "JARAMIJO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1321,
-        "CASOS CONFIRMADOS": 1
-      },
-      {
-        "FECHA": 1585717200.0,
-        "CANTON": "JIPIJAPA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 1306,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "JIPIJAPA",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1306,
+        "CASOS CONFIRMADOS": 3
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "LA CONCORDIA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 808,
         "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "LA JOYA DE LOS SACHAS",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 2203,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "LA MANA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 502,
-        "CASOS CONFIRMADOS": 1
+        "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "LA TRONCAL",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 304,
-        "CASOS CONFIRMADOS": 21
+        "CASOS CONFIRMADOS": 28
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "LAGO AGRIO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 2101,
-        "CASOS CONFIRMADOS": 24
+        "CASOS CONFIRMADOS": 26
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "LATACUNGA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 501,
-        "CASOS CONFIRMADOS": 5
+        "CASOS CONFIRMADOS": 14
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "LIBERTAD",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 2402,
-        "CASOS CONFIRMADOS": 12
+        "CASOS CONFIRMADOS": 19
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "LOMAS DE SARGENTILLO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 924,
-        "CASOS CONFIRMADOS": 1
+        "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "MACARA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1108,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "MACHALA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 701,
-        "CASOS CONFIRMADOS": 19
+        "CASOS CONFIRMADOS": 23
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "MANTA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1308,
-        "CASOS CONFIRMADOS": 28
+        "CASOS CONFIRMADOS": 38
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "MEJIA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1703,
-        "CASOS CONFIRMADOS": 1
+        "CASOS CONFIRMADOS": 7
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "MERA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1602,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "MILAGRO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 910,
-        "CASOS CONFIRMADOS": 140
+        "CASOS CONFIRMADOS": 159
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "MIRA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 404,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "MOCACHE",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1212,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "MONTALVO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1203,
         "CASOS CONFIRMADOS": 4
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "MONTECRISTI",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1309,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "MONTUFAR",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 405,
-        "CASOS CONFIRMADOS": 1
+        "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "MORONA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1401,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
-        "CANTON": "NARANJAL",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 911,
-        "CASOS CONFIRMADOS": 6
-      },
-      {
-        "FECHA": 1585717200.0,
-        "CANTON": "NARANJITO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 912,
-        "CASOS CONFIRMADOS": 2
-      },
-      {
-        "FECHA": 1585717200.0,
-        "CANTON": "NOBOL",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 925,
+        "FECHA": 1586149200.0,
+        "CANTON": "NABON",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 104,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "NARANJAL",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 911,
+        "CASOS CONFIRMADOS": 13
+      },
+      {
+        "FECHA": 1586149200.0,
+        "CANTON": "NARANJITO",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 912,
+        "CASOS CONFIRMADOS": 5
+      },
+      {
+        "FECHA": 1586149200.0,
+        "CANTON": "NOBOL",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 925,
+        "CASOS CONFIRMADOS": 3
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "OTAVALO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1004,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "PALORA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1404,
         "CASOS CONFIRMADOS": 4
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "PASAJE",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 709,
         "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "PAUTE",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 105,
         "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "PEDRO CARBO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 914,
-        "CASOS CONFIRMADOS": 16
+        "CASOS CONFIRMADOS": 26
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "PEDRO MONCAYO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1704,
-        "CASOS CONFIRMADOS": 1
-      },
-      {
-        "FECHA": 1585717200.0,
-        "CANTON": "PEDRO VICENTE MALDONADO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 1708,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "PEDRO VICENTE MALDONADO",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1708,
+        "CASOS CONFIRMADOS": 3
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "PIÑAS",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 710,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "PLAYAS",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 921,
-        "CASOS CONFIRMADOS": 8
+        "CASOS CONFIRMADOS": 18
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "PORTOVELO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 711,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "PORTOVIEJO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1301,
-        "CASOS CONFIRMADOS": 19
+        "CASOS CONFIRMADOS": 31
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "PUJILI",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 504,
+        "CASOS CONFIRMADOS": 2
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "QUEVEDO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1205,
-        "CASOS CONFIRMADOS": 29
+        "CASOS CONFIRMADOS": 47
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "QUININDE",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 804,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "QUINSALOMA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 1213,
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1208,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "QUITO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1701,
-        "CASOS CONFIRMADOS": 228
+        "CASOS CONFIRMADOS": 364
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "RIOBAMBA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 601,
-        "CASOS CONFIRMADOS": 8
+        "CASOS CONFIRMADOS": 28
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "RIOVERDE",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 807,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
-        "CANTON": "RUMIÑAHUI",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 1705,
-        "CASOS CONFIRMADOS": 16
+        "FECHA": 1586149200.0,
+        "CANTON": "ROCAFUERTE",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1312,
+        "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "RUMIÑAHUI",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1705,
+        "CASOS CONFIRMADOS": 18
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "SALCEDO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 505,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SALINAS",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 2403,
-        "CASOS CONFIRMADOS": 6
+        "CASOS CONFIRMADOS": 10
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SALITRE",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 919,
-        "CASOS CONFIRMADOS": 26
+        "CASOS CONFIRMADOS": 32
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SAMBORONDON",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 916,
-        "CASOS CONFIRMADOS": 165
+        "CASOS CONFIRMADOS": 189
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SAN CRISTOBAL",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 2001,
-        "CASOS CONFIRMADOS": 4
+        "CASOS CONFIRMADOS": 7
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "SAN MIGUEL",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 205,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "SAN PEDRO DE HUACA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 406,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SAN PEDRO DE PELILEO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1807,
-        "CASOS CONFIRMADOS": 1
+        "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SANTA ANA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1313,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SANTA CRUZ",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 2003,
-        "CASOS CONFIRMADOS": 2
+        "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SANTA ISABEL",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 108,
         "CASOS CONFIRMADOS": 3
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SANTA LUCIA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 918,
-        "CASOS CONFIRMADOS": 10
+        "CASOS CONFIRMADOS": 12
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SANTA ROSA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 712,
-        "CASOS CONFIRMADOS": 18
+        "CASOS CONFIRMADOS": 19
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SANTO DOMINGO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 2301,
-        "CASOS CONFIRMADOS": 16
+        "CASOS CONFIRMADOS": 33
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SAQUISILI",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 506,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SEVILLA DE ORO",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 113,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "SHUSHUFINDI",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 2104,
+        "CASOS CONFIRMADOS": 1
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "SIGCHOS",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 507,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SIGSIG",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 109,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SIMON BOLIVAR",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 922,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SUCRE",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1314,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SUCUA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1406,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "SUSCAL",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 307,
-        "CASOS CONFIRMADOS": 1
+        "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "TAISHA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1409,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "TENA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1501,
-        "CASOS CONFIRMADOS": 1
-      },
-      {
-        "FECHA": 1585717200.0,
-        "CANTON": "TULCAN",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 401,
-        "CASOS CONFIRMADOS": 3
-      },
-      {
-        "FECHA": 1585717200.0,
-        "CANTON": "URDANETA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 1206,
-        "CASOS CONFIRMADOS": 4
-      },
-      {
-        "FECHA": 1585717200.0,
-        "CANTON": "VENTANAS",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 1207,
-        "CASOS CONFIRMADOS": 10
-      },
-      {
-        "FECHA": 1585717200.0,
-        "CANTON": "VINCES",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 1208,
         "CASOS CONFIRMADOS": 2
       },
       {
-        "FECHA": 1585717200.0,
-        "CANTON": "YAGUACHI",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
-        "ID_CANTON": 920,
-        "CASOS CONFIRMADOS": 16
+        "FECHA": 1586149200.0,
+        "CANTON": "TIWINTZA",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1412,
+        "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
+        "CANTON": "TULCAN",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 401,
+        "CASOS CONFIRMADOS": 8
+      },
+      {
+        "FECHA": 1586149200.0,
+        "CANTON": "URDANETA",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1205,
+        "CASOS CONFIRMADOS": 4
+      },
+      {
+        "FECHA": 1586149200.0,
+        "CANTON": "VENTANAS",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1206,
+        "CASOS CONFIRMADOS": 15
+      },
+      {
+        "FECHA": 1586149200.0,
+        "CANTON": "VINCES",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 1207,
+        "CASOS CONFIRMADOS": 6
+      },
+      {
+        "FECHA": 1586149200.0,
+        "CANTON": "YAGUACHI",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
+        "ID_CANTON": 920,
+        "CASOS CONFIRMADOS": 21
+      },
+      {
+        "FECHA": 1586149200.0,
         "CANTON": "YANTZAZA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1905,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "ZAMORA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 1901,
         "CASOS CONFIRMADOS": 1
       },
       {
-        "FECHA": 1585717200.0,
+        "FECHA": 1586149200.0,
         "CANTON": "ZARUMA",
-        "INFOGRAFIA": 37,
-        "HORA": "17:00",
+        "INFOGRAFIA": 42,
+        "HORA": "10:00",
         "ID_CANTON": 713,
         "CASOS CONFIRMADOS": 1
       }
@@ -1215,52 +1319,52 @@
   },
   "edades": [
     {
-      "BOLETIN MSP": 31,
-      "FECHA": 1585630800.0,
+      "BOLETIN MSP": 38,
+      "FECHA": 1586149200.0,
       "RANGO EDAD": "<1 año",
       "FALLECIDO": 1
     },
     {
-      "BOLETIN MSP": 31,
-      "FECHA": 1585630800.0,
+      "BOLETIN MSP": 38,
+      "FECHA": 1586149200.0,
       "RANGO EDAD": "1 - 4 años",
-      "FALLECIDO": 0
+      "FALLECIDO": 1
     },
     {
-      "BOLETIN MSP": 31,
-      "FECHA": 1585630800.0,
+      "BOLETIN MSP": 38,
+      "FECHA": 1586149200.0,
       "RANGO EDAD": "5 - 9 años",
       "FALLECIDO": 0
     },
     {
-      "BOLETIN MSP": 31,
-      "FECHA": 1585630800.0,
+      "BOLETIN MSP": 38,
+      "FECHA": 1586149200.0,
       "RANGO EDAD": "10 - 14 años",
       "FALLECIDO": 0
     },
     {
-      "BOLETIN MSP": 31,
-      "FECHA": 1585630800.0,
+      "BOLETIN MSP": 38,
+      "FECHA": 1586149200.0,
       "RANGO EDAD": "15 - 19 años",
       "FALLECIDO": 0
     },
     {
-      "BOLETIN MSP": 31,
-      "FECHA": 1585630800.0,
+      "BOLETIN MSP": 38,
+      "FECHA": 1586149200.0,
       "RANGO EDAD": "20 - 49 años",
-      "FALLECIDO": 11
+      "FALLECIDO": 33
     },
     {
-      "BOLETIN MSP": 31,
-      "FECHA": 1585630800.0,
+      "BOLETIN MSP": 38,
+      "FECHA": 1586149200.0,
       "RANGO EDAD": "50 - 64 años",
-      "FALLECIDO": 28
+      "FALLECIDO": 71
     },
     {
-      "BOLETIN MSP": 31,
-      "FECHA": 1585630800.0,
+      "BOLETIN MSP": 38,
+      "FECHA": 1586149200.0,
       "RANGO EDAD": "> 65 años",
-      "FALLECIDO": 39
+      "FALLECIDO": 85
     }
   ]
 }
