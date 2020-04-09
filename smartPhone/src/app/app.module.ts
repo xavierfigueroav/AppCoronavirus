@@ -41,6 +41,8 @@ import { ComponentsModule } from '../components/components.module';
 import { ProfilePage } from '../pages/profile/profile';
 import { Clipboard } from '@ionic-native/clipboard';
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
+import { SQLite } from '@ionic-native/sqlite';
+import { DatabaseService } from '../service/database-service';
 
 @NgModule({
   declarations: [
@@ -113,6 +115,8 @@ import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
     DatePicker,
     Clipboard,
     BackgroundGeolocation,
+    SQLite,
+    DatabaseService
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

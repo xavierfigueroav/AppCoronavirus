@@ -19,6 +19,7 @@ import { FormPage } from '../pages/form/form';
 import { FollowUpPage } from '../pages/followUp/followUp';
 import { TabsPage } from '../pages/tabs/tabs';
 import { DiagnosticPage } from '../pages/diagnostic/diagnostic';
+import { DatabaseService } from "../service/database-service";
 
 import {
     BackgroundGeolocation,
@@ -26,6 +27,8 @@ import {
     BackgroundGeolocationResponse,
     BackgroundGeolocationEvents
   } from "@ionic-native/background-geolocation";
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { DistanceScore } from '../utils_score/distance_score';
 
 @Component({
     templateUrl: 'app.html'
@@ -62,7 +65,8 @@ export class MyApp {
         platform: Platform,
         statusBar: StatusBar,
         splashScreen: SplashScreen,
-        private backgroundGeolocation: BackgroundGeolocation) {
+        private backgroundGeolocation: BackgroundGeolocation,
+        public database:DatabaseService) {
             platform.ready().then(() => {
 
                 this.events.subscribe('pendingForms:editarFormulario', (fechaFormulario) => {
@@ -306,29 +310,92 @@ export class MyApp {
     }
 
     startBackgroundGeolocation() {
-        console.log('startB');
         const config: BackgroundGeolocationConfig = {
           desiredAccuracy: 10,
           stationaryRadius: 20,
           distanceFilter: 1,
-          debug: true, //  enable this hear sounds for background-geolocation life-cycle.
-          stopOnTerminate: false // enable this to clear background location settings when the app terminates
+          debug: true, 
+          stopOnTerminate: false 
         };
 
         this.backgroundGeolocation.configure(config).then(() => {
-            console.log('startX');
-          this.backgroundGeolocation
-            .on(BackgroundGeolocationEvents.location)
-            .subscribe((location: BackgroundGeolocationResponse) => {
-              console.log(location);
-              this.backgroundGeolocation.getLocations().then((locations) => {
-                console.log('locations', locations);
-
-              })
-            });
+            console.log('Background geolocation => configured');
+            this.backgroundGeolocation
+                .on(BackgroundGeolocationEvents.location)
+                .subscribe((location: BackgroundGeolocationResponse) => {
+                    this.locationHandler(location);
+                });
         });
         // start recording location
         this.backgroundGeolocation.start();
-        console.log('startE');
-      }
+        console.log('Background geolocation => started');
+
+    }
+
+    locationHandler(location: BackgroundGeolocationResponse){
+        console.log('Background geolocation => location received');
+        console.log(location);
+
+        var wifiScore = this.calculateWifiScore();
+        this.database.addLocation(location.latitude, location.longitude, location.time, wifiScore);
+
+        var date = new Date();
+        var currentTime = date.toUTCString;
+        this.checkForPendingScores(Number(currentTime));
+
+        var partialActualScore = this.calculatePartialActualScore(Number(currentTime)); //this value will be graficated in actual score
+
+        this.sendPendingScoresToServer();
+        
+    }
+
+    // Only calculate and save the scores for complete hours
+    checkForPendingScores(currentTime: number){
+        if(currentTime == 0) currentTime = 24;
+        this.database.getScores().then(async (data:any) =>{
+          if(data){
+            var lastScoreHour = data.length;
+            if(lastScoreHour > currentTime){ //  if we are in different days, delete previous scores and check again
+                this.database.deleteScores();
+                this.checkForPendingScores(currentTime);
+            }else{                          // if we are in the same day, only calculate the score from the last score hour to the current hour
+                for (let hour = lastScoreHour+1; hour < currentTime; hour++) {   
+                    var score = await this.calcualteDistanceScore(hour);
+                    this.database.addScore(score, hour, 0, 0, "");
+                }
+            }
+          }else{   //there aren't scores yet, calculate all scores until the current hour
+            for (let hour = 1; hour < currentTime; hour++) {
+                var score = await this.calcualteDistanceScore(hour);
+                this.database.addScore(score, hour, 0, 0, "");
+            }
+          }
+        })
+    }
+
+    async calcualteDistanceScore(hour: number): Promise<number>{
+        var homeLatitude = await this.storage.get("homeLat")
+        var homeLongitude = await this.storage.get("homeLng");
+        var distanceScoreCalculator = new DistanceScore(0,0,100,50,250,500,300,1000,2000,homeLatitude, homeLongitude);
+        var locationsByHour = this.getLocationsByHour();
+        var score = distanceScoreCalculator.calculateScore(locationsByHour);
+        return score.maxScore;
+    }
+
+    getLocationsByHour():[]{
+        return [];
+    }
+
+    calculatePartialActualScore(hour: number): number{
+        return 1;
+    }
+
+    calculateWifiScore(): number{
+        // TODO: -implement logic
+        return 1;
+    }
+
+    sendPendingScoresToServer(){
+
+    }
 }
