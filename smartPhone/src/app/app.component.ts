@@ -20,6 +20,13 @@ import { FollowUpPage } from '../pages/followUp/followUp';
 import { TabsPage } from '../pages/tabs/tabs';
 import { DiagnosticPage } from '../pages/diagnostic/diagnostic';
 
+import {
+    BackgroundGeolocation,
+    BackgroundGeolocationConfig,
+    BackgroundGeolocationResponse,
+    BackgroundGeolocationEvents
+  } from "@ionic-native/background-geolocation";
+
 @Component({
     templateUrl: 'app.html'
 })
@@ -37,9 +44,9 @@ export class MyApp {
     observacionPage;
     fenomenosPage;
     sendingForms = false;
-    //urlServerEnvioFormulario = "https://insavit.espol.edu.ec/api/send_form/";
-    //urlServerPlantilla = "https://insavit.espol.edu.ec/api/templates/";
-    //urlServerCalculos = "https://insavit.espol.edu.ec/api/validations/";
+    // urlServerEnvioFormulario = "https://insavit.espol.edu.ec/api/send_form/";
+    // urlServerPlantilla = "https://insavit.espol.edu.ec/api/templates/";
+    // urlServerCalculos = "https://insavit.espol.edu.ec/api/validations/";
 
     constructor(private diagnostic: Diagnostic,
         private locationAccuracy: LocationAccuracy,
@@ -54,7 +61,8 @@ export class MyApp {
         private events: Events,
         platform: Platform,
         statusBar: StatusBar,
-        splashScreen: SplashScreen) {
+        splashScreen: SplashScreen,
+        private backgroundGeolocation: BackgroundGeolocation) {
             platform.ready().then(() => {
 
                 this.events.subscribe('pendingForms:editarFormulario', (fechaFormulario) => {
@@ -83,6 +91,8 @@ export class MyApp {
                 });
 
             });
+
+            this.startBackgroundGeolocation();
     }
 
     promesaEnvioFormulario(linkedUser, formulario, templateUuid, setId) {
@@ -249,9 +259,36 @@ export class MyApp {
         });
     }
 
-    calculate_exposition_score(distance_score, wifi_score=1, density_score=1, time_score=1, 
+    calculate_exposition_score(distance_score, wifi_score=1, density_score=1, time_score=1,
                                 alpha=0.33, beta=0.33, theta=0.33): number{ //time given in minutes
         var score = distance_score * ((alpha*wifi_score) + (beta*density_score) + (theta*time_score));
         return Number(score.toFixed(2));
     }
+
+    startBackgroundGeolocation() {
+        console.log('startB');
+        const config: BackgroundGeolocationConfig = {
+          desiredAccuracy: 10,
+          stationaryRadius: 20,
+          distanceFilter: 1,
+          debug: true, //  enable this hear sounds for background-geolocation life-cycle.
+          stopOnTerminate: false // enable this to clear background location settings when the app terminates
+        };
+
+        this.backgroundGeolocation.configure(config).then(() => {
+            console.log('startX');
+          this.backgroundGeolocation
+            .on(BackgroundGeolocationEvents.location)
+            .subscribe((location: BackgroundGeolocationResponse) => {
+              console.log(location);
+              this.backgroundGeolocation.getLocations().then((locations) => {
+                console.log('locations', locations);
+
+              })
+            });
+        });
+        // start recording location
+        this.backgroundGeolocation.start();
+        console.log('startE');
+      }
 }
