@@ -75,7 +75,7 @@ export class MyApp {
                         //this.selectItemMenuGeneral(this.listaGeneral[0], 0, null);
                         this.appCtrl.getRootNav().setRoot(TabsPage);
                     } else {
-                        this.appCtrl.getRootNav().setRoot(TabsPage); //CAMBIAR A AuthPage
+                        this.appCtrl.getRootNav().setRoot(AuthPage);
                     }
                 });
 
