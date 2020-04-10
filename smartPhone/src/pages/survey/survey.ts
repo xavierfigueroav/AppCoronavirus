@@ -13,8 +13,6 @@ import { FormPage } from '../form/form';
 import { FollowUpPage } from '../followUp/followUp';
 import uuid from 'uuid/v4';
 
-declare var WifiWizard2: any;
-
 @Component({
 	selector: 'page-survey',
 	templateUrl: 'survey.html',
@@ -23,7 +21,6 @@ declare var WifiWizard2: any;
 export class SurveyPage {
 	sentForms;
     templates;
-    networks = [];
     infoTemplates = [];
     pendingForms = [];
     formsData = {};
@@ -100,38 +97,6 @@ export class SurveyPage {
         console.log(`Problem: ${err}`);
     }
 
-    startScan() {
-        if (typeof WifiWizard2 !== 'undefined') {
-                console.log("WifiWizard2 loaded: ");
-                console.log(WifiWizard2);
-        } else {
-            console.warn('WifiWizard2 not loaded.');
-        }  
-        WifiWizard2.scan().then(function(results){
-            console.log("Inside Scan function");
-            console.log(results);
-            //this.network.push(results);
-            for (let x of results) {   
-                var level = x["level"];
-                var ssid = x["SSID"];      
-                var bssid = x["BSSID"];
-                var frequency = x["frequency"];
-                var capabilities = x["capabilities"];
-                var timestamp = x["timestamp"];
-                console.log("Level: "+level+", SSID: "+ssid+", BSSID: "+bssid+"\n"
-                            +"Frequency: "+frequency+", Capabilities: "+capabilities+"\n"
-                            +"Timestamp: "+timestamp);  
-                // this.networks.push({
-                //     "SSID": ssid,
-                //     "BSSID": bssid,
-                //     "level": level,
-                //     "frequency": frequency,
-                //     "capabilities":capabilities,
-                //     "timestamp":timestamp});
-            }  
-        }).catch();
-    }
-
 	ionViewDidEnter() {
         try {
             this.storage.get('sentForms').then((sentForms) => {
@@ -162,8 +127,6 @@ export class SurveyPage {
         } catch(e){
             console.log("ionViewDidEnter");
         }
-
-        this.startScan();
     }
 
     ionViewWillEnter(){

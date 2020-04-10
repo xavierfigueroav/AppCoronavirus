@@ -19,13 +19,16 @@ import { FormPage } from '../pages/form/form';
 import { FollowUpPage } from '../pages/followUp/followUp';
 import { TabsPage } from '../pages/tabs/tabs';
 import { DiagnosticPage } from '../pages/diagnostic/diagnostic';
+// import {WifiScore} from '../pages/utils_score/wifiScore';
 
 import {
     BackgroundGeolocation,
     BackgroundGeolocationConfig,
     BackgroundGeolocationResponse,
     BackgroundGeolocationEvents
-  } from "@ionic-native/background-geolocation";
+} from "@ionic-native/background-geolocation";
+
+declare var WifiWizard2: any;
 
 @Component({
     templateUrl: 'app.html'
@@ -259,6 +262,40 @@ export class MyApp {
         });
     }
 
+    startScan() {
+        if (typeof WifiWizard2 !== 'undefined') {
+                console.log("WifiWizard2 loaded: ");
+                console.log(WifiWizard2);
+        } else {
+            console.warn('WifiWizard2 not loaded.');
+        }  
+        WifiWizard2.scan().then(function(results){
+            console.log("Inside Scan function");
+            console.log(results);
+            //this.network.push(results);
+            for (let x of results) {   
+                var level = x["level"];
+                var ssid = x["SSID"];      
+                var bssid = x["BSSID"];
+                var frequency = x["frequency"];
+                var capabilities = x["capabilities"];
+                var timestamp = x["timestamp"];
+                console.log("Level: "+level+", SSID: "+ssid+", BSSID: "+bssid+"\n"
+                            +"Frequency: "+frequency+", Capabilities: "+capabilities+"\n"
+                            +"Timestamp: "+timestamp);  
+                // this.networks.push({
+                //     "SSID": ssid,
+                //     "BSSID": bssid,
+                //     "level": level,
+                //     "frequency": frequency,
+                //     "capabilities":capabilities,
+                //     "timestamp":timestamp});
+            }
+            return results;  
+        }).catch();
+    }
+
+
     calculate_exposition_score(distance_score, wifi_score=1, density_score=1, time_score=1,
                                 alpha=0.33, beta=0.33, theta=0.33): number{ //time given in minutes
         var score = distance_score * ((alpha*wifi_score) + (beta*density_score) + (theta*time_score));
@@ -283,6 +320,7 @@ export class MyApp {
               console.log(location);
               this.backgroundGeolocation.getLocations().then((locations) => {
                 console.log('locations', locations);
+                var networks = this.startScan();
 
               })
             });
