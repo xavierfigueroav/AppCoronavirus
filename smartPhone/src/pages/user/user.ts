@@ -3,6 +3,8 @@ import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { AuthPage } from '../auth/auth';
 import { AlertController } from 'ionic-angular';
+import { LocationProvider } from '../../providers/location/location';
+import { LocalNotifications } from '@ionic-native/local-notifications';
 
 @Component({
 	selector: 'page-user',
@@ -11,13 +13,14 @@ import { AlertController } from 'ionic-angular';
 
 export class UserPage implements OnInit{
 
-    counter: number;
-    ringColor: string;
     scores: any;
     status: string;
+    currentScore: number;
+    currentScoreColor: string;
+    homeLocationDate: number;
 
-    constructor(public navCtrl: NavController, public navParams: NavParams, public appCtrl: App, 
-                private storage: Storage, public alertCtrl: AlertController) {
+    constructor(public navCtrl: NavController, public navParams: NavParams, public appCtrl: App,
+                private storage: Storage, public alertCtrl: AlertController, private location: LocationProvider) {
     }
 
     ngOnInit() {
@@ -48,15 +51,17 @@ export class UserPage implements OnInit{
             {hour: 23, score: 0.9 },
             {hour: 24, score: 0.5 }
         ];
+
         this.scores.forEach((score: any) => {
             score.color = this.getColorByScore((score.score));
         });
-        this.counter = 0.0;
-        setInterval(() => {
-            this.ringColor = this.getColorByScore(this.counter);
-            this.counter = (this.counter + 0.01) % 1;
-        }, 125);
 
+        this.storage.get('homeLocation').then(location => {
+            this.homeLocationDate = location ? location.date : undefined;
+        });
+
+        this.currentScore = 0.5;
+        this.currentScoreColor = this.getColorByScore(this.currentScore);
     }
 
 
@@ -94,5 +99,38 @@ export class UserPage implements OnInit{
             buttons: ['OK']
           });
           alert.present();
+    }
+
+    registerHomeHandler() {
+        this.location.getCurrentLocation()
+        .then(location => {
+
+            this.storage.set('homeLocation', {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                date: location.timestamp
+            }).then(() => {
+                this.alertCtrl.create({
+                    title: 'La ubicación de tu casa fue almacenada exitósamente',
+                    subTitle: 'Esto nos permitirá brindarte información actualizada sobre tu nivel de exposición.',
+                    buttons: ['OK']
+                }).present();
+
+            }).catch(() => {
+                this.alertCtrl.create({
+                    title: 'Ocurrió un problema al almacenar lar ubicación de tu casa',
+                    subTitle: 'Inténtalo de nuevo. Sin ella no prodremos brindarte información actualizada sobre tu nivel de exposición.',
+                    buttons: ['OK']
+                }).present();
+            })
+
+        })
+        .catch(() => {
+            this.alertCtrl.create({
+                title: 'La ubicación de tu casa no fue almacenada',
+                subTitle: 'Sin la ubicación de tu casa no podemos brindarte información actualizada sobre tu nivel de exposición.',
+                buttons: ['OK']
+            }).present();
+        });
     }
 }
