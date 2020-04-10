@@ -92,7 +92,7 @@ export class MyApp {
                         //this.selectItemMenuGeneral(this.listaGeneral[0], 0, null);
                         this.appCtrl.getRootNav().setRoot(TabsPage);
                     } else {
-                        this.appCtrl.getRootNav().setRoot(TabsPage); //CAMBIAR A AuthPage
+                        this.appCtrl.getRootNav().setRoot(AuthPage);
                     }
                 });
 
@@ -361,15 +361,10 @@ export class MyApp {
 
     async getParameters() : Promise<{}>{
         var parameters = {};
-        //TODO UNCOMMENT THIS 3 LINES!!!!!!!!
-        //var homeLocation = await this.storage.get("homeLocation");
-        // var homeLatitude = homeLocation["latitude"];
-        // var homeLongitude = homeLocation["longitude"];
-        // var homeWifiNetworks = await this.storage.get("homeWifiNetworks");
-
-        var homeLatitude = -10.9393413858164; //delete after uncomment homelocation
-        var homeLongitude = -37.0627421097422; //delete after uncomment homelocation
-        var homeWifiNetworks = 6; //delete after uncomment homeWifiNetworks
+        var homeLocation = await this.storage.get("homeLocation");
+        var homeLatitude = homeLocation["latitude"];
+        var homeLongitude = homeLocation["longitude"];
+        var homeWifiNetworks = await this.storage.get("homeWifiNetworks");
 
         var al = 0;
         var bl = 0;

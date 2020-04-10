@@ -5,6 +5,7 @@ import { AuthPage } from '../auth/auth';
 import { AlertController } from 'ionic-angular';
 import { LocationProvider } from '../../providers/location/location';
 import { LocalNotifications } from '@ionic-native/local-notifications';
+import { MyApp } from '../../app/app.component';
 
 @Component({
 	selector: 'page-user',
@@ -101,9 +102,12 @@ export class UserPage implements OnInit{
           alert.present();
     }
 
-    registerHomeHandler() {
-        this.location.getCurrentLocation()
-        .then(location => {
+    async registerHomeHandler() {
+
+        const numberOfWifiNetworks = await MyApp.startScan();
+        await this.storage.set('homeWifiNetworks', numberOfWifiNetworks);
+
+        this.location.getCurrentLocation().then(location => {
 
             this.storage.set('homeLocation', {
                 latitude: location.coords.latitude,
@@ -124,8 +128,7 @@ export class UserPage implements OnInit{
                 }).present();
             })
 
-        })
-        .catch(() => {
+        }).catch(() => {
             this.alertCtrl.create({
                 title: 'La ubicación de tu casa no fue almacenada',
                 subTitle: 'Sin la ubicación de tu casa no podemos brindarte información actualizada sobre tu nivel de exposición.',
