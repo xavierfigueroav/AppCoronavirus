@@ -383,7 +383,7 @@ export class MyApp {
         return score.maxScore;
     }
 
-    getLocationsByHour():[]{
+    getLocationsByHour():[]{//calculate wifi average as well
         return [];
     }
 

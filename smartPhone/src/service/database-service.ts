@@ -36,17 +36,17 @@ export class DatabaseService {
         distance_home FLOAT,
         time_away FLOAT,
         encoded_route TEXT,
-      );`
+      );`,{}
     ).then(()=>{
       return this.database.executeSql(
       `CREATE TABLE IF NOT EXISTS location (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         latitude FLOAT,
         longitude FLOAT,
-        time DATETIME,
+        time INTEGER,
         wifi_score FLOAT,
         status TEXT DEFAULT 'PENDING'
-        );`)
+        );`,{})
     }).then(()=>{
       return this.database.executeSql(
       `CREATE TABLE IF NOT EXISTS user (
@@ -56,7 +56,7 @@ export class DatabaseService {
         home_latitude FLOAT,
         home_longitude FLOAT,
         home_radius FLOAT,
-        );`)
+        );`,{})
     }).catch((err)=>console.log("error detected creating tables", err));
   }
 
@@ -95,7 +95,7 @@ export class DatabaseService {
     return this.isReady()
     .then(async ()=>{
       return this.database.executeSql(`INSERT INTO score(score,hour,distance_home,time_away,encoded_route) 
-      VALUES ('${score}','${hour}','${distanceHome}','${timeAway}','${encodedRoute}');`).then((result)=>{
+      VALUES ('${score}','${hour}','${distanceHome}','${timeAway}','${encodedRoute}');`,{}).then((result)=>{
         if(result.insertId){
           return this.getScore(result.insertId);
         }
@@ -146,11 +146,15 @@ export class DatabaseService {
 
   async addLocation(latitude: number, longitude: number, time: number, wifiScore: number){
     // [time] => UTC time of this fix, in milliseconds since January 1, 1970. 
-    // TODO : convert time to sqlite DATETIME
+    // convert time to sqlite DATETIME
+    var date_time = new Date(time);
+    // convert to yyyy-mm-dd hh:mm:ss format
+    //let formatted_date = date_time.getFullYear() + "-" + (date_time.getMonth() + 1) + "-" + date_time.getDate() + " " + date_time.getHours() + ":" + date_time.getMinutes() + ":" + date_time.getSeconds();
+    var hour = date_time.getHours();
     return this.isReady()
     .then(async ()=>{
       return this.database.executeSql(`INSERT INTO location(latitude,longitude,time,wifi_score) 
-      VALUES ('${latitude}','${longitude}','${time}','${wifiScore}');`).then((result)=>{
+      VALUES ('${latitude}','${longitude}','${hour}','${wifiScore}');`,{}).then((result)=>{
         if(result.insertId){
           return this.getScore(result.insertId);
         }
@@ -191,6 +195,18 @@ export class DatabaseService {
     })    
   }
 
-
+  async getLocationByHour(hour: number){
+    if(hour == 24) hour = 0;
+    return this.isReady()
+    .then(async ()=>{
+      return this.database.executeSql(`SELECT * FROM location WHERE time BETWEEN '${hour-1}' AND '${hour}'` , []) //num-1 <time <num (num: int)
+      .then((data)=>{
+        if(data.rows.length){
+          return data.rows;
+        }
+        return null;
+      })
+    })   
+  }
 
 }
