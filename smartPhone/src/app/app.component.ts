@@ -359,13 +359,13 @@ export class MyApp {
                 this.database.deleteScores();
                 this.checkForPendingScores(currentHour);
             }else{                          // if we are in the same day, only calculate the score from the last score hour to the current hour
-                for (let hour = lastScoreHour+1; hour < currentHour; hour++) {   
+                for (let hour = lastScoreHour+1; hour <=currentHour; hour++) {   
                     var score = await this.calcualteDistanceScore(hour);
                     this.database.addScore(score, hour, 0, 0, "");
                 }
             }
           }else{   //there aren't scores yet, calculate all scores until the current hour
-            for (let hour = 1; hour < currentHour; hour++) {
+            for (let hour = 1; hour <=currentHour; hour++) {
                 var score = await this.calcualteDistanceScore(hour);
                 this.database.addScore(score, hour, 0, 0, "");
             }
