@@ -45,6 +45,7 @@ import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { SQLite } from '@ionic-native/sqlite'
 import { DatabaseService } from '../service/database-service';
 import { MedicalPage } from '../pages/medical/medical';
+import { TestResultsPage } from '../pages/test-results/test-results';
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { MedicalPage } from '../pages/medical/medical';
     PopoverPage,
     PopoverPage2,
     ProfilePage,
-    MedicalPage
+    MedicalPage,
+    TestResultsPage
   ],
   imports: [
     BrowserModule,
@@ -101,7 +103,8 @@ import { MedicalPage } from '../pages/medical/medical';
     PopoverPage,
     PopoverPage2,
     ProfilePage,
-    MedicalPage
+    MedicalPage,
+    TestResultsPage
   ],
   providers: [
     StatusBar,
