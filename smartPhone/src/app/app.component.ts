@@ -262,17 +262,17 @@ export class MyApp {
         });
     }
 
-    startScan() {
+    async startScan(): Promise<number> {
+        var num_networks;
         if (typeof WifiWizard2 !== 'undefined') {
                 console.log("WifiWizard2 loaded: ");
                 console.log(WifiWizard2);
         } else {
             console.warn('WifiWizard2 not loaded.');
         }  
-        WifiWizard2.scan().then(function(results){
+        await WifiWizard2.scan().then(function(results){
             console.log("Inside Scan function");
             console.log(results);
-            //this.network.push(results);
             for (let x of results) {   
                 var level = x["level"];
                 var ssid = x["SSID"];      
@@ -282,17 +282,11 @@ export class MyApp {
                 var timestamp = x["timestamp"];
                 console.log("Level: "+level+", SSID: "+ssid+", BSSID: "+bssid+"\n"
                             +"Frequency: "+frequency+", Capabilities: "+capabilities+"\n"
-                            +"Timestamp: "+timestamp);  
-                // this.networks.push({
-                //     "SSID": ssid,
-                //     "BSSID": bssid,
-                //     "level": level,
-                //     "frequency": frequency,
-                //     "capabilities":capabilities,
-                //     "timestamp":timestamp});
+                            +"Timestamp: "+timestamp);
             }
-            return results;  
+            num_networks = results;
         }).catch();
+        return num_networks;
     }
 
 
