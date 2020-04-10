@@ -3,6 +3,8 @@ import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { AuthPage } from '../auth/auth';
 
 import { Storage } from '@ionic/storage';
+import { DiagnosticPage } from '../diagnostic/diagnostic';
+import { TestResultsPage } from '../test-results/test-results';
 
 /**
  * Generated class for the MedicalPage page.
@@ -16,6 +18,8 @@ import { Storage } from '@ionic/storage';
   templateUrl: 'medical.html',
 })
 export class MedicalPage {
+
+    status: string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public appCtrl: App,
     private storage: Storage) {
@@ -31,6 +35,14 @@ export class MedicalPage {
             this.appCtrl.getRootNav().setRoot(AuthPage);
         });
     });
+    }
+
+    goToDiagnostic() {
+        this.navCtrl.push(DiagnosticPage);
+    }
+
+    goToTestResults() {
+        this.navCtrl.push(TestResultsPage);
     }
 
 }
