@@ -340,32 +340,32 @@ export class MyApp {
         this.database.addLocation(location.latitude, location.longitude, location.time, wifiScore);
 
         var date = new Date();
-        var currentTime = date.toUTCString;
-        this.checkForPendingScores(Number(currentTime));
+        var currentHour = date.getHours();
+        this.checkForPendingScores(Number(currentHour));
 
-        var partialActualScore = this.calculatePartialActualScore(Number(currentTime)); //this value will be graficated in actual score
+        var partialActualScore = this.calculatePartialActualScore(Number(currentHour)); //this value will be graficated in actual score
 
         this.sendPendingScoresToServer();
         
     }
 
-    // Only calculate and save the scores for complete hours
-    checkForPendingScores(currentTime: number){
-        if(currentTime == 0) currentTime = 24;
+    // Calculate and save the scores only for complete hours
+    checkForPendingScores(currentHour: number){
+        if(currentHour == 0) currentHour = 24;
         this.database.getScores().then(async (data:any) =>{
           if(data){
             var lastScoreHour = data.length;
-            if(lastScoreHour > currentTime){ //  if we are in different days, delete previous scores and check again
+            if(lastScoreHour > currentHour){ //  if we are in different days, delete previous scores and check again
                 this.database.deleteScores();
-                this.checkForPendingScores(currentTime);
+                this.checkForPendingScores(currentHour);
             }else{                          // if we are in the same day, only calculate the score from the last score hour to the current hour
-                for (let hour = lastScoreHour+1; hour < currentTime; hour++) {   
+                for (let hour = lastScoreHour+1; hour < currentHour; hour++) {   
                     var score = await this.calcualteDistanceScore(hour);
                     this.database.addScore(score, hour, 0, 0, "");
                 }
             }
           }else{   //there aren't scores yet, calculate all scores until the current hour
-            for (let hour = 1; hour < currentTime; hour++) {
+            for (let hour = 1; hour < currentHour; hour++) {
                 var score = await this.calcualteDistanceScore(hour);
                 this.database.addScore(score, hour, 0, 0, "");
             }
@@ -376,6 +376,7 @@ export class MyApp {
     async calcualteDistanceScore(hour: number): Promise<number>{
         var homeLatitude = await this.storage.get("homeLat")
         var homeLongitude = await this.storage.get("homeLng");
+        // TODO  read all paramaters from the storage
         var distanceScoreCalculator = new DistanceScore(0,0,100,50,250,500,300,1000,2000,homeLatitude, homeLongitude);
         var locationsByHour = this.getLocationsByHour();
         var score = distanceScoreCalculator.calculateScore(locationsByHour);
