@@ -13,8 +13,6 @@ import { FormPage } from '../form/form';
 import { FollowUpPage } from '../followUp/followUp';
 import uuid from 'uuid/v4';
 
-declare var WifiWizard: any;
-
 @Component({
 	selector: 'page-survey',
 	templateUrl: 'survey.html',
@@ -35,7 +33,7 @@ export class SurveyPage {
     linkedUser;
     notifications;
     id;
-    j = -1; 
+    j = -1;
 
 	constructor(private diagnostic: Diagnostic,
         private events: Events,
@@ -90,44 +88,13 @@ export class SurveyPage {
             }
         });
 
-        //AQUÍ ENVIAR ALGÚN PENDINGFORM SI HAY 
+        //AQUÍ ENVIAR ALGÚN PENDINGFORM SI HAY
         this.crearDirectorio();
 
 	}
 
     errorHandler(err: any) {
         console.log(`Problem: ${err}`);
-    }
-
-    startScan() {
-        if (typeof WifiWizard !== 'undefined') {
-                console.log("WifiWizard loaded: ");
-                console.log(WifiWizard);
-        } else {
-            console.warn('WifiWizard not loaded.');
-        }  
-
-        let successNetwork = (e: any) => {
-            WifiWizard.getScanResults({numLevels: false}, listHandler, failNetwork);
-        }
-
-        let failNetwork = (e: any) => {
-            console.log("" + e);
-        }
-
-        let listHandler = (a: any) => {
-            //this.networks = [];
-            console.log("IMPRIMIR REDES:");
-            console.log(a);
-            /*for (let x of a) {                    
-                console.log(a[x].SSID + ", " + a[x].BSSID + ", " + a[x].level);  
-                this.networks.push({
-                    ssid: a[x].SSID,
-                    bssid: a[x].BSSID,
-                    level: a[x].level});
-            }  */
-        }
-        WifiWizard.startScan(successNetwork, failNetwork);
     }
 
 	ionViewDidEnter() {
@@ -160,8 +127,6 @@ export class SurveyPage {
         } catch(e){
             console.log("ionViewDidEnter");
         }
-
-        this.startScan();
     }
 
     ionViewWillEnter(){
@@ -214,7 +179,7 @@ export class SurveyPage {
                 console.log('SE CREÓ EL DIRECTORIO');
             }).catch(err => {
                 console.log('ERROR AL CREAR EL DIRECTORIO');
-            }); 
+            });
         });
     }
 
@@ -261,11 +226,11 @@ export class SurveyPage {
         } else {
             var nombre_archivo = 'AUTODIAGNÓSTICO';
         }
-        
+
         var fecha_formateada = this.obtenerFechaActual();
         var nombre_archivo = nombre_archivo + "_" + fecha_formateada + ".json";
         var string_form = JSON.stringify(pendingForm, null, 2);
-        
+
         this.file.createFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, true).then((response) => {
             console.log('SE CREÓ EL ARCHIVO');
             this.file.writeFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, string_form, {replace:true, append:false}).then((response) => {
@@ -463,7 +428,7 @@ export class SurveyPage {
                 }
             }
             template.data = JSON.parse(JSON.stringify(currentForm.data));
-            selectedTemplate = JSON.parse(JSON.stringify(currentForm.data)); 
+            selectedTemplate = JSON.parse(JSON.stringify(currentForm.data));
 
             if (template.gps == "required") {
                 this.navCtrl.push(FormPage, {
