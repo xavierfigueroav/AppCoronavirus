@@ -48,6 +48,7 @@
     "@ionic/storage": "2.1.3",
     "chart.js": "^2.9.3",
     "com-intel-security-cordova-plugin": "^2.0.3",
+    "cordova": "9.0.0",
     "cordova-android": "8.1.0",
     "cordova-android-support-gradle-release": "^3.0.0",
     "cordova-browser": "6.0.0",

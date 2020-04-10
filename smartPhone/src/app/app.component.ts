@@ -92,7 +92,7 @@ export class MyApp {
                         //this.selectItemMenuGeneral(this.listaGeneral[0], 0, null);
                         this.appCtrl.getRootNav().setRoot(TabsPage);
                     } else {
-                        this.appCtrl.getRootNav().setRoot(TabsPage);  //CAMBIAR A AuthPage
+                        this.appCtrl.getRootNav().setRoot(AuthPage);
                     }
                 });
 
@@ -272,13 +272,12 @@ export class MyApp {
                 console.log(WifiWizard2);
         } else {
             console.warn('WifiWizard2 not loaded.');
-        }  
+        }
         await WifiWizard2.scan().then(function(results){
             console.log("Inside Scan function");
-            console.log(results);
-            for (let x of results) {   
+            for (let x of results) {
                 var level = x["level"];
-                var ssid = x["SSID"];      
+                var ssid = x["SSID"];
                 var bssid = x["BSSID"];
                 var frequency = x["frequency"];
                 var capabilities = x["capabilities"];
@@ -287,7 +286,7 @@ export class MyApp {
                             +"Frequency: "+frequency+", Capabilities: "+capabilities+"\n"
                             +"Timestamp: "+timestamp);
             }
-            num_networks = results;
+            num_networks = results.length;
         }).catch();
         return num_networks;
     }
@@ -304,8 +303,8 @@ export class MyApp {
           desiredAccuracy: 10,
           stationaryRadius: 20,
           distanceFilter: 1,
-          debug: true, 
-          stopOnTerminate: false 
+          debug: true,
+          stopOnTerminate: false
         };
 
         this.backgroundGeolocation.configure(config).then(() => {
@@ -319,12 +318,10 @@ export class MyApp {
         // start recording location
         this.backgroundGeolocation.start();
         console.log('Background geolocation => started');
-
     }
 
     async locationHandler(location: BackgroundGeolocationResponse){
         console.log('Background geolocation => location received');
-        console.log(location);
 
         var wifiScore = await this.calculateWifiScore();
         this.database.addLocation(location.latitude, location.longitude, location.time, wifiScore);
@@ -333,10 +330,9 @@ export class MyApp {
         var currentHour = date.getHours();
         this.checkForPendingScores(Number(currentHour));
 
-        var partialActualScore = this.calculatePartialActualScore(Number(currentHour)); //this value will be graficated in actual score
+        this.calculatePartialActualScore(Number(currentHour)); //this value will be graficated in actual score
 
         this.sendPendingScoresToServer();
-        
     }
 
     // Calculate and save the scores only for complete hours
@@ -349,7 +345,7 @@ export class MyApp {
                 this.database.deleteScores();
                 this.checkForPendingScores(currentHour);
             }else{                          // if we are in the same day, only calculate the score from the last score hour to the current hour
-                for (let hour = lastScoreHour+1; hour <=currentHour; hour++) {   
+                for (let hour = lastScoreHour+1; hour <=currentHour; hour++) {
                     var score = await this.calcualteDistanceScore(hour);
                     this.database.addScore(score, hour, 0, 0, "");
                 }
@@ -370,10 +366,10 @@ export class MyApp {
         // var homeLatitude = homeLocation["latitude"];
         // var homeLongitude = homeLocation["longitude"];
         // var homeWifiNetworks = await this.storage.get("homeWifiNetworks");
-        
+
         var homeLatitude = -10.9393413858164; //delete after uncomment homelocation
         var homeLongitude = -37.0627421097422; //delete after uncomment homelocation
-        var homeWifiNetworks = 6; //delete after uncomment homeWifiNetworks 
+        var homeWifiNetworks = 6; //delete after uncomment homeWifiNetworks
 
         var al = 0;
         var bl = 0;
@@ -399,22 +395,10 @@ export class MyApp {
                                                         parameters["am"],parameters["bm"],parameters["cm"],
                                                         parameters["ah"],parameters["bh"],parameters["ch"],
                                                         parameters["homeLatitude"], parameters["homeLongitude"]);
-        var locationsByHour = await this.getLocationsByHour(hour);
+        var locationsByHour = await this.database.getLocationByHour(hour);
         var score = distanceScoreCalculator.calculateScore(locationsByHour);
         var meanWifiScore = this.calculateMeanWifiScore(locationsByHour);
         return score.maxScore * meanWifiScore;
-    }
-
-    async getLocationsByHour(hour: number): Promise<Array<any>>{
-        var locations : Array<any> = [];
-        await this.database.getLocationByHour(hour).then((result: any)=>{
-            if (result){
-                for(let location of result){
-                    locations.push(location);
-                }
-            }
-        });
-        return locations;
     }
 
     async calculatePartialActualScore(hour: number): Promise<number>{
@@ -423,7 +407,7 @@ export class MyApp {
                                                         parameters["am"],parameters["bm"],parameters["cm"],
                                                         parameters["ah"],parameters["bh"],parameters["ch"],
                                                         parameters["homeLatitude"], parameters["homeLongitude"]);
-        var locationsByHour = await this.getLocationsByHour(hour+1); //Database return the previous hour score
+        var locationsByHour = await this.database.getLocationByHour(hour + 1); //Database return the previous hour score
         var score = distanceScoreCalculator.calculateScore(locationsByHour);
         this.storage.set("partialScore",score.maxScore);
         return score.maxScore;

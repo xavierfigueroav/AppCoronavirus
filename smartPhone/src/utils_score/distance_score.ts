@@ -1,8 +1,8 @@
 import { DateTime } from "ionic-angular";
 
-const locations: 
+const locations:
     { "id": number, "latitude":number, "longitude": number }[] = [
-      
+
     {"id": 1	,"latitude": -10.9393413858164	, "longitude": -37.0627421097422},
     {"id": 2	,"latitude": -10.939341385769	  , "longitude": -37.0627421097809},
     {"id": 3	,"latitude": -10.9393239478718	, "longitude": -27.0627645137212},
@@ -36,7 +36,7 @@ export class DistanceScore {
       bh: number,
       ch: number,
       homeLat: number,
-      homeLong: number      
+      homeLong: number
     ){
       this.al = al;
       this.bl = bl;
@@ -50,17 +50,16 @@ export class DistanceScore {
       this.homeLat = homeLat,
       this.homeLong = homeLong
     };
-    
-    calculateScore(locations: { latitude:number, longitude: number}[]): {maxScore: number, meanMax: number}{
+
+    calculateScore(locations: any[]): {maxScore: number, meanMax: number}{
         var max: {value:number} = {value : null};
         var Home: Point = new Point(this.homeLat, this.homeLong, 0, 0);
         if(locations.length > 0){
           var scoreData = new ScoreData(locations);
-          scoreData.getDistancesToRef(Home); 
+          scoreData.getDistancesToRef(Home);
           scoreData.setLow(this.al, this.bl, this.cl);
           scoreData.setMid(this.am, this.bm, this.cm);
           scoreData.setMax(this.ah, this.bh, this.ch);
-          var sumScore: number = 0;
           var sumScore: number = 0;
           var sumMax: number = 0;
           var score: number;
@@ -73,7 +72,7 @@ export class DistanceScore {
         }else{
           return {maxScore: 1, meanMax: 0}
         }
-    }    
+    }
 }
 
 
@@ -90,7 +89,7 @@ class Point {
       this.distH = distH;
       this.ptsCnt = ptsCnt;
     }
-  
+
     getDis(ot: Point): number {
       return this.distance(this.x, this.y, ot.x, ot.y);
     }
@@ -113,15 +112,15 @@ class Point {
     deg2rad(deg: number): number {
         return (deg * Math.PI / 180);
     }
-    
+
     rad2deg(rad: number): number {
         return (rad * 180 / Math.PI);
     }
-          
+
   };
-  
+
   class ScoreData {
-  
+
     public points: Array<Point>;
     private al: number;
     private bl: number;
@@ -133,82 +132,82 @@ class Point {
     private bh: number;
     private ch: number;
 
-    constructor(locations) {
+    constructor(locations: any[]) {
+
       this.points = new Array();
-      var that = this;
-      locations.forEach(function(location){
-        that.points.push(new Point(location.latitude, location.longitude, 0,0))
+      locations.forEach((location: any) => {
+        this.points.push(new Point(location.latitude, location.longitude, 0,0))
       });
-        
+
     }
-  
+
     getPoints(): Array<Point> { //esta de más
         return this.points;
     }
-  
-    getDistancesToRef(H: Point) {    
+
+    getDistancesToRef(H: Point) {
       this.points.forEach(function (point) {
         point.distH = H.getDis(point);
-      });   
+      });
     }
-  
+
     printDisdH(){
       this.points.forEach(function (point) {
         console.log(Math.round(point.distH*100000)/100000);
-      });       
-    }   
-  
+      });
+    }
+
     setLow(a: number, b: number, c: number){
       this.al=a; this.bl=b; this.cl=c;
     }
-  
+
     setMid(a: number, b: number, c: number){
       this.am=a; this.bm=b; this.cm=c;
     }
-  
+
     setMax(a: number, b: number, c: number){
       this.ah=a;  this.bh=b; this.ch=c;
     }
-    
+
     computeMean(): number {
       var sum: number =0;
       this.points.forEach(function (point) {
         sum+=point.distH;
-      });   
+      });
       return sum / this.points.length;
     }
-  
+
     stdev(mean: number): number  {
       var variance: number = 0;
       this.points.forEach(function (point) {
         variance = variance + Math.pow(point.distH - mean, 2);
 
-      });  
+      });
       console.log(Math.sqrt(variance / this.points.length))     ;
       return Math.sqrt(variance / this.points.length);
     }
-    
+
     trimf(x: number, a: number, b: number, c: number): number{ // menor que a -> cero, b posicion de pico, mayor que c ->cero
         return (Math.max(Math.min( (x-a)/(b-a),(c-x)/(c-b) ),0));
     }
-    
+
     lowExposure(x: number): number{
       return (this.trimf(x, this.al, this.bl, this.cl));
     }
-  
+
     mediumExposure(x: number): number{
       return (this.trimf(x, this.am, this.bm, this.cm));
     }
-        
+
     highExposure(x: number): number{
       return (this.trimf(x, this.ah, this.bh, this.ch));
     }
-  
+
     scoreExposure(x: number, max:{value: number} ): number{
         var low: number;
         var mid: number;
         var high: number;
-  
+
         low= this.lowExposure(x);
         mid= this.mediumExposure(x);
         high= this.highExposure(x);
@@ -218,5 +217,5 @@ class Point {
         if(max.value==high)	return (3);
         return 0;
     }
-    
+
 };
