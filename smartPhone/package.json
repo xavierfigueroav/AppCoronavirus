@@ -41,6 +41,7 @@
     "@ionic-native/network": "^4.9.0",
     "@ionic-native/secure-storage": "^4.9.0",
     "@ionic-native/splash-screen": "4.8.0",
+    "@ionic-native/sqlite": "^3.12.1",
     "@ionic-native/status-bar": "4.8.0",
     "@ionic-native/transfer": "^3.14.0",
     "@ionic-native/wifi-wizard-2": "^5.23.0",
@@ -82,7 +83,7 @@
     "zone.js": "0.8.26"
   },
   "devDependencies": {
-    "@ionic/app-scripts": "3.1.10",
+    "@ionic/app-scripts": "^3.2.4",
     "typescript": "~2.6.2"
   },
   "description": "An Ionic project",
@@ -126,7 +127,8 @@
         "ACCOUNT_LABEL": "@string/app_name",
         "ACCOUNT_TYPE": "$PACKAGE_NAME.account",
         "CONTENT_AUTHORITY": "$PACKAGE_NAME"
-      }
+      },
+      "cordova-sqlite-storage": {}
     },
     "platforms": [
       "browser",

@@ -22,12 +22,11 @@ export class WifiScore{
         return 1;
     }
     
-    get_wifi_score_networks_available(available_networks, X=1.5, number_home_networks): number{
-        let number_networks_available = available_networks.length;
+    get_wifi_score_networks_available(number_networks_available, X=1.5, number_home_networks): number{
         if(number_networks_available>0){
             console.log("Number of networks available: "+number_networks_available)
             var max_networks_allowed = number_home_networks*X;
-            if(available_networks>=max_networks_allowed)
+            if(number_networks_available>=max_networks_allowed)
                 return 1;
             else{
                 let networks_available_score = (number_networks_available/max_networks_allowed).toFixed(2);
