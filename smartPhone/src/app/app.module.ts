@@ -40,6 +40,7 @@ import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-nati
 import { ComponentsModule } from '../components/components.module';
 import { ProfilePage } from '../pages/profile/profile';
 import { Clipboard } from '@ionic-native/clipboard';
+import { LocationProvider } from '../providers/location/location';
 
 @NgModule({
   declarations: [
@@ -111,7 +112,9 @@ import { Clipboard } from '@ionic-native/clipboard';
     IntelSecurity,
     DatePicker,
     Clipboard,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    LocationProvider,
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    LocationProvider
   ]
 })
 
