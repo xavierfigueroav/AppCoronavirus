@@ -51,7 +51,7 @@ export class DistanceScore {
       this.homeLong = homeLong
     };
     
-    calculateScore(locations: { latitude:number, longitude: number , time: DateTime}[]): {maxScore: number, meanMax: number}{
+    calculateScore(locations: { latitude:number, longitude: number}[]): {maxScore: number, meanMax: number}{
         var max: {value:number} = {value : null};
         var Home: Point = new Point(this.homeLat, this.homeLong, 0, 0);
         if(locations.length > 0){

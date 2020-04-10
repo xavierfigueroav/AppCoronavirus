@@ -196,10 +196,9 @@ export class DatabaseService {
   }
 
   async getLocationByHour(hour: number){
-    if(hour == 24) hour = 0;
     return this.isReady()
     .then(async ()=>{
-      return this.database.executeSql(`SELECT * FROM location WHERE time BETWEEN '${hour-1}' AND '${hour}'` , []) //num-1 <time <num (num: int)
+      return this.database.executeSql(`SELECT * FROM location WHERE time = '${hour-1}'` , [])
       .then((data)=>{
         if(data.rows.length){
           return data.rows;

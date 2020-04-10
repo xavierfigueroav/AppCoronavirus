@@ -373,22 +373,66 @@ export class MyApp {
         })
     }
 
+    async getParameters() : Promise<{}>{
+        var parameters = {};
+        //UNCOMMENT THIS 3 LINES!!!!!!!!
+        var homeLocation = await this.storage.get("homeLocation");
+        // var homeLatitude = homeLocation["latitude"];
+        // var homeLongitude = homeLocation["longitude"];
+        
+        var homeLatitude = -10.9393413858164; //delete after uncomment homelocation
+        var homeLongitude = -37.0627421097422; //delete after uncomment homelocation
+
+        var al = 0;
+        var bl = 0;
+        var cl = 100;
+        var am = 50;
+        var bm = 250;
+        var cm = 500;
+        var ah = 300;
+        var bh = 1000;
+        var ch = 2000;
+
+        parameters = {"homeLatitude":homeLatitude,"homeLongitude":homeLongitude,
+                      "al":al,"bl":bl,"cl":cl,
+                      "am":am,"bm":bm,"cm":cm,
+                      "ah":ah,"bh":bh,"ch":ch}
+        return parameters;
+    }
+
     async calcualteDistanceScore(hour: number): Promise<number>{
-        var homeLatitude = await this.storage.get("homeLat")
-        var homeLongitude = await this.storage.get("homeLng");
-        // TODO  read all paramaters from the storage
-        var distanceScoreCalculator = new DistanceScore(0,0,100,50,250,500,300,1000,2000,homeLatitude, homeLongitude);
-        var locationsByHour = this.getLocationsByHour();
+        var parameters = await this.getParameters();
+        var distanceScoreCalculator = new DistanceScore(parameters["al"],parameters["bl"],parameters["cl"],
+                                                        parameters["am"],parameters["bm"],parameters["cm"],
+                                                        parameters["ah"],parameters["bh"],parameters["ch"],
+                                                        parameters["homeLatitude"], parameters["homeLongitude"]);
+        var locationsByHour = await this.getLocationsByHour(hour);
+        var score = distanceScoreCalculator.calculateScore(locationsByHour);
+        var meanWifiScore = this.calculateMeanWifiScore(locationsByHour);
+        return score.maxScore * meanWifiScore;
+    }
+
+    async getLocationsByHour(hour: number): Promise<Array<any>>{
+        var locations : Array<any> = [];
+        await this.database.getLocationByHour(hour).then((result: any)=>{
+            if (result){
+                for(let location of result){
+                    locations.push(location);
+                }
+            }
+        });
+        return locations;
+    }
+
+    async calculatePartialActualScore(hour: number): Promise<number>{
+        var parameters = await this.getParameters();
+        var distanceScoreCalculator = new DistanceScore(parameters["al"],parameters["bl"],parameters["cl"],
+                                                        parameters["am"],parameters["bm"],parameters["cm"],
+                                                        parameters["ah"],parameters["bh"],parameters["ch"],
+                                                        parameters["homeLatitude"], parameters["homeLongitude"]);
+        var locationsByHour = await this.getLocationsByHour(hour+1); //Database return the previous hour score
         var score = distanceScoreCalculator.calculateScore(locationsByHour);
         return score.maxScore;
-    }
-
-    getLocationsByHour():[]{//calculate wifi average as well
-        return [];
-    }
-
-    calculatePartialActualScore(hour: number): number{
-        return 1;
     }
 
     calculateWifiScore(): number{
@@ -397,6 +441,17 @@ export class MyApp {
     }
 
     sendPendingScoresToServer(){
+        // TODO sent scores to CKAN
+    }
 
+    calculateMeanWifiScore(locationsByHour: Array<any>): number{
+        var wifiTotal = 0;
+        if(locationsByHour.length !=0){
+            for(let wifi_networks of locationsByHour){
+                wifiTotal += Number(wifi_networks.wifi_score);
+            }
+            return wifiTotal/locationsByHour.length;
+        }
+        return 1;
     }
 }
