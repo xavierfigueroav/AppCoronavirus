@@ -234,7 +234,7 @@ export class AuthPage {
                 console.log(err);
             }); //DESCOMENTAR
         }
-        this.checkforUnCalculableScores();
+        this.checkforInestimableScores();
     }
 
     crearDataset() {
@@ -555,7 +555,7 @@ export class AuthPage {
         confirm.present();
     }
 
-    checkforUnCalculableScores(){
+    checkforInestimableScores(){
         this.database.getScores().then(scores => {
             if(scores.length == 0){
                 const date = new Date();
