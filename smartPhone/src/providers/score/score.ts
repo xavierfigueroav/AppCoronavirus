@@ -107,6 +107,9 @@ export class ScoreProvider {
         console.log('Background geolocation => location received');
 
         const wifiScore = await this.calculateWifiScore();
+
+        // FIXME: Delete only once per hour
+        await this.database.deleteLocationsByHour(location.time);
         this.database.addLocation(location.latitude, location.longitude, location.time, wifiScore);
 
         this.calculateAndStoreExpositionScores();
