@@ -15,6 +15,8 @@ import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { FormPage } from '../form/form';
 import { File } from '@ionic-native/file';
 import uuid from 'uuid/v4';
+import { DatabaseService } from '../../service/database-service';
+
 
 @Component({
     selector: 'page-auth',
@@ -41,7 +43,8 @@ export class AuthPage {
         private storage: Storage, public navCtrl: NavController,
         public navParams: NavParams, public http: HTTP, private file: File,
         public network: Network, public loadingCtrl: LoadingController, private geolocation: Geolocation,
-        public alertCtrl: AlertController, private diagnostic: Diagnostic, private locationAccuracy: LocationAccuracy) {
+        public alertCtrl: AlertController, private diagnostic: Diagnostic, private locationAccuracy: LocationAccuracy,
+        public database:DatabaseService) {
 
         this.menuCtrl.enable(false);
         this.file = file;
@@ -231,6 +234,7 @@ export class AuthPage {
                 console.log(err);
             }); //DESCOMENTAR
         }
+        this.checkforUnCalculableScores();
     }
 
     crearDataset() {
@@ -549,6 +553,18 @@ export class AuthPage {
             ]
         });
         confirm.present();
+    }
+
+    checkforUnCalculableScores(){
+        this.database.getScores().then(scores => {
+            if(scores.length == 0){
+                const date = new Date();
+                const currentHour = date.getHours();
+                for (let hour = 1; hour <= currentHour -1; hour++) {
+                    this.database.addScore(-1, hour, 0, 0, '');
+                }
+            }
+        })
     }
 
 }  
