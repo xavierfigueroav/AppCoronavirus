@@ -11,13 +11,19 @@
 
 <ion-content padding>
 
-    <div class="identity-container">
+    <div class="container">
 
         <p class="description">Para calcular tu nivel de exposición necesitamos conocer la ubicación de tu casa. Cuando estés en ella, toca el botón para registrarla.</p>
         <button ion-button icon-end full (click)="registerHomeHandler()">
             Registrar casa
             <ion-icon name="pin"></ion-icon>
         </button>
+        <p class="home-registered-message" *ngIf="homeLocationDate !== undefined">
+            Ya registraste tu casa en: {{ getDateFromeTimestamp(homeLocationDate) }}
+        </p>
+        <p class="home-unregistered-message" *ngIf="homeLocationDate === undefined">
+            Aún no has registrado tu casa
+        </p>
 
     </div>
 
@@ -32,7 +38,6 @@
     </p>
 
     <div class="circle-container" style="text-align: center;">
-
         <svg id="svg0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
             width="50%" height="50%" viewBox="0, 0, 400,400">
             <g id="svgg">
@@ -41,7 +46,6 @@
             </g>
         </svg>
     </div>
-    <!-- <p class="description">Verde representa un nivel bajo, naranja un nivel medio y rojo un nivel alto de exposición.</p> -->
 
     <hr/>
 
@@ -56,7 +60,6 @@
             <div class="day1">1 hora</div><div class="days">6 horas</div><div class="days">12 horas</div><div class="days">18 horas</div><div class="day24"></div>
         </div>
         <div class="score-square" *ngFor="let score of scores"  [ngStyle]="{ 'background-color': score.color }"></div>
-
     </div>
 
 </ion-content>

@@ -45,7 +45,7 @@ page-user {
 
     }
 
-    .identity-container {
+    .container {
         margin-top: 15px;
         margin-bottom: 10px;
     }
@@ -61,5 +61,15 @@ page-user {
 
     .info-button{
         shape-margin: round($number: 0);
+    }
+
+    .home-registered-message {
+        text-align: center;
+        color: #32c800;
+    }
+
+    .home-unregistered-message {
+        text-align: center;
+        color: #FF0000;
     }
 }

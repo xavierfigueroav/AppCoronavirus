@@ -14,11 +14,10 @@ import { ScoreProvider } from '../../providers/score/score';
 
 export class UserPage implements OnInit{
 
-    scores: any;
-    status: string;
     currentScore: number;
     currentScoreColor: string;
     homeLocationDate: number;
+    scores: any;
     colors: any;
 
     constructor(
@@ -36,6 +35,8 @@ export class UserPage implements OnInit{
         console.log('ngOnInit UserPage');
 
         this.colors = {'1': '#32c800', '2': '#FFC800', '3': '#FF0000', '-1': '#999999'};
+
+        // FIXME: Should not we first check for homeLocation and homeWifiNetworks presence?
         this.scoreService.calculateAndStoreExpositionScores();
 
         this.storage.get('homeLocation').then(location => {
@@ -43,8 +44,8 @@ export class UserPage implements OnInit{
         });
 
         this.storage.get('partialScore').then(currentScore => {
-            this.currentScore = currentScore;
-            this.currentScoreColor = this.getColorByScore(currentScore);
+            this.currentScore = currentScore || -1;
+            this.currentScoreColor = this.getColorByScore(this.currentScore);
         })
 
         this.database.getScores().then(scores => {
@@ -94,8 +95,12 @@ export class UserPage implements OnInit{
 
     async registerHomeHandler() {
 
+        // FIXME: This synchronous process delays the execution of getCurrentLocation()
+        // causing not so good user experience because of feedback delays.
         const numberOfWifiNetworks = await this.scoreService.startScan();
         await this.storage.set('homeWifiNetworks', numberOfWifiNetworks);
+
+        // TODO: Run this.scoreService.startBackgroundGeolocation(). Dicuss with team first.
 
         this.location.getCurrentLocation().then(location => {
 
@@ -125,5 +130,10 @@ export class UserPage implements OnInit{
                 buttons: ['OK']
             }).present();
         });
+    }
+
+    getDateFromeTimestamp(timestamp: number) {
+        const date = new Date(timestamp);
+        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
     }
 }
