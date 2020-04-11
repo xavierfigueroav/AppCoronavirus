@@ -5,7 +5,11 @@ import { Coordinates, Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { HTTP } from '@ionic-native/http';
+import { HttpClient } from '@angular/common/http';
+import { File } from '@ionic-native/file';
 import { HomePage } from '../home/home';
+import { TabsPage } from '../tabs/tabs';
 import { PopoverPage } from './popover';
 import { PopoverPage2 } from './popover2';
 
@@ -29,6 +33,7 @@ export class FormPage extends PopoverPage {
     loading;
     infoTemplateIndex;
     id_dataset;
+    indice_seccion;
 
     @ViewChild(Navbar) navbarName: Navbar;
 
@@ -44,32 +49,19 @@ export class FormPage extends PopoverPage {
         public loadingController: LoadingController,
         public navCtrl: NavController,
         public platform: Platform,
+        public http: HTTP,
+        public httpClient: HttpClient,
         public popoverCtrl: PopoverController,
         public viewCtrl: ViewController,
-        public appCtrl: App) {
+        public appCtrl: App,
+        private file: File,
+        public loadingCtrl: LoadingController,) {
         super(viewCtrl);
 
         try {
             this.menuCtrl.enable(true);
-            this.template = this.navParams.get('template');
-            this.formData = this.navParams.get('formData');
-            this.selectedTemplate = this.navParams.get('selectedTemplate');
-            this.currentForm = this.navParams.get('currentForm');
-            this.templateUuid = this.template.uuid;
-            this.infoTemplateIndex = this.navParams.get('infoTemplateIndex');
-            this.forms = this.navParams.get('forms');
-            if (this.navParams.get('formsData') != null){
-                this.formsData = this.navParams.get('formsData');
-            } else {
-                this.storage.get("formsData").then((formsData) => {
-                    if (formsData != null) {
-                        this.formsData = formsData;
-                    }
-                })
-            }
-            this.geolocationAuth = this.navParams.get('geolocationAuth');
-            this.pendingForms = this.navParams.get('pendingForms');
-            this.infoTemplates = this.navParams.get('infoTemplates');
+
+            this.file = file
 
             this.storage.get('id_dataset').then((id_dataset) => {
                 this.id_dataset = id_dataset;
@@ -90,8 +82,134 @@ export class FormPage extends PopoverPage {
 
     }
 
+    siguienteSeccion(indice) {
+        console.log("SE DIO CLIC EN BOTÓN HACIA ADELANTE "+indice);
+        var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-item"));
+        var elementos = [];
+        var errores = 0;
+        
+        for (var el of array) {
+            if (el.id) {
+                elementos.push(el.id);
+            }
+        }
+
+        var params = this.mappingParametros(elementos);
+        
+        for (var pa of params) {
+            errores += this.validateBlurFunction("", pa.blurFunction);
+        }
+        if (errores == 0) {
+            this.storage.get("formulario_uso").then((form_temp) => {
+                console.log("FORM TEMP 1: ", form_temp);
+                var nuevo_indice = Number(indice) + 1;
+                console.log("NUEVO INDICE: ", nuevo_indice);
+                console.log("LONGITUD SELECTED TEMPLATE: ", form_temp.selectedTemplate.children.length);
+                if(form_temp.selectedTemplate.children.length>nuevo_indice) {
+                    form_temp.indice_seccion = nuevo_indice;
+                } else {
+                    form_temp.indice_seccion = null;
+                }        
+                console.log("FORM TEMP 2: ", form_temp);
+                this.storage.set("formulario_uso", form_temp).then(() => {
+                    this.appCtrl.getRootNav().setRoot(FormPage);
+                });
+            });   
+        }
+    }
+
+    anteriorSeccion(indice) {
+        console.log("SE DIO CLIC EN BOTÓN HACIA ATRÁS "+indice);
+        var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-item"));
+        var elementos = [];
+        var errores = 0;
+        
+        for (var el of array) {
+            if (el.id) {
+                elementos.push(el.id);
+            }
+        }
+
+        var params = this.mappingParametros(elementos);
+        
+        for (var pa of params) {
+            errores += this.validateBlurFunction("", pa.blurFunction);
+        }
+        if (errores == 0) {
+            this.storage.get("formulario_uso").then((form_temp) => {
+                console.log("FORM TEMP 1: ", form_temp);
+                var nuevo_indice = Number(indice) - 1;
+                console.log("NUEVO INDICE: ", nuevo_indice);
+                console.log("LONGITUD SELECTED TEMPLATE: ", form_temp.selectedTemplate.children.length);
+                if(nuevo_indice>=0) {
+                    form_temp.indice_seccion = nuevo_indice;
+                } else {
+                    form_temp.indice_seccion = null;
+                }        
+                console.log("FORM TEMP 2: ", form_temp);
+                this.storage.set("formulario_uso", form_temp).then(() => {
+                    this.appCtrl.getRootNav().setRoot(FormPage);
+                });
+            });   
+        }
+    }
+
+    finalizarEncuesta() {
+        console.log("SE DIO CLIC EN FINALIZAR ENCUESTA");
+        var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-item"));
+        var elementos = [];
+        var errores = 0;
+        
+        for (var el of array) {
+            if (el.id) {
+                elementos.push(el.id);
+            }
+        }
+
+        var params = this.mappingParametros(elementos);
+        
+        for (var pa of params) {
+            errores += this.validateBlurFunction("", pa.blurFunction);
+        }
+        console.log("ERRORES: ", errores);
+        console.log("ELEMENTOS: ", elementos);
+        if (errores == 0) {
+            //this.navCtrl.pop();
+            this.enviarFormulario();
+            //ENVIAR ENCUESTA Y MANDAR A TABS
+        }
+    }
+
+    async cargarDatos() {
+        console.log("EMPIEZA LA CARGA DE DATOS");
+        var formulario_uso = await this.storage.get('formulario_uso');
+        console.log("FORMULARIO USO:", formulario_uso);
+        this.template = formulario_uso.template;
+        this.formData = formulario_uso.formData;
+        this.selectedTemplate = formulario_uso.selectedTemplate;
+        console.log("SELECTED TEMPLATE: ", this.selectedTemplate);
+        this.currentForm = formulario_uso.currentForm;
+        this.templateUuid = this.template.uuid;
+        this.infoTemplateIndex = formulario_uso.infoTemplateIndex;
+        this.forms = formulario_uso.forms;
+        this.geolocationAuth = formulario_uso.geolocationAuth;
+        this.pendingForms = formulario_uso.pendingForms;
+        this.infoTemplates = formulario_uso.infoTemplates;
+        this.indice_seccion = formulario_uso.indice_seccion;
+        console.log("INDICE ACTUAL: ", this.indice_seccion);
+        if(formulario_uso.formsData != null) {
+            this.formsData = formulario_uso.formsData;
+        } else {
+            var formsData = await this.storage.get("formsData");
+            if (formsData != null) {
+                this.formsData = formsData;
+            }
+        }        
+    }
+
     ionViewDidEnter() {
-        try {
+        this.cargarDatos();
+        /*try {
             this.navbarName.backButtonClick = () => {
                 var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-item"));
                 var elementos = [];
@@ -114,7 +232,7 @@ export class FormPage extends PopoverPage {
             }
         } catch(e){
             console.log("ionViewDidEnter");
-        }
+        }*/
     }
 
     save(index, pending_form_index) {
@@ -127,6 +245,15 @@ export class FormPage extends PopoverPage {
             this.pendingForms[pending_form_index].formData = this.currentForm;
             this.pendingForms[pending_form_index].id_dataset = this.id_dataset;
             this.storage.set("pendingForms", this.pendingForms);
+            this.storage.get("formulario_uso").then((form_temp) => {
+                form_temp.selectedTemplate = this.pendingForms[pending_form_index].formData.data;
+                form_temp.currentForm = this.currentForm;
+                form_temp.forms = this.forms;
+                form_temp.formsData = this.formsData;
+                form_temp.formData = this.pendingForms[pending_form_index].formData.data;
+                form_temp.pendingForms = this.pendingForms;
+                this.storage.set("formulario_uso", form_temp);
+            });
         } catch(e){
             console.log("save");
         }
@@ -174,6 +301,152 @@ export class FormPage extends PopoverPage {
         } catch(e){
             console.log("saveForm");
         }
+    }
+
+    enviarFormulario() {
+        console.log("ENVIAR FORMULARIO");
+        this.storage.get('pendingForms').then((pendingForms) => {
+            console.log("ENVIAR FORMULARIO 2");
+            if((pendingForms != null) && (pendingForms.length > 0)) {
+                console.log("HAY PENDING FORMS");
+                var url = "http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create";
+                //for(let pendingForm of pendingForms) {
+                    var pendingForm = pendingForms[pendingForms.length - 1];
+                    var id_dataset = pendingForm.id_dataset;
+                    var string_cuerpo = '{"id_dataset":"'+id_dataset+'","form":"'+pendingForm+'"}';
+                    var objeto = JSON.parse(string_cuerpo);
+                    this.subirArchivo(pendingForm, id_dataset);
+                //}
+            } else {
+                let alert = this.alertCtrl.create({
+                    subTitle: "No hay nuevos datos. No se ha enviado ningún formulario",
+                    buttons: ["cerrar"]
+                });
+                alert.present();
+                this.appCtrl.getRootNav().setRoot(TabsPage);
+            }
+        });
+    }
+
+    subirArchivo(pendingForm, id_dataset) {
+        var tipo_form = pendingForm.formData.type;
+        if(tipo_form == 'initial') {
+            var nombre_archivo = 'DATOS-PERSONALES';
+        } else {
+            var nombre_archivo = 'AUTODIAGNÓSTICO';
+        }
+        
+        var fecha_formateada = this.obtenerFechaActual();
+        var nombre_archivo = nombre_archivo + "_" + fecha_formateada + ".json";
+        var string_form = JSON.stringify(pendingForm, null, 2);
+        
+        const loader = this.loadingCtrl.create({
+            content: "Espere ...",
+        });
+        loader.present();
+
+        this.file.createFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, true).then((response) => {
+            console.log('SE CREÓ EL ARCHIVO');
+            this.file.writeFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, string_form, {replace:true, append:false}).then((response) => {
+                console.log('SE ESCRIBIÓ EL ARCHIVO');
+                var url = "http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create";
+                console.log("ID DATASET: ", id_dataset);
+                var carpeta = this.file.externalApplicationStorageDirectory+"AppCoronavirus/";
+                var ruta_completa = carpeta + nombre_archivo;
+                console.log("RUTA ARCHIVO:", ruta_completa);
+
+                this.http.uploadFile(url, {package_id: id_dataset, name: nombre_archivo}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
+                    var respuesta = JSON.parse(response.data);
+                    console.log("ID RECURSO: ", respuesta.result.id);
+                    console.log('SE ENVIÓ EL ARCHIVO');
+                    this.file.removeFile(carpeta, nombre_archivo).then((response) => {
+                        console.log('SE ELIMINÓ EL ARCHIVO');
+                        this.storage.get('sentForms').then((response) => {
+                            let sentForms = response;
+                            if (sentForms != null && sentForms.length > 0) {
+                                sentForms.push(pendingForm);
+                            } else {
+                                sentForms = [pendingForm];
+                            }
+                            this.storage.set("pendingForms", []);
+                            this.storage.set("sentForms", sentForms);
+                            let alert = this.alertCtrl.create({
+                                subTitle: "Se ha enviado correctamente el formulario",
+                                buttons: ["cerrar"]
+                            });
+                            loader.dismiss();
+                            alert.present();
+                            this.appCtrl.getRootNav().setRoot(TabsPage);
+                        });
+                    }).catch(err => {
+                        console.log(err);
+                        console.log('NO SE ELIMINÓ EL ARCHIVO');
+                        this.storage.get('sentForms').then((response) => {
+                            let sentForms = response;
+                            if (sentForms != null && sentForms.length > 0) {
+                                sentForms.push(pendingForm);
+                            } else {
+                                sentForms = [pendingForm];
+                            }
+                            this.storage.set("pendingForms", []);
+                            this.storage.set("sentForms", sentForms);
+                            let alert = this.alertCtrl.create({
+                                subTitle: "Se ha enviado correctamente el formulario",
+                                buttons: ["cerrar"]
+                            });
+                            loader.dismiss();
+                            alert.present();
+                            this.appCtrl.getRootNav().setRoot(TabsPage);
+                        });
+                    });
+                }).catch(err => {
+                    console.log(err);
+                    console.log('NO SE LEYÓ EL ARCHIVO');
+                });
+            }).catch(err => {
+                console.log(err);
+                console.log('NO SE ESCRIBIÓ EL ARCHIVO');
+            });
+        }).catch(err => {
+            console.log(err);
+            console.log('NO SE CREÓ EL ARCHIVO');
+        });
+    }
+
+    obtenerFechaActual() {
+        var fecha_actual = new Date();
+        var dia = fecha_actual.getDate();
+        if(dia < 10) {
+            var dia_actual = "0" + dia.toString();
+        } else {
+            var dia_actual = dia.toString();
+        }
+        var mes = Number(fecha_actual.getMonth()) + 1;
+        if(mes < 10) {
+            var mes_actual = "0" + mes.toString();
+        } else {
+            var mes_actual = mes.toString();
+        }
+        var hora = fecha_actual.getHours();
+        if(hora < 10) {
+            var hora_actual = "0" + hora.toString();
+        } else {
+            var hora_actual = hora.toString();
+        }
+        var minutos = fecha_actual.getMinutes();
+        if(minutos < 10) {
+            var minutos_actual = "0" + minutos.toString();
+        } else {
+            var minutos_actual = minutos.toString();
+        }
+        var segundos = fecha_actual.getSeconds();
+        if(segundos < 10) {
+            var segundos_actual = "0" + segundos.toString();
+        } else {
+            var segundos_actual = segundos.toString();
+        }
+        var fecha = dia_actual + "-" + mes_actual + "-" + fecha_actual.getFullYear() + "_" + hora_actual + "-"+ minutos_actual + "-" + segundos_actual;
+        return fecha;
     }
 
     saveCoordinates() {

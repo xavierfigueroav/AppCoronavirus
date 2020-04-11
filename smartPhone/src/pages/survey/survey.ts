@@ -32,6 +32,7 @@ export class SurveyPage {
     select_tipo_multiform;
     linkedUser;
     notifications;
+    loader;
     id;
     j = -1;
 
@@ -49,7 +50,13 @@ export class SurveyPage {
         public httpClient: HttpClient,
         public appCtrl: App,
         private localNotifications: LocalNotifications,
+        public loadingCtrl: LoadingController,
         private file: File) {
+
+        this.loader = this.loadingCtrl.create({
+            content: "Espere ...",
+        });
+        this.loader.present();
 
         this.menuCtrl.enable(true);
         this.file = file;
@@ -88,48 +95,25 @@ export class SurveyPage {
             }
         });
 
-        //AQUÍ ENVIAR ALGÚN PENDINGFORM SI HAY
-        this.crearDirectorio();
+        this.storage.get('sentForms').then((sentForms) => {
+            this.sentForms = sentForms;
+            if(this.sentForms != null && this.sentForms.length >0) {
+                console.log("HAY SENTFORMS");
+                var m = -1;
+                for(let sentForm of this.sentForms) {
+                    m++;
+                    if(sentForm.formData.type=='initial') {
+                        this.j = m;
+                        console.log("SE CAMBIÓ EL J");
+                        this.clickEditForm(this.j);
+                    }
+                }
+            }
+        });
 
 	}
 
-    errorHandler(err: any) {
-        console.log(`Problem: ${err}`);
-    }
-
-	ionViewDidEnter() {
-        try {
-            this.storage.get('sentForms').then((sentForms) => {
-                this.sentForms = sentForms;
-                if(this.sentForms != null && this.sentForms.length >0) {
-                    console.log("HAY SENTFORMS");
-                    var m = -1;
-                    for(let sentForm of this.sentForms) {
-                        m++;
-                        if(sentForm.formData.type=='initial') {
-                            this.j = m;
-                            console.log("SE CAMBIÓ EL J");
-                        }
-                    }
-                }
-            });
-
-            this.storage.get('pendingForms').then((pendingForms) => {
-                this.pendingForms = pendingForms;
-            });
-
-            this.storage.get('infoTemplates').then((templates) => {
-                this.infoTemplates = templates;
-                this.selectedSection = templates[0];
-            });
-            console.log("ENVIAR FORMULARIO ENTER");
-            this.enviarFormulario();
-        } catch(e){
-            console.log("ionViewDidEnter");
-        }
-    }
-
-    ionViewWillEnter(){
+    /*ionViewWillEnter(){
         this.storage.get('infoTemplates').then((templates) => {
             this.infoTemplates = templates;
             this.selectedSection = templates[0];
@@ -149,141 +133,7 @@ export class SurveyPage {
                 }
             }
         });
-    }
-
-    enviarFormulario() {
-        console.log("ENVIAR FORMULARIO");
-        this.storage.get('pendingForms').then((pendingForms) => {
-            console.log("ENVIAR FORMULARIO 2");
-            if((pendingForms != null) && (pendingForms.length > 0)) {
-                console.log("HAY PENDING FORMS");
-                var url = "http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create";
-                //for(let pendingForm of pendingForms) {
-                    var pendingForm = pendingForms[pendingForms.length - 1];
-                    var id_dataset = pendingForm.id_dataset;
-                    var string_cuerpo = '{"id_dataset":"'+id_dataset+'","form":"'+pendingForm+'"}';
-                    var objeto = JSON.parse(string_cuerpo);
-                    this.subirArchivo(pendingForm, id_dataset);
-                //}
-            }
-        });
-    }
-
-    crearDirectorio() {
-        this.file.checkDir(this.file.externalApplicationStorageDirectory, 'AppCoronavirus').then(response => {
-            console.log('EL DIRECTORIO YA EXISTE');
-            console.log(this.file.externalApplicationStorageDirectory + "/AppCoronavirus");
-        }).catch(err => {
-            console.log('EL DIRECTORIO NO EXISTE');
-            this.file.createDir(this.file.externalApplicationStorageDirectory, 'AppCoronavirus', false).then(response => {
-                console.log('SE CREÓ EL DIRECTORIO');
-            }).catch(err => {
-                console.log('ERROR AL CREAR EL DIRECTORIO');
-            });
-        });
-    }
-
-    obtenerFechaActual() {
-        var fecha_actual = new Date();
-        var dia = fecha_actual.getDate();
-        if(dia < 10) {
-            var dia_actual = "0" + dia.toString();
-        } else {
-            var dia_actual = dia.toString();
-        }
-        var mes = Number(fecha_actual.getMonth()) + 1;
-        if(mes < 10) {
-            var mes_actual = "0" + mes.toString();
-        } else {
-            var mes_actual = mes.toString();
-        }
-        var hora = fecha_actual.getHours();
-        if(hora < 10) {
-            var hora_actual = "0" + hora.toString();
-        } else {
-            var hora_actual = hora.toString();
-        }
-        var minutos = fecha_actual.getMinutes();
-        if(minutos < 10) {
-            var minutos_actual = "0" + minutos.toString();
-        } else {
-            var minutos_actual = minutos.toString();
-        }
-        var segundos = fecha_actual.getSeconds();
-        if(segundos < 10) {
-            var segundos_actual = "0" + segundos.toString();
-        } else {
-            var segundos_actual = segundos.toString();
-        }
-        var fecha = dia_actual + "-" + mes_actual + "-" + fecha_actual.getFullYear() + "_" + hora_actual + "-"+ minutos_actual + "-" + segundos_actual;
-        return fecha;
-    }
-
-    subirArchivo(pendingForm, id_dataset) {
-        var tipo_form = pendingForm.formData.type;
-        if(tipo_form == 'initial') {
-            var nombre_archivo = 'DATOS-PERSONALES';
-        } else {
-            var nombre_archivo = 'AUTODIAGNÓSTICO';
-        }
-
-        var fecha_formateada = this.obtenerFechaActual();
-        var nombre_archivo = nombre_archivo + "_" + fecha_formateada + ".json";
-        var string_form = JSON.stringify(pendingForm, null, 2);
-
-        this.file.createFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, true).then((response) => {
-            console.log('SE CREÓ EL ARCHIVO');
-            this.file.writeFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, string_form, {replace:true, append:false}).then((response) => {
-                console.log('SE ESCRIBIÓ EL ARCHIVO');
-                var url = "http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create";
-                console.log("ID DATASET: ", id_dataset);
-                var carpeta = this.file.externalApplicationStorageDirectory+"AppCoronavirus/";
-                var ruta_completa = carpeta + nombre_archivo;
-                console.log("RUTA ARCHIVO:", ruta_completa);
-
-                this.http.uploadFile(url, {package_id: id_dataset, name: nombre_archivo}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
-                    var respuesta = JSON.parse(response.data);
-                    console.log("ID RECURSO: ", respuesta.result.id);
-                    console.log('SE ENVIÓ EL ARCHIVO');
-                    this.file.removeFile(carpeta, nombre_archivo).then((response) => {
-                        console.log('SE ELIMINÓ EL ARCHIVO');
-                        this.storage.get('sentForms').then((response) => {
-                            let sentForms = response;
-                            if (sentForms != null && sentForms.length > 0) {
-                                sentForms.push(pendingForm);
-                            } else {
-                                sentForms = [pendingForm];
-                            }
-                            this.storage.set("pendingForms", []);
-                            this.storage.set("sentForms", sentForms);
-                        });
-                    }).catch(err => {
-                        console.log(err);
-                        console.log('NO SE ELIMINÓ EL ARCHIVO');
-                        this.storage.get('sentForms').then((response) => {
-                            let sentForms = response;
-                            if (sentForms != null && sentForms.length > 0) {
-                                sentForms.push(pendingForm);
-                            } else {
-                                sentForms = [pendingForm];
-                            }
-                            this.storage.set("pendingForms", []);
-                            this.storage.set("sentForms", sentForms);
-                        });
-                    });
-                }).catch(err => {
-                    console.log(err);
-                    console.log('NO SE LEYÓ EL ARCHIVO');
-                });
-            }).catch(err => {
-                console.log(err);
-                console.log('NO SE ESCRIBIÓ EL ARCHIVO');
-            });
-        }).catch(err => {
-            console.log(err);
-            console.log('NO SE CREÓ EL ARCHIVO');
-        });
-    }
+    }*/
 
     async startFollowUpForm(template, selectedTemplate, templateUuid, index) {
         this.formsData = await this.storage.get("formsData");
@@ -381,7 +231,7 @@ export class SurveyPage {
                         index: 0
                     }];
                 }
-                this.navCtrl.push(FormPage, {
+                var formulario_uso = {
                     template: template,
                     selectedTemplate: selectedTemplate,
                     formData: selectedTemplate,
@@ -391,8 +241,11 @@ export class SurveyPage {
                     pendingForms: pendingForms,
                     geolocationAuth: this.geolocationAuth,
                     infoTemplates: this.infoTemplates,
-                    infoTemplateIndex: index
-                });
+                    infoTemplateIndex: index,
+                    indice_seccion: 0
+                };
+                this.storage.set("formulario_uso", formulario_uso);
+                this.appCtrl.getRootNav().setRoot(FormPage);
             });
         });
     }
@@ -400,6 +253,7 @@ export class SurveyPage {
     async clickEditForm(j) {
         try{
             let pendingForms = await this.storage.get("sentForms");
+            console.log("PENDING FORMS: ", pendingForms);
             let pendingForm = pendingForms[j];
             let currentF = pendingForm.formData;
             let templateUuid = pendingForm.template;
@@ -431,7 +285,7 @@ export class SurveyPage {
             selectedTemplate = JSON.parse(JSON.stringify(currentForm.data));
 
             if (template.gps == "required") {
-                this.navCtrl.push(FormPage, {
+                var formulario_uso = {
                     template: template,
                     selectedTemplate: selectedTemplate,
                     formData: selectedTemplate,
@@ -442,9 +296,13 @@ export class SurveyPage {
                     geolocationAuth: "GRANTED",
                     infoTemplates: infoTemplates,
                     infoTemplateIndex: infoTemplateIndex,
-                });
+                    indice_seccion: 0
+                };
+                this.storage.set("formulario_uso", formulario_uso);
+                this.loader.dismiss();
+                this.appCtrl.getRootNav().setRoot(FormPage);
             } else {
-                this.navCtrl.push(FormPage, {
+                var formulario_uso = {
                     template: template,
                     selectedTemplate: selectedTemplate,
                     formData: selectedTemplate,
@@ -455,7 +313,11 @@ export class SurveyPage {
                     geolocationAuth: "GRANTED",
                     infoTemplates: infoTemplates,
                     infoTemplateIndex: infoTemplateIndex,
-                });
+                    indice_seccion: 0
+                };
+                this.storage.set("formulario_uso", formulario_uso);
+                this.loader.dismiss();
+                this.appCtrl.getRootNav().setRoot(FormPage);
             }
         }catch (err) {
             console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
@@ -807,7 +669,7 @@ export class SurveyPage {
                         index: 0
                     }];
                 }
-                this.navCtrl.push(FormPage, {
+                var formulario_uso = {
                     template: template,
                     selectedTemplate: selectedTemplate,
                     formData: selectedTemplate,
@@ -817,7 +679,10 @@ export class SurveyPage {
                     pendingForms: pendingForms,
                     geolocationAuth: this.geolocationAuth,
                     infoTemplates: this.infoTemplates,
-                });
+                    indice_seccion: 0
+                };
+                this.storage.set("formulario_uso", formulario_uso);
+                this.appCtrl.getRootNav().setRoot(FormPage);
             });
         });
     }

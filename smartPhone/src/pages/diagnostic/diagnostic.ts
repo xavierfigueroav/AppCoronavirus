@@ -346,7 +346,7 @@ export class DiagnosticPage {
                         index: 0
                     }];
                 }
-                this.navCtrl.push(FormPage, {
+                var formulario_uso = {
                     template: template,
                     selectedTemplate: selectedTemplate,
                     formData: selectedTemplate,
@@ -356,8 +356,11 @@ export class DiagnosticPage {
                     pendingForms: pendingForms,
                     geolocationAuth: this.geolocationAuth,
                     infoTemplates: this.infoTemplates,
-                    infoTemplateIndex: index
-                });
+                    infoTemplateIndex: index,
+                    indice_seccion: 0
+                };
+                this.storage.set("formulario_uso", formulario_uso);
+                this.appCtrl.getRootNav().setRoot(FormPage);
             });
         });
     }
@@ -707,7 +710,7 @@ export class DiagnosticPage {
                         index: 0
                     }];
                 }
-                this.navCtrl.push(FormPage, {
+                var formulario_uso = {
                     template: template,
                     selectedTemplate: selectedTemplate,
                     formData: selectedTemplate,
@@ -717,7 +720,9 @@ export class DiagnosticPage {
                     pendingForms: pendingForms,
                     geolocationAuth: this.geolocationAuth,
                     infoTemplates: this.infoTemplates,
-                });
+                };
+                this.storage.set("formulario_uso", formulario_uso);
+                this.appCtrl.getRootNav().setRoot(FormPage);
             });
         });
     }
