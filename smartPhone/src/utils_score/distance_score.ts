@@ -1,16 +1,3 @@
-import { DateTime } from "ionic-angular";
-
-const locations:
-    { "id": number, "latitude":number, "longitude": number }[] = [
-
-    {"id": 1	,"latitude": -10.9393413858164	, "longitude": -37.0627421097422},
-    {"id": 2	,"latitude": -10.939341385769	  , "longitude": -37.0627421097809},
-    {"id": 3	,"latitude": -10.9393239478718	, "longitude": -27.0627645137212},
-    {"id": 4	,"latitude": -10.9392105616561	, "longitude": -57.0628430455445},
-    {"id": 5	,"latitude": -10.9389389789911	, "longitude": -27.0628785984113},
-    {"id": 6	,"latitude": -10.9385435911514	, "longitude": -77.0628386631358},
-
-  ];
 
 export class DistanceScore {
 
@@ -54,6 +41,7 @@ export class DistanceScore {
     calculateScore(locations: any[]): {maxScore: number, meanMax: number}{
         var max: {value:number} = {value : null};
         var Home: Point = new Point(this.homeLat, this.homeLong, 0, 0);
+        console.log('length', locations.length);
         if(locations.length > 0){
           var scoreData = new ScoreData(locations);
           scoreData.getDistancesToRef(Home);

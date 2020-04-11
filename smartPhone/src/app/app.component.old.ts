@@ -69,8 +69,7 @@ export class MyApp {
         statusBar: StatusBar,
         splashScreen: SplashScreen,
         private backgroundGeolocation: BackgroundGeolocation,
-        public database:DatabaseService,
-        private scoreService: ScoreProvider) {
+        public database:DatabaseService) {
             platform.ready().then(() => {
 
                 this.events.subscribe('pendingForms:editarFormulario', (fechaFormulario) => {
@@ -100,7 +99,21 @@ export class MyApp {
 
             });
 
-            //this.startBackgroundGeolocation();
+        this.startBackgroundGeolocation();
+    }
+
+    async checkForParameters() {
+
+        const homeLocation = await this.storage.get('homeLocation');
+        // TODO: Replace this with this.storage.get('homeRadius');
+        const homeRadius = 1;
+
+        console.log('homeLocation', homeLocation);
+
+        console.log('homeLocation cond', homeLocation !== null);
+        console.log('homeRadius cond', homeRadius !== null);
+
+        return homeLocation !== null && homeRadius !== null;
     }
 
     promesaEnvioFormulario(linkedUser, formulario, templateUuid, setId) {
@@ -314,7 +327,6 @@ export class MyApp {
             this.backgroundGeolocation
                 .on(BackgroundGeolocationEvents.location)
                 .subscribe((location: BackgroundGeolocationResponse) => {
-                    console.log(location);
                     this.locationHandler(location);
                 });
         });
@@ -336,6 +348,10 @@ export class MyApp {
         this.calculatePartialActualScore(Number(currentHour)); //this value will be graficated in actual score
 
         this.sendPendingScoresToServer();
+
+        this.database.getLocations().then(locations => {
+            console.log('locations handler: ', locations);
+        });
     }
 
     // Calculate and save the scores only for complete hours
@@ -344,17 +360,21 @@ export class MyApp {
         this.database.getScores().then(async (data:any) =>{
           if(data){
             var lastScoreHour = data.length;
+            console.log('lastscorehour', lastScoreHour);
+            console.log('currentscore', currentHour);
             if(lastScoreHour > currentHour){ //  if we are in different days, delete previous scores and check again
                 this.database.deleteScores();
                 this.checkForPendingScores(currentHour);
             }else{                          // if we are in the same day, only calculate the score from the last score hour to the current hour
-                for (let hour = lastScoreHour+1; hour <=currentHour; hour++) {
+                for (let hour = lastScoreHour+1; hour < currentHour; hour++) {
                     var score = await this.calcualteDistanceScore(hour);
                     this.database.addScore(score, hour, 0, 0, "");
+                    console.log('');
                 }
             }
           }else{   //there aren't scores yet, calculate all scores until the current hour
-            for (let hour = 1; hour <=currentHour; hour++) {
+          console.log('no scores yet');
+            for (let hour = 1; hour < currentHour; hour++) {
                 var score = await this.calcualteDistanceScore(hour);
                 this.database.addScore(score, hour, 0, 0, "");
             }
@@ -367,7 +387,6 @@ export class MyApp {
         var homeLocation = await this.storage.get("homeLocation");
         var homeLatitude = homeLocation["latitude"];
         var homeLongitude = homeLocation["longitude"];
-        var homeWifiNetworks = await this.storage.get("homeWifiNetworks");
 
         var al = 0;
         var bl = 0;
@@ -380,7 +399,6 @@ export class MyApp {
         var ch = 2000;
 
         parameters = {"homeLatitude":homeLatitude,"homeLongitude":homeLongitude,
-                      "homeWifiNetworks":homeWifiNetworks,
                       "al":al,"bl":bl,"cl":cl,
                       "am":am,"bm":bm,"cm":cm,
                       "ah":ah,"bh":bh,"ch":ch}
@@ -394,6 +412,7 @@ export class MyApp {
                                                         parameters["ah"],parameters["bh"],parameters["ch"],
                                                         parameters["homeLatitude"], parameters["homeLongitude"]);
         var locationsByHour = await this.database.getLocationByHour(hour);
+        console.log('locationbyhour', locationsByHour, hour);
         var score = distanceScoreCalculator.calculateScore(locationsByHour);
         var meanWifiScore = this.calculateMeanWifiScore(locationsByHour);
         return score.maxScore * meanWifiScore;
@@ -414,8 +433,8 @@ export class MyApp {
     async calculateWifiScore(): Promise<number>{
         var numNetworks = await MyApp.startScan();
         var wifiScore: WifiScore = new WifiScore();
-        var parameters = await this.getParameters();
-        var score = wifiScore.get_wifi_score_networks_available(numNetworks, 1.5, parameters["homeWifiNetworks"]);
+        var homeWifiNetworks = await this.storage.get('homeWifiNetworks');
+        var score = wifiScore.get_wifi_score_networks_available(numNetworks, 1.5, homeWifiNetworks);
         return score;
     }
 

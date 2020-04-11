@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
+import { NavController, NavParams, App } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { AuthPage } from '../auth/auth';
 import { AlertController } from 'ionic-angular';
 import { LocationProvider } from '../../providers/location/location';
-import { LocalNotifications } from '@ionic-native/local-notifications';
+import { DatabaseService } from '../../service/database-service';
+import { ScoreProvider } from '../../providers/score/score';
 import { MyApp } from '../../app/app.component';
 
 @Component({
 	selector: 'page-user',
-	templateUrl: 'user.html',
+    templateUrl: 'user.html',
 })
 
 export class UserPage implements OnInit{
@@ -20,8 +21,14 @@ export class UserPage implements OnInit{
     currentScoreColor: string;
     homeLocationDate: number;
 
-    constructor(public navCtrl: NavController, public navParams: NavParams, public appCtrl: App,
-                private storage: Storage, public alertCtrl: AlertController, private location: LocationProvider) {
+    constructor(
+        public navCtrl: NavController,
+        public navParams: NavParams,
+        public appCtrl: App,
+        private storage: Storage,
+        public alertCtrl: AlertController,
+        private location: LocationProvider,
+        private database: DatabaseService) {
     }
 
     ngOnInit() {
@@ -63,8 +70,15 @@ export class UserPage implements OnInit{
 
         this.currentScore = 0.5;
         this.currentScoreColor = this.getColorByScore(this.currentScore);
-    }
 
+        this.storage.get('partialScore').then(result => {
+            console.log('partialScore: ', result);
+        })
+
+        this.database.getScores().then(result => {
+            console.log('scores: ', result);
+        })
+    }
 
     getColorByScore(score: number) {
         if(score <= 0.5) {
@@ -104,8 +118,10 @@ export class UserPage implements OnInit{
 
     async registerHomeHandler() {
 
-        const numberOfWifiNetworks = await MyApp.startScan();
-        await this.storage.set('homeWifiNetworks', numberOfWifiNetworks);
+        //const numberOfWifiNetworks = await MyApp.startScan();
+        //await this.storage.set('homeWifiNetworks', numberOfWifiNetworks);
+
+        //this.scoreService.startBackgroundGeolocation();
 
         this.location.getCurrentLocation().then(location => {
 

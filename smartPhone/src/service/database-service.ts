@@ -134,7 +134,7 @@ export class DatabaseService {
   async getLocations(){
     return this.isReady()
     .then(async ()=>{
-      return this.database.executeSql("SELECT * from score", [])
+      return this.database.executeSql("SELECT * from location", [])
       .then((data)=>{
         let lists = [];
         for(let i=0; i<data.rows.length; i++){

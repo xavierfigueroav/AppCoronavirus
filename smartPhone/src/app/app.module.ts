@@ -46,6 +46,7 @@ import { SQLite } from '@ionic-native/sqlite'
 import { DatabaseService } from '../service/database-service';
 import { MedicalPage } from '../pages/medical/medical';
 import { TestResultsPage } from '../pages/test-results/test-results';
+import { ScoreProvider } from '../providers/score/score';
 
 @NgModule({
   declarations: [
@@ -125,6 +126,7 @@ import { TestResultsPage } from '../pages/test-results/test-results';
     BackgroundGeolocation,
     SQLite,
     DatabaseService,
+    ScoreProvider,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
