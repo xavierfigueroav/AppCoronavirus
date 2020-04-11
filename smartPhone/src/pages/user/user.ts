@@ -6,7 +6,6 @@ import { AlertController } from 'ionic-angular';
 import { LocationProvider } from '../../providers/location/location';
 import { DatabaseService } from '../../service/database-service';
 import { ScoreProvider } from '../../providers/score/score';
-import { MyApp } from '../../app/app.component';
 
 @Component({
 	selector: 'page-user',
@@ -20,6 +19,7 @@ export class UserPage implements OnInit{
     currentScore: number;
     currentScoreColor: string;
     homeLocationDate: number;
+    colors: any;
 
     constructor(
         public navCtrl: NavController,
@@ -30,72 +30,40 @@ export class UserPage implements OnInit{
         private location: LocationProvider,
         private database: DatabaseService,
         private scoreService: ScoreProvider
-        ) {
-    }
+        ) { }
 
     ngOnInit() {
         console.log('ngOnInit UserPage');
-        this.scores = [
-            {hour: 1, score: 0.5 },
-            {hour: 2, score: 0.3 },
-            {hour: 3, score: 0.2 },
-            {hour: 4, score: 0.7 },
-            {hour: 5, score: 0.9 },
-            {hour: 6, score: 0.3 },
-            {hour: 7, score: 0.2 },
-            {hour: 8, score: 0.0 },
-            {hour: 9, score: 0.4 },
-            {hour: 10, score: 0.6 },
-            {hour: 11, score: 0.8 },
-            {hour: 12, score: 0.1 },
-            {hour: 13, score: 0.0 },
-            {hour: 14, score: 0.8 },
-            {hour: 15, score: 0.9 },
-            {hour: 16, score: 0.3 },
-            {hour: 17, score: 0.2 },
-            {hour: 18, score: 0.7 },
-            {hour: 19, score: 0.1 },
-            {hour: 20, score: 0.2 },
-            {hour: 21, score: 0.1 },
-            {hour: 22, score: 0.6 },
-            {hour: 23, score: 0.9 },
-            {hour: 24, score: 0.5 }
-        ];
 
-        this.scores.forEach((score: any) => {
-            score.color = this.getColorByScore((score.score));
-        });
+        this.colors = {'1': '#32c800', '2': '#FFC800', '3': '#FF0000', '-1': '#999999'};
+        this.scoreService.calculateAndStoreExpositionScores();
 
         this.storage.get('homeLocation').then(location => {
             this.homeLocationDate = location ? location.date : undefined;
         });
 
-        this.currentScore = 0.5;
-        this.currentScoreColor = this.getColorByScore(this.currentScore);
-
-        this.storage.get('partialScore').then(result => {
-            console.log('partialScore: ', result);
+        this.storage.get('partialScore').then(currentScore => {
+            this.currentScore = currentScore;
+            this.currentScoreColor = this.getColorByScore(currentScore);
         })
 
-        this.database.getScores().then(result => {
-            console.log('scores: ', result);
-        })
+        this.database.getScores().then(scores => {
+            scores.forEach(score => {
+                score.color = this.getColorByScore(score.score);
+            });
 
-        var date = new Date();
-        var currentHour = Number(date.getHours());
-        this.scoreService.checkForPendingScores(currentHour);
-        this.scoreService.calculatePartialActualScore(currentHour);
-        this.scoreService.sendPendingScoresToServer();
+            this.scores = scores;
+
+            for(let i = scores.length + 1; i < 25; i++){
+                const missingScore = {'hour': i, 'score': -1};
+                missingScore['color'] = this.getColorByScore(missingScore.score);
+                this.scores.push(missingScore);
+            }
+        })
     }
 
     getColorByScore(score: number) {
-        if(score <= 0.5) {
-            const red = 55 + Math.round(score*400);
-            return `rgb(${red},200,0)`;
-        } else {
-            const green = 200 - Math.round((score - 0.5)*400);
-            return `rgb(255,${green},0)`;
-        }
+        return this.colors[Math.ceil(score)];
     }
 
 	cerrarSesion() {
@@ -126,10 +94,8 @@ export class UserPage implements OnInit{
 
     async registerHomeHandler() {
 
-        //const numberOfWifiNetworks = await MyApp.startScan();
-        //await this.storage.set('homeWifiNetworks', numberOfWifiNetworks);
-
-        //this.scoreService.startBackgroundGeolocation();
+        const numberOfWifiNetworks = await this.scoreService.startScan();
+        await this.storage.set('homeWifiNetworks', numberOfWifiNetworks);
 
         this.location.getCurrentLocation().then(location => {
 

@@ -41,7 +41,6 @@ export class DistanceScore {
     calculateScore(locations: any[]): {maxScore: number, meanMax: number}{
         var max: {value:number} = {value : null};
         var Home: Point = new Point(this.homeLat, this.homeLong, 0, 0);
-        console.log('length', locations.length);
         if(locations.length > 0){
           var scoreData = new ScoreData(locations);
           scoreData.getDistancesToRef(Home);
