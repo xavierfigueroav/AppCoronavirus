@@ -3,6 +3,7 @@ import { DatabaseService } from '../../service/database-service';
 import { Storage } from '@ionic/storage';
 import { WifiScore } from '../../utils_score/wifi_score';
 import { DistanceScore } from '../../utils_score/distance_score';
+import { ScoreSender } from '../score-sender/score-sender'
 import {
     BackgroundGeolocation,
     BackgroundGeolocationResponse,
@@ -10,7 +11,6 @@ import {
     BackgroundGeolocationConfig
 } from '@ionic-native/background-geolocation';
 import { HTTP } from '@ionic-native/http';
-import * as Constants from '../../data/constants';
 
 
 declare var WifiWizard2: any;
@@ -28,7 +28,7 @@ export class ScoreProvider {
         private storage: Storage,
         public backgroundGeolocation: BackgroundGeolocation,
         public database:DatabaseService,
-        public http: HTTP,
+        public scoreSender: ScoreSender
         ) {
         console.log('Hello ScoreProvider Provider');
     }
@@ -125,7 +125,7 @@ export class ScoreProvider {
         this.calcualteDistanceScore(Number(currentHour + 1), false).then(score => {
             this.storage.set('partialScore', score);
         });
-        this.sendPendingScoresToServer();
+        this.scoreSender.sendPendingScoresToServer();
     }
 
 // Calculate and save the scores only for complete hours
@@ -204,60 +204,7 @@ export class ScoreProvider {
         const homeWifiNetworks = await this.storage.get('homeWifiNetworks');
         const score = wifiScore.get_wifi_score_networks_available(numNetworks, 1.5, homeWifiNetworks);
         return score;
-    }
-
-    async sendPendingScoresToServer(){
-        var scores = await this.database.getScores(); 
-        var pendingScores = {};
-        scores.forEach((score) =>{
-            if(score.status == "PENDING"){  
-                var hour = score.hour;
-                if(hour == 24 ) hour = 0 
-                pendingScores["score_"+hour] = score.score
-            }
-        });
-        await this.sendPostRequest(pendingScores);
-    }
-
-    async sendPostRequest(pendingScores){
-        console.log("Sending cores");
-        var phone_id = await this.storage.get("phone_id");
-        var date = new Date();
-        var datetime = date.getFullYear()+"-"+date.getMonth()+"-"+date.getDay()+" 00:00:00";   //i.e. 2020-04-01 00:00:00
-        var data = this.createUpdateScoreBody(pendingScores, phone_id, datetime)
-        this.http.post(Constants.UPDATE_TABLE_URL, data, {}).then(res => {
-            //TODO  update scores status to SENT
-            pendingScores.forEach((score)=>{
-                this.database.updateScoreStatus(score.id, "SENT");
-            });
-        })
-        .catch(error => {
-            console.log("Error sending scores");
-            //TODO check if the register hasn't been created. If it hasn't, create it and send the method again
-            //TODO if the error isn't about register, pass
-        });
-    }
-
-    createUpdateScoreBody(pendingScores, phone_id, datetime){
-        var data = {
-            "tabla": "integracion_score_diario",
-            "operador": "and",
-            "valores": pendingScores,
-            "condiciones": [
-                {
-                    "columna": "telefono_id",
-                    "comparador": "==",
-                    "valor": phone_id
-                },
-                {
-                    "columna": "dia",
-                    "comparador": "==",
-                    "valor": datetime
-                }
-            ]
-        };
-        return data;
-    }
+    }    
 
     calculateMeanWifiScore(locationsByHour: Array<any>): number{
         let wifiTotal = 0;
