@@ -23,7 +23,7 @@ export class ScoreProvider {
 
     constructor(
         private storage: Storage,
-        private backgroundGeolocation: BackgroundGeolocation,
+        public backgroundGeolocation: BackgroundGeolocation,
         public database:DatabaseService
         ) {
         console.log('Hello ScoreProvider Provider');
@@ -118,9 +118,10 @@ export class ScoreProvider {
         const date = new Date();
         const currentHour = date.getHours();
         this.checkForPendingScores(Number(currentHour));
-        this.calculatePartialActualScore(Number(currentHour));
+        this.calcualteDistanceScore(Number(currentHour + 1), false).then(score => {
+            this.storage.set('partialScore', score);
+        });
         this.sendPendingScoresToServer();
-
     }
 
 // Calculate and save the scores only for complete hours
@@ -138,12 +139,14 @@ export class ScoreProvider {
                     for (let hour = lastScoreHour+1; hour < currentHour; hour++) {
                         const score = await this.calcualteDistanceScore(hour);
                         this.database.addScore(score, hour, 0, 0, '');
+                        this.database.deleteLocationsByHour(hour);
                     }
                 }
             } else{   //there aren't scores yet, calculate all scores until the current hour
                 for (let hour = 1; hour < currentHour; hour++) {
                     const score = await this.calcualteDistanceScore(hour);
                     this.database.addScore(score, hour, 0, 0, "");
+                    this.database.deleteLocationsByHour(hour);
                 }
             }
         });
@@ -173,7 +176,7 @@ export class ScoreProvider {
         };
     }
 
-    async calcualteDistanceScore(hour: number): Promise<number>{
+    async calcualteDistanceScore(hour: number, full = true): Promise<number>{
         const parameters = await this.getParameters();
 
         const distanceScoreCalculator = new DistanceScore(
@@ -183,28 +186,12 @@ export class ScoreProvider {
             parameters['homeLatitude'], parameters['homeLongitude']
         );
 
-        const locationsByHour = await this.database.getLocationByHour(hour);
+        let locationsByHour = await this.database.getLocationByHour(hour);
+        locationsByHour = full ? locationsByHour : locationsByHour[-1] ? [locationsByHour[-1]] : [];
         const score = distanceScoreCalculator.calculateScore(locationsByHour);
         const meanWifiScore = this.calculateMeanWifiScore(locationsByHour);
 
         return score.maxScore * meanWifiScore;
-    }
-
-    async calculatePartialActualScore(hour: number): Promise<number>{
-        const parameters = await this.getParameters();
-
-        const distanceScoreCalculator = new DistanceScore(
-            parameters['al'],parameters['bl'],parameters['cl'],
-            parameters['am'],parameters['bm'],parameters['cm'],
-            parameters['ah'],parameters['bh'],parameters['ch'],
-            parameters['homeLatitude'], parameters['homeLongitude']
-        );
-
-        const locationsByHour = await this.database.getLocationByHour(hour + 1);
-        const score = distanceScoreCalculator.calculateScore(locationsByHour);
-        this.storage.set('partialScore', score.maxScore);
-
-        return score.maxScore;
     }
 
     async calculateWifiScore(): Promise<number>{

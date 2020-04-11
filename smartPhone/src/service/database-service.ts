@@ -42,16 +42,6 @@ export class DatabaseService {
             wifi_score FLOAT,
             status TEXT DEFAULT 'PENDING'
             );`, {})
-        }).then(() => {
-        return this.database.executeSql(
-        `CREATE TABLE IF NOT EXISTS user (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            document_id TEXT,
-            phone_id STRING,
-            home_latitude FLOAT,
-            home_longitude FLOAT,
-            home_radius FLOAT
-            );`, {})
         }).catch(error => console.log("Error while creating tables", error));
     }
 

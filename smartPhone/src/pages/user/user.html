@@ -13,9 +13,10 @@
 
     <div class="container">
 
-        <p class="description">Para calcular tu nivel de exposición necesitamos conocer la ubicación de tu casa. Cuando estés en ella, toca el botón para registrarla.</p>
+        <p class="description">Para empezar a calcular tu nivel de exposición necesitamos conocer la ubicación de tu casa y su tamaño. Cuando estés en ella, toca el botón para registrarla.</p>
+        <ion-input type="number" placeholder="Radio de tu casa" [(ngModel)]="homeRadius"></ion-input>
         <button ion-button icon-end full (click)="registerHomeHandler()">
-            Registrar casa
+            Enviar radio y ubicación
             <ion-icon name="pin"></ion-icon>
         </button>
         <p class="home-registered-message" *ngIf="homeLocationDate !== undefined">
@@ -57,7 +58,7 @@
             </button>
         </p>
         <div>
-            <div class="day1">1 hora</div><div class="days">6 horas</div><div class="days">12 horas</div><div class="days">18 horas</div><div class="day24"></div>
+            <div class="day1">01h00</div><div class="days">06h00</div><div class="days">12h00</div><div class="days">18h00</div><div class="day24"></div>
         </div>
         <div class="score-square" *ngFor="let score of scores"  [ngStyle]="{ 'background-color': score.color }"></div>
     </div>

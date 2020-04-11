@@ -19,6 +19,7 @@ export class UserPage implements OnInit{
     homeLocationDate: number;
     scores: any;
     colors: any;
+    homeRadius: number;
 
     constructor(
         public navCtrl: NavController,
@@ -36,8 +37,11 @@ export class UserPage implements OnInit{
 
         this.colors = {'1': '#32c800', '2': '#FFC800', '3': '#FF0000', '-1': '#999999'};
 
-        // FIXME: Should not we first check for homeLocation and homeWifiNetworks presence?
-        this.scoreService.calculateAndStoreExpositionScores();
+        this.scoreService.backgroundGeolocation.checkStatus().then(status => {
+            if(status.isRunning) {
+                this.scoreService.calculateAndStoreExpositionScores();
+            }
+        });
 
         this.storage.get('homeLocation').then(location => {
             this.homeLocationDate = location ? location.date : undefined;
@@ -95,41 +99,70 @@ export class UserPage implements OnInit{
 
     async registerHomeHandler() {
 
-        // FIXME: This synchronous process delays the execution of getCurrentLocation()
-        // causing not so good user experience because of feedback delays.
-        const numberOfWifiNetworks = await this.scoreService.startScan();
-        await this.storage.set('homeWifiNetworks', numberOfWifiNetworks);
-
         // TODO: Run this.scoreService.startBackgroundGeolocation(). Dicuss with team first.
 
-        this.location.getCurrentLocation().then(location => {
+        if(this.homeRadius !== undefined) {
 
-            this.storage.set('homeLocation', {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                date: location.timestamp
+            this.scoreService.startScan().then(numberOfWifiNetworks => {
+                console.log('homeWifiNetworks set');
+                return this.storage.set('homeWifiNetworks', numberOfWifiNetworks);
             }).then(() => {
-                this.alertCtrl.create({
-                    title: 'La ubicación de tu casa fue almacenada exitósamente',
-                    subTitle: 'Esto nos permitirá brindarte información actualizada sobre tu nivel de exposición.',
-                    buttons: ['OK']
-                }).present();
+                console.log('homeRadius set');
+                return this.storage.set('homeRadius', this.homeRadius);
+            }).then(() => {
+                console.log('getCurrentLocation called');
+                return this.location.getCurrentLocation();
+            }).then(location => {
+
+                console.log('getCurrentLocation resolved');
+
+                this.storage.set('homeLocation', {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                    date: location.timestamp
+                }).then(() => {
+                    this.alertCtrl.create({
+                        title: 'La ubicación de tu casa fue almacenada exitósamente',
+                        subTitle: 'Esto nos permitirá brindarte información actualizada sobre tu nivel de exposición.',
+                        buttons: ['OK']
+                    }).present();
+
+                    return this.scoreService.backgroundGeolocation.checkStatus();
+                }).then(status => {
+                    console.log('backgroundGeolocation.checkStatus resolved', status);
+                    if(status.isRunning) {
+
+                        this.scoreService.backgroundGeolocation.stop()
+                        this.scoreService.startBackgroundGeolocation();
+
+                    } else {
+                        this.scoreService.startBackgroundGeolocation();
+                    }
+                    this.scoreService.calculateAndStoreExpositionScores();
+                }).catch(() => {
+                    this.alertCtrl.create({
+                        title: 'Ocurrió un problema al almacenar lar ubicación de tu casa',
+                        subTitle: 'Inténtalo de nuevo. Sin ella no prodremos brindarte información actualizada sobre tu nivel de exposición.',
+                        buttons: ['OK']
+                    }).present();
+                })
 
             }).catch(() => {
                 this.alertCtrl.create({
-                    title: 'Ocurrió un problema al almacenar lar ubicación de tu casa',
-                    subTitle: 'Inténtalo de nuevo. Sin ella no prodremos brindarte información actualizada sobre tu nivel de exposición.',
+                    title: 'La ubicación de tu casa no fue almacenada',
+                    subTitle: 'Sin la ubicación de tu casa no podemos brindarte información actualizada sobre tu nivel de exposición.',
                     buttons: ['OK']
                 }).present();
-            })
+            });
 
-        }).catch(() => {
+        } else {
+
             this.alertCtrl.create({
-                title: 'La ubicación de tu casa no fue almacenada',
-                subTitle: 'Sin la ubicación de tu casa no podemos brindarte información actualizada sobre tu nivel de exposición.',
+                title: 'El radio de tu casa es incorrecto',
+                subTitle: 'Ingresa un número entero positivo.',
                 buttons: ['OK']
             }).present();
-        });
+        }
     }
 
     getDateFromeTimestamp(timestamp: number) {
