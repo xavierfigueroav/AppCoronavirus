@@ -3,12 +3,15 @@ import { DatabaseService } from '../../service/database-service';
 import { Storage } from '@ionic/storage';
 import { WifiScore } from '../../utils_score/wifi_score';
 import { DistanceScore } from '../../utils_score/distance_score';
+import { ScoreSender } from '../score-sender/score-sender'
 import {
     BackgroundGeolocation,
     BackgroundGeolocationResponse,
     BackgroundGeolocationEvents,
     BackgroundGeolocationConfig
 } from '@ionic-native/background-geolocation';
+import { HTTP } from '@ionic-native/http';
+
 
 declare var WifiWizard2: any;
 
@@ -24,7 +27,8 @@ export class ScoreProvider {
     constructor(
         private storage: Storage,
         public backgroundGeolocation: BackgroundGeolocation,
-        public database:DatabaseService
+        public database:DatabaseService,
+        public scoreSender: ScoreSender
         ) {
         console.log('Hello ScoreProvider Provider');
     }
@@ -121,7 +125,7 @@ export class ScoreProvider {
         this.calcualteDistanceScore(Number(currentHour + 1), false).then(score => {
             this.storage.set('partialScore', score);
         });
-        this.sendPendingScoresToServer();
+        this.scoreSender.sendPendingScoresToServer();
     }
 
 // Calculate and save the scores only for complete hours
@@ -200,11 +204,7 @@ export class ScoreProvider {
         const homeWifiNetworks = await this.storage.get('homeWifiNetworks');
         const score = wifiScore.get_wifi_score_networks_available(numNetworks, 1.5, homeWifiNetworks);
         return score;
-    }
-
-    sendPendingScoresToServer(){
-        // TODO: sent scores to CKAN
-    }
+    }    
 
     calculateMeanWifiScore(locationsByHour: Array<any>): number{
         let wifiTotal = 0;
