@@ -9,6 +9,12 @@ import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage
 import { Md5 } from 'ts-md5/dist/md5';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { IntelSecurity } from '@ionic-native/intel-security';
+import { Diagnostic } from '@ionic-native/diagnostic';
+import { Geolocation } from '@ionic-native/geolocation';
+import { LocationAccuracy } from '@ionic-native/location-accuracy';
+import { FormPage } from '../form/form';
+import { File } from '@ionic-native/file';
+import uuid from 'uuid/v4';
 
 @Component({
     selector: 'page-auth',
@@ -23,18 +29,22 @@ export class AuthPage {
     infoTemplates = [];
     string_cedula;
     id_dataset;
+    geolocationAuth;
+    loading;
+    coordinates = null;
+    formsData = {};
+    pendingForms = [];
 
     constructor(private intelSecurity: IntelSecurity,
         public httpClient: HttpClient, public appCtrl: App,
         public menuCtrl: MenuController, private secureStorage: SecureStorage,
         private storage: Storage, public navCtrl: NavController,
-        public navParams: NavParams, public http: HTTP,
-        public network: Network, public loadingCtrl: LoadingController,
-        public alertCtrl: AlertController) {
-        // Or to get a key/value pair
+        public navParams: NavParams, public http: HTTP, private file: File,
+        public network: Network, public loadingCtrl: LoadingController, private geolocation: Geolocation,
+        public alertCtrl: AlertController, private diagnostic: Diagnostic, private locationAccuracy: LocationAccuracy) {
 
         this.menuCtrl.enable(false);
-
+        this.file = file;
         this.storage.get('linkedUser').then((val) => {
             if(val) {
                 this.linkedUser = val;
@@ -43,6 +53,8 @@ export class AuthPage {
             console.log('Hubo un error al obtener los cálculos');
             console.log(err);
         });
+
+        this.crearDirectorio();
 
         /*this.httpClient.get(this.urlFunctions).subscribe(res => {
             this.storage.set('calculos', res);
@@ -65,8 +77,21 @@ export class AuthPage {
         });*/
     }
 
+    crearDirectorio() {
+        this.file.checkDir(this.file.externalApplicationStorageDirectory, 'AppCoronavirus').then(response => {
+            console.log('EL DIRECTORIO YA EXISTE');
+            console.log(this.file.externalApplicationStorageDirectory + "/AppCoronavirus");
+        }).catch(err => {
+            console.log('EL DIRECTORIO NO EXISTE');
+            this.file.createDir(this.file.externalApplicationStorageDirectory, 'AppCoronavirus', false).then(response => {
+                console.log('SE CREÓ EL DIRECTORIO');
+            }).catch(err => {
+                console.log('ERROR AL CREAR EL DIRECTORIO');
+            }); 
+        });
+    }
+
     attemptAuth() {
-        
         if (this.linkedUser) {
             const loader = this.loadingCtrl.create({
                 content: "Espere ...",
@@ -81,6 +106,7 @@ export class AuthPage {
                         this.getInfoPlantilla().then((result) => {
                             this.storage.set('linkedUser', this.linkedUser).then(data => {
                                 this.appCtrl.getRootNav().setRoot(TabsPage);
+                                //var infotemplate = this.storage.get("")
                             });
                         });
                     } else {
@@ -162,7 +188,7 @@ export class AuthPage {
                 content: "Espere ...",
             });
             loader.present();
-            if(isNaN(Number(this.cedula)) || !Number.isInteger(Number(this.cedula)) || Number(this.cedula) < 0 || this.cedula.length != 10) {
+            /*if(isNaN(Number(this.cedula)) || !Number.isInteger(Number(this.cedula)) || Number(this.cedula) < 0 || this.cedula.length != 10) {
                 loader.dismiss();
                 const alert = this.alertCtrl.create({
                     subTitle: 'Por favor, ingrese un número de cédula válido',
@@ -172,7 +198,7 @@ export class AuthPage {
                 return 0;
             } else {
                 loader.dismiss();
-            }
+            }*/
 
             this.httpClient.get('./assets/plantilla/plantilla.json').subscribe(res => {
                 this.storage.set('templates', res);
@@ -184,6 +210,7 @@ export class AuthPage {
                                 instanceID: instanceID
                             });
                             //this.storage.set('templates', JSON.parse(res.data).templates)
+                            loader.dismiss();
                             this.crearDataset();
                         })
                         .catch((error: any) => {
@@ -207,8 +234,6 @@ export class AuthPage {
     }
 
     crearDataset() {
-        //this.encriptarCedula();
-
         var string_cedula = '{"name":"'+this.cedula+'","owner_org":"0daa04ac-4b43-4316-bbf0-537cd5b881ac"}';
         var objeto = JSON.parse(string_cedula);
         var url = "http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/package_create";
@@ -226,7 +251,11 @@ export class AuthPage {
                     }).then((data) => {
                         //loader.dismiss();
                         this.getInfoPlantilla().then((result) => {
-                            this.appCtrl.getRootNav().setRoot(TabsPage);
+                            //this.appCtrl.getRootNav().setRoot(TabsPage);
+                            this.storage.get("infoTemplates").then((info_templates) => {
+                                var info_template = info_templates[0];
+                                this.startForm(info_template, 'initial', 0);
+                            });
                         });
                     }).catch(error => {
                         //loader.dismiss();
@@ -249,10 +278,6 @@ export class AuthPage {
                     return 0;
                 }
             });
-    }
-
-    encriptarCedula() {
-        this.cedula;
     }
 
     async getInfoPlantilla() {
@@ -280,6 +305,196 @@ export class AuthPage {
             }
         });
         await this.storage.set('infoTemplates', this.infoTemplates);
+    }
+
+    async startForm(template, type, index) {
+        // Genereate an uuid for form
+        let templateUuid = template.uuid;
+        this.storage.get('infoTemplates').then((templates) => {
+            for (let temp of templates) {
+                if (temp.uuid == template.uuid) {
+                    template = temp;
+                    break;
+                }
+            }
+            if (template.gps == "required") {
+                this.requestLocationAuthorization(template, templateUuid, type, index);
+            } else {
+                this.chooseFormTypeToInit(template, templateUuid, type, index)
+            }
+        });
+    }
+
+    requestLocationAuthorization(template, templateUuid, type, index) {
+        this.diagnostic.requestLocationAuthorization().then(res => {
+            this.geolocationAuth = res;
+            this.locationAccuracy.canRequest().then((canRequest: boolean) => {
+                if (canRequest) {
+                    this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
+                        () => {
+                            this.loading = this.loadingCtrl.create({
+                                content: 'Obteniendo ubicación ...',
+                            });
+                            this.loading.present();
+                            this.geolocation.getCurrentPosition({
+                                enableHighAccuracy: true,
+                                timeout: 12000
+                            }).then((res) => {
+                                this.loading.dismiss();
+                                this.coordinates = {
+                                    latitude: res.coords.latitude,
+                                    longitude: res.coords.longitude
+                                };
+                                this.chooseFormTypeToInit(
+                                    template,
+                                    templateUuid,
+                                    type,
+                                    index);
+                            }).catch((error) => {
+                                this.loading.dismiss();
+                                let alert = this.alertCtrl.create({
+                                    title: "Error",
+                                    subTitle: "No pudimos acceder a tu ubicación.",
+                                    buttons: ["ok"]
+                                });
+                                alert.present();
+                                this.chooseFormTypeToInit(
+                                    template,
+                                    templateUuid,
+                                    type,
+                                    index);
+                            });
+                        }).catch(err => {
+                            this.geolocationAuth = "DENIED";
+                            let alert = this.alertCtrl.create({
+                                title: "Error",
+                                subTitle: "Por favor, danos acceso a tu ubicación para una mejor experiencia",
+                                buttons: ["ok"]
+                            });
+                            alert.present();
+                            return 0;
+                        });
+                } else {
+                    let alert = this.alertCtrl.create({
+                        title: "Error",
+                        subTitle: "Por favor, danos acceso a tu ubicación para una mejor experiencia",
+                        buttons: ["ok"]
+                    });
+                    alert.present();
+                    return 0;
+                }
+            }).catch(err => {
+                console.log(JSON.stringify(err));
+                let alert = this.alertCtrl.create({
+                    title: "Error",
+                    subTitle: "Por favor, danos acceso a tu ubicación para una mejor experiencia",
+                    buttons: ["ok"]
+                });
+                alert.present();
+                return 0;
+            });
+
+        }).catch(err => {
+            console.log(JSON.stringify(err));
+            this.chooseFormTypeToInit(
+                template,
+                templateUuid,
+                type,
+                index);
+        });
+    }
+
+    chooseFormTypeToInit(template, templateUuid, type, index) {
+        if (type == "follow_up") {
+            //this.startFollowUpForm(template, template.data.follow_up, templateUuid, index);
+            let formUuid = uuid();
+            this.startInitialForm(template, template.data.follow_up, templateUuid, formUuid, type, index);
+        } else if (type == "initial") {
+            let formUuid = uuid();
+            this.startInitialForm(template, template.data.initial, templateUuid, formUuid, type, index);
+        }
+    }
+
+    startInitialForm(template, selectedTemplate, templateUuid, formUuid, type, index) {
+        this.storage.get('formsData').then((formsData) => {
+            this.formsData = formsData;
+            let currentForm = {};
+            let forms;
+            if (this.formsData != null && (Object.keys(this.formsData).length > 0) && this.formsData.hasOwnProperty(templateUuid)) {
+                forms = this.formsData[templateUuid].slice(0);
+            }
+            if (forms != null && (forms.length > 0)) {
+                let form = forms[forms.length - 1];
+                currentForm = {
+                    uuid: formUuid,
+                    version: 0,
+                    type: type,
+                    name: template.name,
+                    gps: template.gps,
+                    data: {},
+                    createdDate: new Date()
+                };
+                if (template.gps == "required") {
+                    currentForm["coordinates"] = this.coordinates;
+                }
+                forms.push(currentForm);
+            } else {
+                currentForm = {
+                    uuid: formUuid,
+                    version: 0,
+                    type: type,
+                    name: template.name,
+                    gps: template.gps,
+                    data: {},
+                    createdDate: new Date()
+                };
+                if (template.gps == "required") {
+                    currentForm["coordinates"] = this.coordinates;
+                }
+                forms = [currentForm];
+            }
+            var pendingForms = []
+            this.storage.get('pendingForms').then((pendingForms) => {
+                this.pendingForms = pendingForms;
+                if (this.pendingForms != null && (this.pendingForms.length > 0)) {
+                    pendingForms = this.pendingForms.slice(0);
+                    let idx = 0;
+                    if (this.formsData != null && this.formsData[templateUuid] != null) {
+                        idx = this.formsData[templateUuid].length;
+                    }
+                    pendingForms.push({
+                        template: templateUuid,
+                        score_movilidad: 0,
+                        score_salud_personal: 0,
+                        formData: currentForm,
+                        index: idx
+                    });
+                } else {
+                    pendingForms = [{
+                        template: templateUuid,
+                        score_movilidad: 0,
+                        score_salud_personal: 0,
+                        formData: currentForm,
+                        index: 0
+                    }];
+                }
+                var formulario_uso = {
+                    template: template,
+                    selectedTemplate: selectedTemplate,
+                    formData: selectedTemplate,
+                    currentForm: currentForm,
+                    forms: forms,
+                    formsData: this.formsData,
+                    pendingForms: pendingForms,
+                    geolocationAuth: this.geolocationAuth,
+                    infoTemplates: this.infoTemplates,
+                    infoTemplateIndex: index,
+                    indice_seccion: 0
+                };
+                this.storage.set("formulario_uso", formulario_uso);
+                this.appCtrl.getRootNav().setRoot(FormPage);
+            });
+        });
     }
 
     desvincular() {
