@@ -79,7 +79,7 @@ calculate_exposition_score(distance_score, wifi_score=1, density_score=1, time_s
 startBackgroundGeolocation() {
     const config: BackgroundGeolocationConfig = {
         desiredAccuracy: 10,
-          stationaryRadius: 20,
+          stationaryRadius: 1,
           distanceFilter: 1,
           debug: true,
           stopOnTerminate: false

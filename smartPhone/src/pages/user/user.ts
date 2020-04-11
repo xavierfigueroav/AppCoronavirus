@@ -28,7 +28,9 @@ export class UserPage implements OnInit{
         private storage: Storage,
         public alertCtrl: AlertController,
         private location: LocationProvider,
-        private database: DatabaseService) {
+        private database: DatabaseService,
+        private scoreService: ScoreProvider
+        ) {
     }
 
     ngOnInit() {
@@ -78,6 +80,12 @@ export class UserPage implements OnInit{
         this.database.getScores().then(result => {
             console.log('scores: ', result);
         })
+
+        var date = new Date();
+        var currentHour = Number(date.getHours());
+        this.scoreService.checkForPendingScores(currentHour);
+        this.scoreService.calculatePartialActualScore(currentHour);
+        this.scoreService.sendPendingScoresToServer();
     }
 
     getColorByScore(score: number) {
