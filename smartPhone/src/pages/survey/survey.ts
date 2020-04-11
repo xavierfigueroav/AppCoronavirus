@@ -104,7 +104,7 @@ export class SurveyPage {
                     m++;
                     if(sentForm.formData.type=='initial') {
                         this.j = m;
-                        console.log("SE CAMBIÓ EL J");
+                        console.log("SE CAMBIÓ EL J: ", m);
                         this.clickEditForm(this.j);
                     }
                 }
@@ -252,9 +252,10 @@ export class SurveyPage {
 
     async clickEditForm(j) {
         try{
-            let pendingForms = await this.storage.get("sentForms");
-            console.log("PENDING FORMS: ", pendingForms);
-            let pendingForm = pendingForms[j];
+            //SE EDITA LA QUE YA SE ENVIÓ AUTOMÁTICAMENTE AL INICIO DE LA APP
+            let sentForms = await this.storage.get("sentForms");
+            console.log("PENDING FORMS: ", sentForms);
+            let pendingForm = sentForms[j];
             let currentF = pendingForm.formData;
             let templateUuid = pendingForm.template;
             let template;
@@ -292,7 +293,7 @@ export class SurveyPage {
                     currentForm: currentForm,
                     forms: forms,
                     formsData: formsData,
-                    pendingForms: pendingForms,
+                    pendingForms: sentForms,
                     geolocationAuth: "GRANTED",
                     infoTemplates: infoTemplates,
                     infoTemplateIndex: infoTemplateIndex,
@@ -309,7 +310,7 @@ export class SurveyPage {
                     currentForm: currentForm,
                     forms: forms,
                     formsData: formsData,
-                    pendingForms: pendingForms,
+                    pendingForms: sentForms,
                     geolocationAuth: "GRANTED",
                     infoTemplates: infoTemplates,
                     infoTemplateIndex: infoTemplateIndex,

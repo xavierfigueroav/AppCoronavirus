@@ -238,13 +238,17 @@ export class FormPage extends PopoverPage {
     save(index, pending_form_index) {
         try {    
             this.currentForm.saveDate = new Date();
-            this.currentForm.data = this.formData;
+            this.currentForm.data = this.selectedTemplate;
             this.forms[index] = this.currentForm;
             this.formsData[this.templateUuid] = this.forms;
             this.storage.set("formsData", this.formsData);
+            console.log("SELECTED TEMPLATE SAVE", this.selectedTemplate);
+            console.log("FORM DATA SAVE", this.formData);
+            console.log("CURRENT FORM SAVE", this.currentForm);
             this.pendingForms[pending_form_index].formData = this.currentForm;
             this.pendingForms[pending_form_index].id_dataset = this.id_dataset;
             this.storage.set("pendingForms", this.pendingForms);
+            console.log("PENDING FORMS SAVE", this.pendingForms);
             this.storage.get("formulario_uso").then((form_temp) => {
                 form_temp.selectedTemplate = this.pendingForms[pending_form_index].formData.data;
                 form_temp.currentForm = this.currentForm;
@@ -253,6 +257,7 @@ export class FormPage extends PopoverPage {
                 form_temp.formData = this.pendingForms[pending_form_index].formData.data;
                 form_temp.pendingForms = this.pendingForms;
                 this.storage.set("formulario_uso", form_temp);
+                console.log("FORMULARIO USO GUARDADO: ", form_temp);
             });
         } catch(e){
             console.log("save");
