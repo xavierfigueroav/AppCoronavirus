@@ -43,10 +43,10 @@ class UserProfile(models.Model):
     )
     name = models.CharField(max_length=350)
     last_name = models.CharField(max_length=350)
-    user_type = models.ForeignKey(UserType)
+    user_type = models.ForeignKey(UserType, on_delete=models.CASCADE)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     manager = models.ForeignKey(
-        "self", null=True, blank=True, related_name="created_by"
+        "self", null=True, blank=True, related_name="created_by", on_delete=models.CASCADE
     )
 
     def __unicode__(self):
@@ -55,7 +55,7 @@ class UserProfile(models.Model):
 
 class Template(models.Model):
     uid = models.CharField(default=uuid.uuid4, max_length=36)
-    type = models.ForeignKey(TemplateType)
+    type = models.ForeignKey(TemplateType, on_delete=models.CASCADE)
     name = models.CharField(max_length=500)
     structure = models.TextField()
     quantity = models.IntegerField(default=0)
@@ -82,12 +82,12 @@ class Template(models.Model):
 
 
 class UserTemplate(models.Model):
-    user = models.ForeignKey(UserProfile)
-    template = models.ForeignKey(Template)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    template = models.ForeignKey(Template, on_delete=models.CASCADE)
 
 
 class InfoTemplate(models.Model):
     done_quantity = models.IntegerField()
     remain_quantity = models.IntegerField()
-    type = models.ForeignKey(TemplateType)
-    template = models.ForeignKey(Template)
+    type = models.ForeignKey(TemplateType, on_delete=models.CASCADE)
+    template = models.ForeignKey(Template, on_delete=models.CASCADE)

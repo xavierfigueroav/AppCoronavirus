@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
 
-reload(sys)
-sys.setdefaultencoding("utf8")
+#rload(sys)
+#sys.setdefaultencoding("utf8")
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import authenticate
@@ -13,7 +13,8 @@ from rest_framework.permissions import AllowAny
 from .models import FormData
 from form_manager.models import UserProfile, TemplateType, UserTemplate, UserType
 from coronafiec import settings
-import utils as api
+from .utils import convert_to_csv_and_send_to_ckan
+#import utils as api
 import ast
 
 
@@ -105,7 +106,7 @@ def save_form_data(request):
             filename = "{0}-{1}".format(form.name, form.created_date)
             if set_id:
                 data = form.data
-                api.convert_to_csv_and_send_to_ckan(data, filename, set_id)
+                convert_to_csv_and_send_to_ckan(data, filename, set_id)
             context["msg"] = "Guardado correctamente"
             context["data"] = form.to_dict()
             status = 200

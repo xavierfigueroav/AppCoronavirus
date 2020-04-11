@@ -16,7 +16,7 @@ import xlsxwriter
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
-from django.core import urlresolvers
+from django.urls import reverse
 
 
 @login_required(login_url="login")
@@ -75,11 +75,11 @@ def edit(request, uid):
                 user.username = data["username"]
                 user.save()
                 messages.success(request, "Usuario editado correctamente")
-                return redirect(urlresolvers.reverse("users"))
+                return redirect(reverse("users"))
             except Exception as e:
                 print(e)
                 messages.error(request, "El usuario ya existe")
-                return redirect(urlresolvers.reverse("create-user-view"))
+                return redirect(reverse("create-user-view"))
     else:
         return HttpResponse("Usuario no autorizado", status=401)
 
@@ -111,11 +111,11 @@ def create(request):
             )
             interviewer.save()
             messages.success(request, "Usuario Creado correctamente")
-            return redirect(urlresolvers.reverse("users"))
+            return redirect(reverse("users"))
         except Exception as e:
             print(e)
             messages.error(request, "El usuario ya existe")
-            return redirect(urlresolvers.reverse("create-user-view"))
+            return redirect(reverse("create-user-view"))
     else:
         return HttpResponse("Usuario no autorizado", status=401)
 
@@ -134,7 +134,7 @@ def delete(request, uid):
             user = User.objects.get(id=interviewer.get().user.id)
             user.delete()
         messages.success(request, "Usuario elimnado correctamente")
-        return redirect(urlresolvers.reverse("users"))
+        return redirect(reverse("users"))
     else:
         return HttpResponse("Usuario no autorizado", status=401)
 

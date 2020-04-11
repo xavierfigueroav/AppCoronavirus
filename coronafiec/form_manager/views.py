@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
 
-reload(sys)
-sys.setdefaultencoding("utf8")
+#reload(sys)
+#sys.setdefaultencoding("utf8")
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.http import (
@@ -19,7 +19,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
-from django.core import urlresolvers
+from django.urls import reverse
 import ast
 from api import utils as api
 from coronafiec.settings import FORMS_ROOT
@@ -130,10 +130,10 @@ def create(request):
                 template.uid = response.get("result")["id"]
                 template.save()
             messages.success(request, "Plantilla creada correctamente")
-            return redirect(urlresolvers.reverse("templates"))
+            return redirect(reverse("templates"))
         else:
             messages.error(request, "El conjunto de datos no existe")
-            return redirect(urlresolvers.reverse("create-template-view"))
+            return redirect(reverse("create-template-view"))
     else:
         return HttpResponse("Usuario no autorizado", status=401)
 
@@ -172,7 +172,7 @@ def edit(request, uid):
             if response.get("error"):
                 messages.error(request, "Hubo un error al enviar el formulario")
             messages.success(request, "Plantilla Editada correctamente")
-            return redirect(urlresolvers.reverse("templates"))
+            return redirect(reverse("templates"))
         else:
             return HttpResponse("La plantilla no existe", status=404)
     else:
@@ -190,7 +190,7 @@ def delete(request, uid):
         if template.exists():
             template.delete()
         messages.success(request, "Plantilla eliminada correctamente")
-        return redirect(urlresolvers.reverse("templates"))
+        return redirect(reverse("templates"))
     else:
         return HttpResponse("Usuario no autorizado", status=401)
     return HttpResponse(template.render(context, request))
@@ -256,7 +256,7 @@ def home(request):
         }
         return HttpResponse(template.render(context, request))
     else:
-        return redirect(urlresolvers.reverse("login"))
+        return redirect(reverse("login"))
 
 
 @require_http_methods(["GET", "POST"])
@@ -286,10 +286,10 @@ def login_user(request):
 
             else:
                 messages.error(request, "No existe el usuario")
-                return redirect(urlresolvers.reverse("login"))
+                return redirect(reverse("login"))
         else:
             messages.error(request, "Usuario o contraseña incorrecto")
-            return redirect(urlresolvers.reverse("login"))
+            return redirect(reverse("login"))
     else:
         context = {}
         template = loader.get_template("login.html")
@@ -312,4 +312,4 @@ def export_form(request, uid):
         return response
     else:
         messages.error(request, "El archivo no existe")
-        return redirect(urlresolvers.reverse("home"))
+        return redirect(reverse("home"))

@@ -73,7 +73,7 @@ class FormDataManager(models.Manager):
 class FormData(models.Model):
     uid = models.CharField(default=uuid.uuid4, editable=False, max_length=36)
     name = models.CharField(max_length=500, blank=True)
-    type = models.ForeignKey(TemplateType, null=True)
+    type = models.ForeignKey(TemplateType, null=True, on_delete=models.CASCADE)
     coordinates = models.CharField(max_length=100, null=True)
     data = models.TextField()
     created_date = models.DateTimeField(null=True, blank=True)
