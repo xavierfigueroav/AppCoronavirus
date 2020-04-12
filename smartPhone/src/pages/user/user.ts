@@ -44,11 +44,13 @@ export class UserPage implements OnInit{
 
         this.colors = {'1': '#32c800', '2': '#FFC800', '3': '#FF0000', '-1': '#000000', '-2': '#999999'};
 
-        this.scoreService.calculateAndStoreExpositionScores();
-
         this.storage.get('homeLocation').then(location => {
-            this.homeLocationDate = location ? location.date : undefined;
+            if(location) {
+                this.homeLocationDate = location.date;
+                this.scoreService.calculateAndStoreExpositionScores();
+            }
         });
+        this.fillScores();
     }
 
     fillScores() {
