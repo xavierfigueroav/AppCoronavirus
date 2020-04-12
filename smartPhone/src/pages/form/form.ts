@@ -99,6 +99,7 @@ export class FormPage extends PopoverPage {
         for (var pa of params) {
             errores += this.validateBlurFunction("", pa.blurFunction);
         }
+        console.log("ERRORES: ", errores);
         if (errores == 0) {
             this.storage.get("formulario_uso").then((form_temp) => {
                 console.log("FORM TEMP 1: ", form_temp);
@@ -135,6 +136,7 @@ export class FormPage extends PopoverPage {
         for (var pa of params) {
             errores += this.validateBlurFunction("", pa.blurFunction);
         }
+        console.log("ERRORES: ", errores);
         if (errores == 0) {
             this.storage.get("formulario_uso").then((form_temp) => {
                 console.log("FORM TEMP 1: ", form_temp);
@@ -186,6 +188,7 @@ export class FormPage extends PopoverPage {
         console.log("FORMULARIO USO:", formulario_uso);
         this.template = formulario_uso.template;
         this.formData = formulario_uso.formData;
+        console.log("FORM DATA: ", this.formData);
         this.selectedTemplate = formulario_uso.selectedTemplate;
         console.log("SELECTED TEMPLATE: ", this.selectedTemplate);
         this.currentForm = formulario_uso.currentForm;
@@ -472,7 +475,7 @@ export class FormPage extends PopoverPage {
         try {
             let parametrosMapeados = [];
             for (let i = 0; i < parameters.length; i++) {
-                parametrosMapeados.push(this.getObjects(this.formData, 'id', parameters[i])[0]);
+                parametrosMapeados.push(this.getObjects(this.selectedTemplate, 'id', parameters[i])[0]);
             }
             return parametrosMapeados;
         } catch(e){
@@ -549,6 +552,10 @@ export class FormPage extends PopoverPage {
             let parametrosMapeados = this.mappingParametros(args);
             let stringFuncionMapeada = this.construirFuncionDinamicaString('funcion', 'parametrosMapeados', parametrosMapeados.length);
             var valor = eval(stringFuncionMapeada);
+            console.log("FUNCIÓN: ", funcion);
+            console.log("PARAMETROS MAPEADOS: ", parametrosMapeados);
+            console.log("STRING FUNCION MAPEADA: ", stringFuncionMapeada);
+            console.log("VALOR DE LA FUNCION: ", valor);
             return valor;
         }
         catch (err) {
