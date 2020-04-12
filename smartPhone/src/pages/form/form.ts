@@ -99,6 +99,7 @@ export class FormPage extends PopoverPage {
         for (var pa of params) {
             errores += this.validateBlurFunction("", pa.blurFunction);
         }
+        console.log("ERRORES: ", errores);
         if (errores == 0) {
             this.storage.get("formulario_uso").then((form_temp) => {
                 console.log("FORM TEMP 1: ", form_temp);
@@ -135,6 +136,7 @@ export class FormPage extends PopoverPage {
         for (var pa of params) {
             errores += this.validateBlurFunction("", pa.blurFunction);
         }
+        console.log("ERRORES: ", errores);
         if (errores == 0) {
             this.storage.get("formulario_uso").then((form_temp) => {
                 console.log("FORM TEMP 1: ", form_temp);
@@ -186,6 +188,7 @@ export class FormPage extends PopoverPage {
         console.log("FORMULARIO USO:", formulario_uso);
         this.template = formulario_uso.template;
         this.formData = formulario_uso.formData;
+        console.log("FORM DATA: ", this.formData);
         this.selectedTemplate = formulario_uso.selectedTemplate;
         console.log("SELECTED TEMPLATE: ", this.selectedTemplate);
         this.currentForm = formulario_uso.currentForm;
@@ -238,13 +241,17 @@ export class FormPage extends PopoverPage {
     save(index, pending_form_index) {
         try {    
             this.currentForm.saveDate = new Date();
-            this.currentForm.data = this.formData;
+            this.currentForm.data = this.selectedTemplate;
             this.forms[index] = this.currentForm;
             this.formsData[this.templateUuid] = this.forms;
             this.storage.set("formsData", this.formsData);
+            console.log("SELECTED TEMPLATE SAVE", this.selectedTemplate);
+            console.log("FORM DATA SAVE", this.formData);
+            console.log("CURRENT FORM SAVE", this.currentForm);
             this.pendingForms[pending_form_index].formData = this.currentForm;
             this.pendingForms[pending_form_index].id_dataset = this.id_dataset;
             this.storage.set("pendingForms", this.pendingForms);
+            console.log("PENDING FORMS SAVE", this.pendingForms);
             this.storage.get("formulario_uso").then((form_temp) => {
                 form_temp.selectedTemplate = this.pendingForms[pending_form_index].formData.data;
                 form_temp.currentForm = this.currentForm;
@@ -253,6 +260,7 @@ export class FormPage extends PopoverPage {
                 form_temp.formData = this.pendingForms[pending_form_index].formData.data;
                 form_temp.pendingForms = this.pendingForms;
                 this.storage.set("formulario_uso", form_temp);
+                console.log("FORMULARIO USO GUARDADO: ", form_temp);
             });
         } catch(e){
             console.log("save");
@@ -467,7 +475,7 @@ export class FormPage extends PopoverPage {
         try {
             let parametrosMapeados = [];
             for (let i = 0; i < parameters.length; i++) {
-                parametrosMapeados.push(this.getObjects(this.formData, 'id', parameters[i])[0]);
+                parametrosMapeados.push(this.getObjects(this.selectedTemplate, 'id', parameters[i])[0]);
             }
             return parametrosMapeados;
         } catch(e){
@@ -544,6 +552,10 @@ export class FormPage extends PopoverPage {
             let parametrosMapeados = this.mappingParametros(args);
             let stringFuncionMapeada = this.construirFuncionDinamicaString('funcion', 'parametrosMapeados', parametrosMapeados.length);
             var valor = eval(stringFuncionMapeada);
+            console.log("FUNCIÓN: ", funcion);
+            console.log("PARAMETROS MAPEADOS: ", parametrosMapeados);
+            console.log("STRING FUNCION MAPEADA: ", stringFuncionMapeada);
+            console.log("VALOR DE LA FUNCION: ", valor);
             return valor;
         }
         catch (err) {

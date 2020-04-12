@@ -20,6 +20,7 @@ export class UserPage implements OnInit{
     scores: any;
     colors: any;
     homeRadius: number;
+    showingForm: boolean;
 
     constructor(
         public navCtrl: NavController,
@@ -43,10 +44,12 @@ export class UserPage implements OnInit{
         console.log('ngOnInit UserPage');
 
         this.colors = {'1': '#32c800', '2': '#FFC800', '3': '#FF0000', '-1': '#000000', '-2': '#999999'};
+        this.showingForm = true;
 
         this.storage.get('homeLocation').then(location => {
             if(location) {
                 this.homeLocationDate = location.date;
+                this.showingForm = false;
                 this.scoreService.calculateAndStoreExpositionScores();
             }
         });
@@ -109,6 +112,7 @@ export class UserPage implements OnInit{
                 console.log('homeRadius set');
                 return this.storage.set('homeRadius', this.homeRadius);
             }).then(() => {
+                this.homeRadius = undefined;
                 console.log('getCurrentLocation called');
                 return this.location.getCurrentLocation();
             }).then(location => {
@@ -126,6 +130,8 @@ export class UserPage implements OnInit{
                         subTitle: 'Esto nos permitirá brindarte información actualizada sobre tu nivel de exposición.',
                         buttons: ['OK']
                     }).present();
+
+                    this.showingForm = false;
 
                     return this.scoreService.backgroundGeolocation.checkStatus();
                 }).then(status => {

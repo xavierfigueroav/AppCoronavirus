@@ -104,7 +104,7 @@ export class SurveyPage {
                     m++;
                     if(sentForm.formData.type=='initial') {
                         this.j = m;
-                        console.log("SE CAMBIÓ EL J");
+                        console.log("SE CAMBIÓ EL J: ", m);
                         this.clickEditForm(this.j);
                     }
                 }
@@ -252,9 +252,10 @@ export class SurveyPage {
 
     async clickEditForm(j) {
         try{
-            let pendingForms = await this.storage.get("sentForms");
-            console.log("PENDING FORMS: ", pendingForms);
-            let pendingForm = pendingForms[j];
+            //SE EDITA LA QUE YA SE ENVIÓ AUTOMÁTICAMENTE AL INICIO DE LA APP
+            let sentForms = await this.storage.get("sentForms");
+            console.log("PENDING FORMS: ", sentForms);
+            let pendingForm = sentForms[j];
             let currentF = pendingForm.formData;
             let templateUuid = pendingForm.template;
             let template;
@@ -292,7 +293,7 @@ export class SurveyPage {
                     currentForm: currentForm,
                     forms: forms,
                     formsData: formsData,
-                    pendingForms: pendingForms,
+                    pendingForms: sentForms,
                     geolocationAuth: "GRANTED",
                     infoTemplates: infoTemplates,
                     infoTemplateIndex: infoTemplateIndex,
@@ -309,7 +310,7 @@ export class SurveyPage {
                     currentForm: currentForm,
                     forms: forms,
                     formsData: formsData,
-                    pendingForms: pendingForms,
+                    pendingForms: sentForms,
                     geolocationAuth: "GRANTED",
                     infoTemplates: infoTemplates,
                     infoTemplateIndex: infoTemplateIndex,
@@ -409,42 +410,6 @@ export class SurveyPage {
             let formUuid = uuid();
             this.startInitialForm(template, template.data.follow_up, templateUuid, formUuid, type, index);
         } else if (type == "initial") {
-            /*let alert = this.alertCtrl.create({
-                title: 'Ingrese una identificación',
-                cssClass: 'alert-title',
-                inputs: [
-                    {
-                        name: 'identification',
-                        placeholder: 'Código, cédula, ..',
-                        type: 'text',
-                    }
-                ],
-                buttons: [
-                    {
-                        text: 'Continuar',
-                        handler: data => {
-                            if (data && data.identification.length >= 5 && data.identification.length <= 15) {
-                                let formUuid = uuid();
-                                this.startInitialForm(template, template.data.initial, templateUuid, formUuid, type, index, data.identification, reason);
-                            } else {
-                                const alert = this.alertCtrl.create({
-                                    title: 'Identificación incorrecta!',
-                                    cssClass: 'alert-title',
-                                    subTitle: 'Debe contener entre 5 a 15 caracteres',
-                                    buttons: ['OK']
-                                });
-                                alert.present();
-                                return false;
-                            }
-                        }
-                    },
-                    {
-                        text: 'Cancelar',
-                        handler: () => { }
-                    }
-                ]
-            });
-            alert.present();*/
             let formUuid = uuid();
             this.startInitialForm(template, template.data.initial, templateUuid, formUuid, type, index);
         } else if (type == "SIMPLE") {

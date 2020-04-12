@@ -27,9 +27,9 @@ export class AuthPage {
     //url = "https://insavit.espol.edu.ec/api/validate_user/";
     //urlFunctions = "http://150.136.213.20/dataset/0cfc0e05-8e4c-435a-893b-5d12ede68f0f/resource/d0173624-db8d-4487-929e-e69872e5c840/download/calculos.json";
     linkedUser = null;
-    cedula;
+    codigo_app;
     infoTemplates = [];
-    string_cedula;
+    string_codigo;
     id_dataset;
     geolocationAuth;
     loading;
@@ -100,10 +100,10 @@ export class AuthPage {
                 content: "Espere ...",
             });
             loader.present();
-            this.intelSecurity.storage.read({ id: 'cedula' })
+            this.intelSecurity.storage.read({ id: 'codigo_app' })
                 .then((instanceID: number) => this.intelSecurity.data.getData(instanceID))
                 .then((data: string) => {
-                    if (this.cedula == data) {
+                    if (this.codigo_app == data) {
                         loader.dismiss();
                         this.linkedUser.sesion = true;
                         this.getInfoPlantilla().then((result) => {
@@ -191,7 +191,7 @@ export class AuthPage {
                 content: "Espere ...",
             });
             loader.present();
-            /*if(isNaN(Number(this.cedula)) || !Number.isInteger(Number(this.cedula)) || Number(this.cedula) < 0 || this.cedula.length != 10) {
+            /*if(isNaN(Number(this.codigo_app)) || !Number.isInteger(Number(this.codigo_app)) || Number(this.codigo_app) < 0 || this.codigo_app.length != 10) {
                 loader.dismiss();
                 const alert = this.alertCtrl.create({
                     subTitle: 'Por favor, ingrese un número de cédula válido',
@@ -206,10 +206,10 @@ export class AuthPage {
             this.httpClient.get('./assets/plantilla/plantilla.json').subscribe(res => {
                 this.storage.set('templates', res);
                 //if (JSON.parse(res.data).uid != undefined) {
-                    this.intelSecurity.data.createFromData({ data: this.cedula })
+                    this.intelSecurity.data.createFromData({ data: this.codigo_app })
                         .then((instanceID: Number) => {
                             this.intelSecurity.storage.write({
-                                id: "cedula",
+                                id: "codigo_app",
                                 instanceID: instanceID
                             });
                             //this.storage.set('templates', JSON.parse(res.data).templates)
@@ -238,8 +238,8 @@ export class AuthPage {
     }
 
     crearDataset() {
-        var string_cedula = '{"name":"'+this.cedula+'","owner_org":"0daa04ac-4b43-4316-bbf0-537cd5b881ac"}';
-        var objeto = JSON.parse(string_cedula);
+        var string_codigo = '{"name":"'+this.codigo_app+'","owner_org":"0daa04ac-4b43-4316-bbf0-537cd5b881ac"}';
+        var objeto = JSON.parse(string_codigo);
         var url = "http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/package_create";
         console.log("SE CREARÁ EL DATASET");
             
@@ -250,7 +250,7 @@ export class AuthPage {
                 this.storage.set('id_dataset', respuesta.result.id).then((data) => {
                     console.log("SE GUARDÓ EL ID DATASET");
                     this.storage.set('linkedUser', {
-                        cedula: this.cedula,
+                        codigo_app: this.codigo_app,
                         sesion: true
                     }).then((data) => {
                         //loader.dismiss();

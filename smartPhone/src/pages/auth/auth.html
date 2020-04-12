@@ -13,11 +13,11 @@
         <p style="font-size:40px">AutoSalud</p>
         <ion-item style="margin-top:90px;" class="input-username" margin-top color="light">
             <ion-icon color="navbar" name="person"></ion-icon>
-            <ion-input type="text" class="ion-text-center" placeholder="Ingrese el código de la app" [(ngModel)]="cedula" name="cedula"></ion-input>
+            <ion-input type="text" class="ion-text-center" placeholder="Ingrese el código de la app" [(ngModel)]="codigo_app" name="codigo_app"></ion-input>
         </ion-item>
         <!--button class="input-username" ion-item color="light" margin-top *ngIf="linkedUser">
             <ion-icon color="navbar" name="person" item-start></ion-icon>
-            <ion-label color="navbar" margin-left item-start>{{linkedUser.cedula}}</ion-label>
+            <ion-label color="navbar" margin-left item-start>{{linkedUser.codigo_app}}</ion-label>
             <ion-note item-end color="menuItemSelected"></ion-note>
         </button-->
         <!--ion-item class="input-password" margin-top color="light">
@@ -27,7 +27,7 @@
             <ion-input type="password" placeholder="Clave" [(ngModel)]="user.password" name="password"></ion-input>
         </ion-item-->
         <br>
-        <button class="btn-login" color="button" [disabled]="!cedula" ion-button block (click)="attemptAuth()">Ingresar</button>
+        <button class="btn-login" color="button" [disabled]="!codigo_app" ion-button block (click)="attemptAuth()">Ingresar</button>
         <!--button class="btn-login" ion-button icon-start size="small" *ngIf="linkedUser" block (click)="attemptAuth()">Ingresar</button>
         <button class="btn-unlink" ion-button icon-end size="small" *ngIf="linkedUser" block (click)="desvincular()">Ingresar con otra identificación</button-->
         <br>

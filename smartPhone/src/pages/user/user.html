@@ -13,20 +13,26 @@
 
     <div class="container">
 
-        <p class="description">Para empezar a calcular tu nivel de exposición necesitamos conocer la ubicación de tu casa y su tamaño. Cuando estés en ella, toca el botón para registrarla.</p>
-        <ion-input type="number" placeholder="Radio de tu casa" [(ngModel)]="homeRadius"></ion-input>
-        <button ion-button icon-end full (click)="registerHomeHandler()">
-            Enviar radio y ubicación
-            <ion-icon name="pin"></ion-icon>
-        </button>
+        <div id="form-feedback">
+            <button ion-button icon-only class="info-button" color="primary" (click)="showingForm = !showingForm" clear>
+                <span class="home-registered-message" *ngIf="homeLocationDate !== undefined">
+                    Ya registraste tu casa en: {{ getDateFromeTimestamp(homeLocationDate) }}
+                </span>
+                <span class="home-unregistered-message" *ngIf="homeLocationDate === undefined">
+                    Aún no has registrado tu casa
+                </span>
+                <ion-icon [name]="showingForm ? 'ios-arrow-up' : 'ios-arrow-down'"></ion-icon>
+            </button>
+        </div>
 
-        <p class="home-registered-message" *ngIf="homeLocationDate !== undefined">
-            Ya registraste tu casa en: {{ getDateFromeTimestamp(homeLocationDate) }}
-        </p>
-        <p class="home-unregistered-message" *ngIf="homeLocationDate === undefined">
-            Aún no has registrado tu casa
-        </p>
-
+        <div class="form-body" [ngClass]="{'hidden': !showingForm}">
+            <p class="description">Para empezar a calcular tu nivel de exposición necesitamos conocer la ubicación de tu casa y su tamaño. Cuando estés en ella, toca el botón para registrarla.</p>
+            <ion-input type="number" placeholder="Radio de tu casa" [(ngModel)]="homeRadius"></ion-input>
+            <button ion-button icon-end full (click)="registerHomeHandler()">
+                Enviar radio y ubicación
+                <ion-icon name="pin"></ion-icon>
+            </button>
+        </div>
     </div>
 
     <hr />
