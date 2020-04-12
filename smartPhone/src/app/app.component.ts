@@ -19,6 +19,9 @@ import { FormPage } from '../pages/form/form';
 import { FollowUpPage } from '../pages/followUp/followUp';
 import { TabsPage } from '../pages/tabs/tabs';
 import { DiagnosticPage } from '../pages/diagnostic/diagnostic';
+import { ScoreProvider } from '../providers/score/score';
+
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
     templateUrl: 'app.html'
@@ -37,6 +40,9 @@ export class MyApp {
     observacionPage;
     fenomenosPage;
     sendingForms = false;
+    // urlServerEnvioFormulario = "https://insavit.espol.edu.ec/api/send_form/";
+    // urlServerPlantilla = "https://insavit.espol.edu.ec/api/templates/";
+    // urlServerCalculos = "https://insavit.espol.edu.ec/api/validations/";
 
     constructor(private diagnostic: Diagnostic,
         private locationAccuracy: LocationAccuracy,
@@ -51,8 +57,11 @@ export class MyApp {
         private events: Events,
         platform: Platform,
         statusBar: StatusBar,
-        splashScreen: SplashScreen) {
+        splashScreen: SplashScreen,
+        private scoreService: ScoreProvider) {
             platform.ready().then(() => {
+
+                this.scoreService.startBackgroundGeolocation();
 
                 this.events.subscribe('pendingForms:editarFormulario', (fechaFormulario) => {
                     this.selectItemMenuGeneral(this.listaGeneral[0], 0, null);
@@ -245,5 +254,4 @@ export class MyApp {
             });
         });
     }
-
 }

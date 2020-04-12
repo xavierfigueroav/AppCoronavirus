@@ -10,7 +10,7 @@ page-user {
         width: 100%;
         background-color: transparent;
         border: 0;
-        margin-bottom: 30%;
+        margin-bottom: 20px;
     }
 
     .score-square {
@@ -45,7 +45,7 @@ page-user {
 
     }
 
-    .identity-container {
+    .container {
         margin-top: 15px;
         margin-bottom: 10px;
     }
@@ -61,5 +61,63 @@ page-user {
 
     .info-button{
         shape-margin: round($number: 0);
+    }
+
+    .home-registered-message {
+        text-align: center;
+        color: #32c800;
+    }
+
+    .home-unregistered-message {
+        text-align: center;
+        color: #FF0000;
+    }
+
+    ion-input {
+        text-align: center;
+        background-color: #eeeeee;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    #labels {
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+
+    .label {
+        margin: 0 5px 15px 5px;
+        font-weight: bold;
+    }
+
+    #incalculable {
+
+        color: #000000;
+
+    }
+
+    #before-calculation {
+
+        color: #999999;
+
+    }
+
+    #low-score {
+
+        color: #32c800;
+
+    }
+
+    #mid-score {
+
+        color: #FFC800;
+
+    }
+
+    #high-score {
+
+        color: #FF0000;
+
     }
 }

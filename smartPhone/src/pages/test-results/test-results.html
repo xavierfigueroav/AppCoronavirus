@@ -1,0 +1,36 @@
+<ion-header>
+	<ion-navbar color="primary">
+		<ion-title>Pruebas</ion-title>
+		<ion-buttons end>
+			<button ion-button icon-only (click)="cerrarSesion()">
+				<ion-icon name="log-out"></ion-icon>
+			</button>
+		</ion-buttons>
+	</ion-navbar>
+</ion-header>
+
+<ion-content>
+
+    <div class="pin-container" margin>
+        <h2 class="title">Busca tu prueba</h2>
+        <p class="description">Necesitas el código de muestra que fue provisto por la persona que te atendió en el centro de salud o laboratorio.</p>
+        <div class="form">
+            <ion-input type="text" placeholder="Ingresa el código aquí"></ion-input>
+            <button ion-button class="button" color="green" (click)="resultFound=true">Buscar</button>
+        </div>
+    </div>
+
+    <ion-card *ngIf="resultFound">
+        <ion-card-header style="text-align: center;">
+            Exámen ASUER
+        </ion-card-header>
+
+        <ion-card-content style="padding-top:10px;">
+            <div class="result-container">
+                <span class="result1-label result-text">Estado: </span><span class="result-value value-1 result-text">En proceso</span>
+                <span class="result2-label result-text">Resultado: </span><span class="result-value value-2 result-text">Pendiente</span>
+            </div>
+        </ion-card-content>
+    </ion-card>
+
+</ion-content>

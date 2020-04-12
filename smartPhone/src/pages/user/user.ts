@@ -1,73 +1,76 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
+import { NavController, NavParams, App, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { AuthPage } from '../auth/auth';
 import { AlertController } from 'ionic-angular';
+import { LocationProvider } from '../../providers/location/location';
+import { DatabaseService } from '../../service/database-service';
+import { ScoreProvider } from '../../providers/score/score';
 
 @Component({
 	selector: 'page-user',
-	templateUrl: 'user.html',
+    templateUrl: 'user.html',
 })
 
 export class UserPage implements OnInit{
 
-    counter: number;
-    ringColor: string;
+    currentScore: number;
+    currentScoreColor: string;
+    homeLocationDate: number;
     scores: any;
-    status: string;
+    colors: any;
+    homeRadius: number;
 
-    constructor(public navCtrl: NavController, public navParams: NavParams, public appCtrl: App, 
-                private storage: Storage, public alertCtrl: AlertController) {
-    }
+    constructor(
+        public navCtrl: NavController,
+        public navParams: NavParams,
+        public appCtrl: App,
+        private storage: Storage,
+        public alertCtrl: AlertController,
+        private location: LocationProvider,
+        private database: DatabaseService,
+        private scoreService: ScoreProvider,
+        private events: Events
+        ) {
+            this.events.subscribe('scoreChanges', (score: number) => {
+                this.currentScore = score || -2;
+                this.currentScoreColor = this.getColorByScore(this.currentScore);
+                this.fillScores();
+            });
+         }
 
     ngOnInit() {
         console.log('ngOnInit UserPage');
-        this.scores = [
-            {hour: 1, score: 0.5 },
-            {hour: 2, score: 0.3 },
-            {hour: 3, score: 0.2 },
-            {hour: 4, score: 0.7 },
-            {hour: 5, score: 0.9 },
-            {hour: 6, score: 0.3 },
-            {hour: 7, score: 0.2 },
-            {hour: 8, score: 0.0 },
-            {hour: 9, score: 0.4 },
-            {hour: 10, score: 0.6 },
-            {hour: 11, score: 0.8 },
-            {hour: 12, score: 0.1 },
-            {hour: 13, score: 0.0 },
-            {hour: 14, score: 0.8 },
-            {hour: 15, score: 0.9 },
-            {hour: 16, score: 0.3 },
-            {hour: 17, score: 0.2 },
-            {hour: 18, score: 0.7 },
-            {hour: 19, score: 0.1 },
-            {hour: 20, score: 0.2 },
-            {hour: 21, score: 0.1 },
-            {hour: 22, score: 0.6 },
-            {hour: 23, score: 0.9 },
-            {hour: 24, score: 0.5 }
-        ];
-        this.scores.forEach((score: any) => {
-            score.color = this.getColorByScore((score.score));
-        });
-        this.counter = 0.0;
-        setInterval(() => {
-            this.ringColor = this.getColorByScore(this.counter);
-            this.counter = (this.counter + 0.01) % 1;
-        }, 125);
 
+        this.colors = {'1': '#32c800', '2': '#FFC800', '3': '#FF0000', '-1': '#000000', '-2': '#999999'};
+
+        this.storage.get('homeLocation').then(location => {
+            if(location) {
+                this.homeLocationDate = location.date;
+                this.scoreService.calculateAndStoreExpositionScores();
+            }
+        });
+        this.fillScores();
     }
 
+    fillScores() {
+        this.database.getScores().then(scores => {
+            scores.forEach(score => {
+                score.color = this.getColorByScore(score.score);
+            });
+
+            this.scores = scores;
+
+            for(let i = scores.length + 1; i < 25; i++){
+                const missingScore = {'hour': i, 'score': -2};
+                missingScore['color'] = this.getColorByScore(missingScore.score);
+                this.scores.push(missingScore);
+            }
+        });
+    }
 
     getColorByScore(score: number) {
-        if(score <= 0.5) {
-            const red = 55 + Math.round(score*400);
-            return `rgb(${red},200,0)`;
-        } else {
-            const green = 200 - Math.round((score - 0.5)*400);
-            return `rgb(255,${green},0)`;
-        }
+        return this.colors[Math.ceil(score)];
     }
 
 	cerrarSesion() {
@@ -81,7 +84,7 @@ export class UserPage implements OnInit{
     infoActual() {
         const alert = this.alertCtrl.create({
           title: 'Exposicion actual',
-          subTitle: 'El valor que se muestra aquí es el nivel de exposición de contagio en la hora actual, mientras más se acerque al 1 hay máyor riesgo de contagio.',
+          subTitle: 'El valor que se muestra aquí es el nivel de exposición de contagio en la hora actual.',
           buttons: ['OK']
         });
         alert.present();
@@ -90,9 +93,80 @@ export class UserPage implements OnInit{
     infoAllDay(){
         const alert = this.alertCtrl.create({
             title: 'Exposición durante las últimas 24 horas',
-            subTitle: 'Esta barra muestra el nivel de exposición por cada hora del día, de este modo usted podrá tomar las medidas necesarias.',
+            subTitle: 'Esta barra muestra el nivel de exposición por cada hora del día.',
             buttons: ['OK']
           });
           alert.present();
+    }
+
+    async registerHomeHandler() {
+        if(this.homeRadius !== undefined) {
+
+            this.scoreService.startScan().then(numberOfWifiNetworks => {
+                console.log('homeWifiNetworks set');
+                return this.storage.set('homeWifiNetworks', numberOfWifiNetworks);
+            }).then(() => {
+                console.log('homeRadius set');
+                return this.storage.set('homeRadius', this.homeRadius);
+            }).then(() => {
+                console.log('getCurrentLocation called');
+                return this.location.getCurrentLocation();
+            }).then(location => {
+
+                console.log('getCurrentLocation resolved');
+
+                this.storage.set('homeLocation', {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                    date: location.timestamp
+                }).then(() => {
+                    this.homeLocationDate = location.timestamp;
+                    this.alertCtrl.create({
+                        title: 'La ubicación de tu casa fue almacenada exitósamente',
+                        subTitle: 'Esto nos permitirá brindarte información actualizada sobre tu nivel de exposición.',
+                        buttons: ['OK']
+                    }).present();
+
+                    return this.scoreService.backgroundGeolocation.checkStatus();
+                }).then(status => {
+                    console.log('backgroundGeolocation.checkStatus resolved', status);
+                    if(status.isRunning) {
+
+                        this.scoreService.backgroundGeolocation.stop()
+                        this.scoreService.startBackgroundGeolocation();
+
+                    } else {
+                        this.scoreService.startBackgroundGeolocation();
+                    }
+                    this.scoreService.calculateAndStoreExpositionScores();
+                }).catch(() => {
+                    this.alertCtrl.create({
+                        title: 'Ocurrió un problema al almacenar lar ubicación de tu casa',
+                        subTitle: 'Inténtalo de nuevo. Sin ella no prodremos brindarte información actualizada sobre tu nivel de exposición.',
+                        buttons: ['OK']
+                    }).present();
+                })
+
+            }).catch(() => {
+                this.alertCtrl.create({
+                    title: 'La ubicación de tu casa no fue almacenada',
+                    subTitle: 'Sin la ubicación de tu casa no podemos brindarte información actualizada sobre tu nivel de exposición.',
+                    buttons: ['OK']
+                }).present();
+            });
+
+        } else {
+
+            this.alertCtrl.create({
+                title: 'El radio de tu casa es incorrecto',
+                subTitle: 'Ingresa un número entero positivo.',
+                buttons: ['OK']
+            }).present();
+        }
+    }
+
+    getDateFromeTimestamp(timestamp: number) {
+        const date = new Date(timestamp);
+        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
     }
 }
