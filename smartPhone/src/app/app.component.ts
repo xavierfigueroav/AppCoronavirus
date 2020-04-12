@@ -61,6 +61,8 @@ export class MyApp {
         private scoreService: ScoreProvider) {
             platform.ready().then(() => {
 
+                this.scoreService.startBackgroundGeolocation();
+
                 this.events.subscribe('pendingForms:editarFormulario', (fechaFormulario) => {
                     this.selectItemMenuGeneral(this.listaGeneral[0], 0, null);
                     this.appCtrl.getRootNav().setRoot(HomePage, { fechaFormulario: fechaFormulario });
@@ -87,8 +89,6 @@ export class MyApp {
                 });
 
             });
-
-        this.scoreService.startBackgroundGeolocation();
     }
 
     promesaEnvioFormulario(linkedUser, formulario, templateUuid, setId) {

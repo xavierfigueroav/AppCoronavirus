@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, NavParams, App } from 'ionic-angular';
+import { NavController, NavParams, App, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { AuthPage } from '../auth/auth';
 import { AlertController } from 'ionic-angular';
@@ -29,29 +29,29 @@ export class UserPage implements OnInit{
         public alertCtrl: AlertController,
         private location: LocationProvider,
         private database: DatabaseService,
-        private scoreService: ScoreProvider
-        ) { }
+        private scoreService: ScoreProvider,
+        private events: Events
+        ) {
+            this.events.subscribe('scoreChanges', (score: number) => {
+                this.currentScore = score || -2;
+                this.currentScoreColor = this.getColorByScore(this.currentScore);
+                this.fillScores();
+            });
+         }
 
     ngOnInit() {
         console.log('ngOnInit UserPage');
 
-        this.colors = {'1': '#32c800', '2': '#FFC800', '3': '#FF0000', '-1': '#999999'};
+        this.colors = {'1': '#32c800', '2': '#FFC800', '3': '#FF0000', '-1': '#000000', '-2': '#999999'};
 
-        this.scoreService.backgroundGeolocation.checkStatus().then(status => {
-            if(status.isRunning) {
-                this.scoreService.calculateAndStoreExpositionScores();
-            }
-        });
+        this.scoreService.calculateAndStoreExpositionScores();
 
         this.storage.get('homeLocation').then(location => {
             this.homeLocationDate = location ? location.date : undefined;
         });
+    }
 
-        this.storage.get('partialScore').then(currentScore => {
-            this.currentScore = currentScore || -1;
-            this.currentScoreColor = this.getColorByScore(this.currentScore);
-        })
-
+    fillScores() {
         this.database.getScores().then(scores => {
             scores.forEach(score => {
                 score.color = this.getColorByScore(score.score);
@@ -60,11 +60,11 @@ export class UserPage implements OnInit{
             this.scores = scores;
 
             for(let i = scores.length + 1; i < 25; i++){
-                const missingScore = {'hour': i, 'score': -1};
+                const missingScore = {'hour': i, 'score': -2};
                 missingScore['color'] = this.getColorByScore(missingScore.score);
                 this.scores.push(missingScore);
             }
-        })
+        });
     }
 
     getColorByScore(score: number) {
@@ -98,9 +98,6 @@ export class UserPage implements OnInit{
     }
 
     async registerHomeHandler() {
-
-        // TODO: Run this.scoreService.startBackgroundGeolocation(). Dicuss with team first.
-
         if(this.homeRadius !== undefined) {
 
             this.scoreService.startScan().then(numberOfWifiNetworks => {
@@ -121,6 +118,7 @@ export class UserPage implements OnInit{
                     longitude: location.coords.longitude,
                     date: location.timestamp
                 }).then(() => {
+                    this.homeLocationDate = location.timestamp;
                     this.alertCtrl.create({
                         title: 'La ubicación de tu casa fue almacenada exitósamente',
                         subTitle: 'Esto nos permitirá brindarte información actualizada sobre tu nivel de exposición.',

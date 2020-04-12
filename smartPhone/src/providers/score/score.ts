@@ -10,8 +10,7 @@ import {
     BackgroundGeolocationEvents,
     BackgroundGeolocationConfig
 } from '@ionic-native/background-geolocation';
-import { HTTP } from '@ionic-native/http';
-
+import { Events } from 'ionic-angular';
 
 declare var WifiWizard2: any;
 
@@ -24,27 +23,25 @@ declare var WifiWizard2: any;
 @Injectable()
 export class ScoreProvider {
 
+    backgroundGeolocationConfig: BackgroundGeolocationConfig;
+
     constructor(
         private storage: Storage,
         public backgroundGeolocation: BackgroundGeolocation,
         public database:DatabaseService,
-        public scoreSender: ScoreSender
+        public scoreSender: ScoreSender,
+        private events: Events
         ) {
         console.log('Hello ScoreProvider Provider');
-    }
-
-    async checkForParameters() {
-
-        const homeLocation = await this.storage.get('homeLocation');
-        // TODO: Replace this with this.storage.get('homeRadius');
-        const homeRadius = 1;
-
-        console.log('homeLocation', homeLocation);
-
-        if(homeLocation !== null && homeRadius !== null) {
-            console.log('startBackgroundGeolocation');
-            this.startBackgroundGeolocation();
-        }
+        this.backgroundGeolocationConfig = {
+            desiredAccuracy: 10,
+            stationaryRadius: 20,
+            distanceFilter: 1,
+            stopOnTerminate: false,
+            startOnBoot : true,
+            notificationsEnabled: false,
+            saveBatteryOnBackground: true
+        };
     }
 
     async startScan(): Promise<number> {
@@ -65,8 +62,8 @@ export class ScoreProvider {
             }
             num_networks = wifiNetworks.length;
         }).catch((error: any) => {
-            // FIXME: After 4 scans within 2 minutes, WifiWizard2.scan() fails
             console.log('ERROR SCAN', JSON.stringify(error));
+            num_networks = 0;
         });
 
         return num_networks;
@@ -86,25 +83,27 @@ export class ScoreProvider {
     }
 
     startBackgroundGeolocation() {
-        const config: BackgroundGeolocationConfig = {
-            desiredAccuracy: 10,
-            stationaryRadius: 20,
-            distanceFilter: 1,
-            stopOnTerminate: false
-        };
-
-        this.backgroundGeolocation.configure(config).then(() => {
-            console.log('Background geolocation => configured');
-            this.backgroundGeolocation
-                .on(BackgroundGeolocationEvents.location)
-                .subscribe((location: BackgroundGeolocationResponse) => {
-                    console.log('Movement detected');
-                    this.locationHandler(location);
+        this.storage.get('homeLocation').then(location => {
+            if(location) {
+                return this.storage.get('homeRadius');
+            }
+            return null;
+        }).then(radius => {
+            if(radius){
+                this.backgroundGeolocationConfig.distanceFilter = radius;
+                this.backgroundGeolocation.configure(this.backgroundGeolocationConfig).then(() => {
+                    console.log('Background geolocation => configured');
+                    this.backgroundGeolocation
+                    .on(BackgroundGeolocationEvents.location)
+                    .subscribe((location: BackgroundGeolocationResponse) => {
+                        console.log('Movement detected');
+                        this.locationHandler(location);
+                    });
                 });
+                this.backgroundGeolocation.start();
+                console.log('Background geolocation => started');
+            }
         });
-
-        this.backgroundGeolocation.start();
-        console.log('Background geolocation => started');
     }
 
     async locationHandler(location: BackgroundGeolocationResponse){
@@ -124,8 +123,9 @@ export class ScoreProvider {
         this.checkForPendingScores(Number(currentHour));
         this.calcualteDistanceScore(Number(currentHour + 1), false).then(score => {
             this.storage.set('partialScore', score);
+            this.events.publish('scoreChanges', score);
         });
-        this.scoreSender.sendPendingScoresToServer();
+        // TODO: Run this.scoreSender.sendPendingScoresToServer();
     }
 
 // Calculate and save the scores only for complete hours
@@ -204,7 +204,7 @@ export class ScoreProvider {
         const homeWifiNetworks = await this.storage.get('homeWifiNetworks');
         const score = wifiScore.get_wifi_score_networks_available(numNetworks, 1.5, homeWifiNetworks);
         return score;
-    }    
+    }
 
     calculateMeanWifiScore(locationsByHour: Array<any>): number{
         let wifiTotal = 0;
