@@ -10,7 +10,7 @@ page-user {
         width: 100%;
         background-color: transparent;
         border: 0;
-        margin-bottom: 30%;
+        margin-bottom: 20px;
     }
 
     .score-square {
@@ -78,5 +78,46 @@ page-user {
         background-color: #eeeeee;
         padding-left: 10px;
         padding-right: 10px;
+    }
+
+    #labels {
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+
+    .label {
+        margin: 0 5px 15px 5px;
+        font-weight: bold;
+    }
+
+    #incalculable {
+
+        color: #000000;
+
+    }
+
+    #before-calculation {
+
+        color: #999999;
+
+    }
+
+    #low-score {
+
+        color: #32c800;
+
+    }
+
+    #mid-score {
+
+        color: #FFC800;
+
+    }
+
+    #high-score {
+
+        color: #FF0000;
+
     }
 }
