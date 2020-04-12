@@ -11,6 +11,8 @@ import {
     BackgroundGeolocationConfig
 } from '@ionic-native/background-geolocation';
 import { Events } from 'ionic-angular';
+import { Encoding, ILatLng } from "@ionic-native/google-maps";
+import value from '*.json';
 
 declare var WifiWizard2: any;
 
@@ -70,7 +72,7 @@ export class ScoreProvider {
     }
 
 
-    calculate_exposition_score(
+    calculateExpositionScore(
         distance_score: number,
         wifi_score=1,
         density_score=1,
@@ -109,9 +111,15 @@ export class ScoreProvider {
     async locationHandler(location: BackgroundGeolocationResponse){
         console.log('Background geolocation => location received');
 
+        const distanceScore = await this.calculateDistanceScore(location);
+
         const wifiScore = await this.calculateWifiScore();
 
-        this.database.addLocation(location.latitude, location.longitude, location.time, wifiScore);
+        const timeScore = this.calculateTimeScore();
+
+        const populationDensityScore = await this.calculatePopulationDensityScore();
+
+        this.database.addLocation(location.latitude, location.longitude, location.time, distanceScore.score, distanceScore.distance, timeScore.time, timeScore.score, wifiScore, populationDensityScore);
 
         this.calculateAndStoreExpositionScores();
     }
@@ -121,9 +129,10 @@ export class ScoreProvider {
         const date = new Date();
         const currentHour = date.getHours();
         this.checkForPendingScores(Number(currentHour));
-        this.calcualteDistanceScore(Number(currentHour + 1), false).then(score => {
-            this.storage.set('partialScore', score);
-            this.events.publish('scoreChanges', score);
+        //calculate actual score
+        this.calculateCompleteScore(Number(currentHour + 1), false).then(score => {
+            this.storage.set('partialScore', score.completeScore);
+            this.events.publish('scoreChanges', score.completeScore);
         });
         // TODO: Run this.scoreSender.sendPendingScoresToServer();
     }
@@ -141,15 +150,15 @@ export class ScoreProvider {
                     this.checkForPendingScores(currentHour);
                 } else{                          // if we are in the same day, only calculate the score from the last score hour to the current hour
                     for (let hour = lastScoreHour+1; hour < currentHour; hour++) {
-                        const score = await this.calcualteDistanceScore(hour);
-                        this.database.addScore(score, hour, 0, 0, '');
+                        const score = await this.calculateCompleteScore(hour);
+                        this.database.saveScore(score.completeScore, hour, score.maxDistanceToHome, score.maxTimeAway, score.encodedRoute);
                         this.database.deleteLocationsByHour(hour);
                     }
                 }
             } else{   //there aren't scores yet, calculate all scores until the current hour
                 for (let hour = 1; hour < currentHour; hour++) {
-                    const score = await this.calcualteDistanceScore(hour);
-                    this.database.addScore(score, hour, 0, 0, "");
+                    const score = await this.calculateCompleteScore(hour);
+                    this.database.saveScore(score.completeScore, hour, score.maxDistanceToHome, score.maxTimeAway, score.encodedRoute);
                     this.database.deleteLocationsByHour(hour);
                 }
             }
@@ -180,22 +189,14 @@ export class ScoreProvider {
         };
     }
 
-    async calcualteDistanceScore(hour: number, full = true): Promise<number>{
-        const parameters = await this.getParameters();
-
-        const distanceScoreCalculator = new DistanceScore(
-            parameters['al'],parameters['bl'],parameters['cl'],
-            parameters['am'],parameters['bm'],parameters['cm'],
-            parameters['ah'],parameters['bh'],parameters['ch'],
-            parameters['homeLatitude'], parameters['homeLongitude']
-        );
-
+    async calculateCompleteScore(hour: number, full = true): Promise< {completeScore: number, maxDistanceToHome: number, maxTimeAway: number, encodedRoute: string}>{
         let locationsByHour = await this.database.getLocationByHour(hour);
         locationsByHour = full ? locationsByHour : locationsByHour[-1] ? [locationsByHour[-1]] : [];
-        const score = distanceScoreCalculator.calculateScore(locationsByHour);
-        const meanWifiScore = this.calculateMeanWifiScore(locationsByHour);
+        const completeScore = this.calculateCompleteExposition(locationsByHour);
+        const encodedRoute = this.getEncodedRoute(locationsByHour);
+        
+        return {completeScore: completeScore.score, maxDistanceToHome: completeScore.maxDistanceToHome, maxTimeAway: completeScore.maxTimeAway, encodedRoute: encodedRoute}
 
-        return score.maxScore * meanWifiScore;
     }
 
     async calculateWifiScore(): Promise<number>{
@@ -206,14 +207,51 @@ export class ScoreProvider {
         return score;
     }
 
-    calculateMeanWifiScore(locationsByHour: Array<any>): number{
-        let wifiTotal = 0;
-        if(locationsByHour.length !=0){
-            for(let wifi_networks of locationsByHour){
-                wifiTotal += Number(wifi_networks.wifi_score);
-            }
-            return wifiTotal/locationsByHour.length;
-        }
+    async calculateDistanceScore(location): Promise<{score: number, distance: number}>{
+        const parameters = await this.getParameters();
+
+        const distanceScoreCalculator = new DistanceScore(
+            parameters['al'],parameters['bl'],parameters['cl'],
+            parameters['am'],parameters['bm'],parameters['cm'],
+            parameters['ah'],parameters['bh'],parameters['ch'],
+            parameters['homeLatitude'], parameters['homeLongitude']
+        );
+
+        const score = distanceScoreCalculator.calculateScore(location);
+        return score;
+    }
+
+    calculateTimeScore():{score: number, time: number }{
+        //TODO implement
+        return {score: 1, time:0};
+    }
+
+    calculateCompleteExposition(locations: any[]): {score: number, maxDistanceToHome: number, maxTimeAway: number} {
+        var scores: number[];
+        var maxDistanceToHome = 0;
+        var maxTimeAway = 0;
+        locations.forEach((location) =>{
+            scores.push(this.calculateExpositionScore(location.distance_score, location.wifi_score, location.populations_density, location.time_score));
+            maxDistanceToHome += location.distance_home;
+            maxTimeAway += location.time_away;
+        });
+        var completeScore = Math.max(...scores);
+        return {score: completeScore, maxDistanceToHome: maxDistanceToHome, maxTimeAway: maxTimeAway};
+    }
+
+    calculateMaxDistanceToHome(scores: Map<any,any>): number{
+        const distances = Array.from(scores.values()).map(value => value.distance_home);
+        return Math.max(...distances);
+    }
+
+    getEncodedRoute(locations : any[]){
+        const latLngs =locations.map((location) => {return {"lat": value.latitude, "lng": value.longitude};} );
+        return Encoding.encodePath(latLngs);
+    }  
+
+    async calculatePopulationDensityScore(){
+        //TODO implement
         return 1;
     }
+    
 }

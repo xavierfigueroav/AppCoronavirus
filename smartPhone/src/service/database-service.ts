@@ -29,9 +29,10 @@ export class DatabaseService {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             score FLOAT,
             hour NUMBER,
-            distance_home FLOAT,
-            time_away FLOAT,
-            encoded_route TEXT
+            max_distance_home FLOAT,
+            max_time_awaye FLOAT,
+            encoded_route TEXT,
+            status TEXT DEFAULT 'PENDING'
         );`, {}).then(() => {
         return this.database.executeSql(
         `CREATE TABLE IF NOT EXISTS location (
@@ -39,8 +40,12 @@ export class DatabaseService {
             latitude FLOAT,
             longitude FLOAT,
             time INTEGER,
+            distance_score FLOAT,
+            time_score FLOAT,
             wifi_score FLOAT,
-            status TEXT DEFAULT 'PENDING'
+            distance_home FLOAT,
+            time_away FLOAT,
+            population_density FLOAT
             );`, {})
         }).catch(error => console.log("Error while creating tables", error));
     }
@@ -71,16 +76,16 @@ export class DatabaseService {
         });
     }
 
-    async addScore(
+    async saveScore(
         score: number,
         hour: number,
-        distanceHome: number,
-        timeAway: number,
+        maxDistanceHome: number,
+        maxTimeAway: number,
         encodedRoute: string
     ){
         return this.isReady().then(async () =>{
-            return this.database.executeSql(`INSERT INTO score(score,hour,distance_home,time_away,encoded_route)
-            VALUES ('${score}','${hour}','${distanceHome}','${timeAway}','${encodedRoute}');`, {}).then(result => {
+            return this.database.executeSql(`INSERT INTO score(score,hour,max_distance_home,max_time_away,encoded_route)
+            VALUES ('${score}','${hour}','${maxDistanceHome}','${maxTimeAway}','${encodedRoute}');`, {}).then(result => {
                 if(result.insertId){
                     return this.getScore(result.insertId);
                 }
@@ -123,12 +128,12 @@ export class DatabaseService {
         });
     }
 
-    async addLocation(latitude: number, longitude: number, time: number, wifiScore: number){
+    async addLocation(latitude: number, longitude: number, time: number, distanceScore: number, distanceHome: number, timeAway: number, timeScore: number, wifiScore: number, populationDensity: number){
         const date = new Date(time);
         const hour = date.getHours();
         return this.isReady().then(async () => {
-            return this.database.executeSql(`INSERT INTO location(latitude,longitude,time,wifi_score)
-            VALUES ('${latitude}','${longitude}','${hour}','${wifiScore}');`, {}).then(result => {
+            return this.database.executeSql(`INSERT INTO location(latitude,longitude,time,distance_score,wifi_score,distance_home,time_away,time_score,population_density)
+            VALUES ('${latitude}','${longitude}','${hour}','${distanceScore}','${wifiScore}','${distanceHome}','${timeScore}','${timeAway}','${populationDensity}');`, {}).then(result => {
                 if(result.insertId){
                     return this.getScore(result.insertId);
                 }
