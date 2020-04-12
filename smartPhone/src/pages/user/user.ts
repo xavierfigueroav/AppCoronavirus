@@ -84,7 +84,7 @@ export class UserPage implements OnInit{
     infoActual() {
         const alert = this.alertCtrl.create({
           title: 'Exposicion actual',
-          subTitle: 'El valor que se muestra aquí es el nivel de exposición de contagio en la hora actual, mientras más se acerque al 1 hay máyor riesgo de contagio.',
+          subTitle: 'El valor que se muestra aquí es el nivel de exposición de contagio en la hora actual.',
           buttons: ['OK']
         });
         alert.present();
@@ -93,7 +93,7 @@ export class UserPage implements OnInit{
     infoAllDay(){
         const alert = this.alertCtrl.create({
             title: 'Exposición durante las últimas 24 horas',
-            subTitle: 'Esta barra muestra el nivel de exposición por cada hora del día, de este modo usted podrá tomar las medidas necesarias.',
+            subTitle: 'Esta barra muestra el nivel de exposición por cada hora del día.',
             buttons: ['OK']
           });
           alert.present();

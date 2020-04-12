@@ -34,9 +34,6 @@
     <h3 style="text-align: center;" >Nivel de exposición</h3>
     <p class="description" style="text-align: center;">
         Este es su nivel de exposición actual.
-        <button ion-button icon-only round class="info-button" color="primary" (click)="infoActual()" clear>
-            <ion-icon name="ios-information-circle"></ion-icon>
-        </button>
     </p>
 
     <div class="circle-container" style="text-align: center;">
@@ -49,18 +46,23 @@
         </svg>
     </div>
 
+    <div id="labels">
+        <span id="incalculable" class="label">Incalculable</span>
+        <span id="before-calculation" class="label">No calculado</span>
+        <span id="low-score" class="label">Nivel bajo</span>
+        <span id="mid-score" class="label">Nivel medio</span>
+        <span id="high-score" class="label">Nivel alto</span>
+    </div>
+
     <hr/>
 
+    <p class="description" style="text-align: center;">
+        Nivel de exposición a lo largo del día.
+    </p>
+    <div>
+        <div class="day1">01h00</div><div class="days">06h00</div><div class="days">12h00</div><div class="days">18h00</div><div class="day24"></div>
+    </div>
     <div id="score-bar">
-        <p class="description" style="text-align: center;">
-            Nivel de exposición a lo largo del día.
-            <button ion-button icon-only round class="info-button" color="primary" (click)="infoAllDay()" clear>
-                <ion-icon name="ios-information-circle"></ion-icon>
-            </button>
-        </p>
-        <div>
-            <div class="day1">01h00</div><div class="days">06h00</div><div class="days">12h00</div><div class="days">18h00</div><div class="day24"></div>
-        </div>
         <div class="score-square" *ngFor="let score of scores"  [ngStyle]="{ 'background-color': score.color }"></div>
     </div>
 
