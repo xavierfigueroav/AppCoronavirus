@@ -42,7 +42,8 @@ export class ScoreProvider {
             stopOnTerminate: false,
             startOnBoot : true,
             notificationsEnabled: false,
-            saveBatteryOnBackground: true
+            saveBatteryOnBackground: true,
+            interval: 4000
         };
     }
 
@@ -112,13 +113,13 @@ export class ScoreProvider {
         console.log('Background geolocation => location received');
 
         const distanceScore = await this.calculateDistanceScore(location);
-
+        console.log("distanceScore",distanceScore);
         const wifiScore = await this.calculateWifiScore();
-
+        console.log("wifiScore",wifiScore);
         const timeScore = this.calculateTimeScore();
-
+        console.log("timeScore",timeScore);
         const populationDensityScore = await this.calculatePopulationDensityScore();
-
+        console.log("populationDensityScore",populationDensityScore);
         this.database.addLocation(location.latitude, location.longitude, location.time, distanceScore.score, distanceScore.distance, timeScore.time, timeScore.score, wifiScore, populationDensityScore);
 
         this.calculateAndStoreExpositionScores();
@@ -230,12 +231,17 @@ export class ScoreProvider {
         var scores: number[];
         var maxDistanceToHome = 0;
         var maxTimeAway = 0;
-        locations.forEach((location) =>{
-            scores.push(this.calculateExpositionScore(location.distance_score, location.wifi_score, location.populations_density, location.time_score));
-            maxDistanceToHome += location.distance_home;
-            maxTimeAway += location.time_away;
-        });
-        var completeScore = Math.max(...scores);
+        console.log("locations",locations);
+        var completeScore = -1;
+        if(locations !== undefined && locations.length > 0){
+            locations.forEach((location) =>{
+                scores.push(this.calculateExpositionScore(location.distance_score, location.wifi_score, location.populations_density, location.time_score));
+                maxDistanceToHome += location.distance_home;
+                maxTimeAway += location.time_away;
+            });
+            completeScore = Math.max(...scores);
+        }
+        console.log("locations2",locations);
         return {score: completeScore, maxDistanceToHome: maxDistanceToHome, maxTimeAway: maxTimeAway};
     }
 
@@ -245,8 +251,14 @@ export class ScoreProvider {
     }
 
     getEncodedRoute(locations : any[]){
-        const latLngs =locations.map((location) => {return {"lat": value.latitude, "lng": value.longitude};} );
-        return Encoding.encodePath(latLngs);
+        if(locations.length > 0){
+            const latLngs =locations.map((location) => {return {"lat": location.latitude, "lng": location.longitude};} );
+            console.log("latLong",latLngs);
+            var encodedRoute = Encoding.encodePath(latLngs);
+            console.log("encodedRoute",encodedRoute);
+            return encodedRoute;
+        }
+        return "";
     }  
 
     async calculatePopulationDensityScore(){

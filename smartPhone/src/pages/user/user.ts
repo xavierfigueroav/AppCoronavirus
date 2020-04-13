@@ -136,14 +136,15 @@ export class UserPage implements OnInit{
                     return this.scoreService.backgroundGeolocation.checkStatus();
                 }).then(status => {
                     console.log('backgroundGeolocation.checkStatus resolved', status);
-                    if(status.isRunning) {
+                    // if(status.isRunning) {
 
-                        this.scoreService.backgroundGeolocation.stop()
-                        this.scoreService.startBackgroundGeolocation();
+                    //     this.scoreService.backgroundGeolocation.stop()
+                    //     this.scoreService.startBackgroundGeolocation();
 
-                    } else {
-                        this.scoreService.startBackgroundGeolocation();
-                    }
+                    // } else {
+                    //     this.scoreService.startBackgroundGeolocation();
+                    // }
+                    this.scoreService.startBackgroundGeolocation();
                     this.scoreService.calculateAndStoreExpositionScores();
                 }).catch(() => {
                     this.alertCtrl.create({

@@ -561,7 +561,7 @@ export class AuthPage {
                 const date = new Date();
                 const currentHour = date.getHours();
                 for (let hour = 1; hour <= currentHour -1; hour++) {
-                    this.database.addScore(-1, hour, 0, 0, '');
+                    this.database.saveScore(-1, hour, 0, 0, '');
                 }
             }
         })

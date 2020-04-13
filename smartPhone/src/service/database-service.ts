@@ -30,7 +30,7 @@ export class DatabaseService {
             score FLOAT,
             hour NUMBER,
             max_distance_home FLOAT,
-            max_time_awaye FLOAT,
+            max_time_away FLOAT,
             encoded_route TEXT,
             status TEXT DEFAULT 'PENDING'
         );`, {}).then(() => {
