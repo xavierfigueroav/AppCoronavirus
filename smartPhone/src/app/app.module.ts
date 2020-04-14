@@ -40,6 +40,14 @@ import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-nati
 import { ComponentsModule } from '../components/components.module';
 import { ProfilePage } from '../pages/profile/profile';
 import { Clipboard } from '@ionic-native/clipboard';
+import { LocationProvider } from '../providers/location/location';
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
+import { SQLite } from '@ionic-native/sqlite'
+import { DatabaseService } from '../service/database-service';
+import { MedicalPage } from '../pages/medical/medical';
+import { TestResultsPage } from '../pages/test-results/test-results';
+import { ScoreProvider } from '../providers/score/score';
+import { ScoreSender } from '../providers/score-sender/score-sender';
 
 @NgModule({
   declarations: [
@@ -62,7 +70,9 @@ import { Clipboard } from '@ionic-native/clipboard';
     DiagnosticPage,
     PopoverPage,
     PopoverPage2,
-    ProfilePage
+    ProfilePage,
+    MedicalPage,
+    TestResultsPage
   ],
   imports: [
     BrowserModule,
@@ -94,7 +104,9 @@ import { Clipboard } from '@ionic-native/clipboard';
     TabsPage,
     PopoverPage,
     PopoverPage2,
-    ProfilePage
+    ProfilePage,
+    MedicalPage,
+    TestResultsPage
   ],
   providers: [
     StatusBar,
@@ -111,7 +123,13 @@ import { Clipboard } from '@ionic-native/clipboard';
     IntelSecurity,
     DatePicker,
     Clipboard,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    LocationProvider,
+    BackgroundGeolocation,
+    SQLite,
+    DatabaseService,
+    ScoreProvider,
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    ScoreSender
   ]
 })
 

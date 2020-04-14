@@ -34,7 +34,7 @@ export class SurveyPage {
     notifications;
     loader;
     id;
-    j = -1; 
+    j = -1;
 
 	constructor(private diagnostic: Diagnostic,
         private events: Events,
@@ -109,7 +109,7 @@ export class SurveyPage {
                     }
                 }
             }
-        });    
+        });
 
 	}
 
@@ -283,7 +283,7 @@ export class SurveyPage {
                 }
             }
             template.data = JSON.parse(JSON.stringify(currentForm.data));
-            selectedTemplate = JSON.parse(JSON.stringify(currentForm.data)); 
+            selectedTemplate = JSON.parse(JSON.stringify(currentForm.data));
 
             if (template.gps == "required") {
                 var formulario_uso = {

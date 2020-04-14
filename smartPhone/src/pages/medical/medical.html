@@ -1,0 +1,53 @@
+<ion-header>
+	<ion-navbar color="primary">
+		<ion-title>Encuestas</ion-title>
+		<ion-buttons end>
+			<button ion-button icon-only (click)="cerrarSesion()">
+				<ion-icon name="log-out"></ion-icon>
+			</button>
+		</ion-buttons>
+	</ion-navbar>
+</ion-header>
+
+<ion-content>
+
+    <div class="container">
+
+        <h2 style="text-align: center;">¿Cómo te identificas?</h2>
+        <p class="description" style="text-align: justify;">La forma en la que identificas nos ayuda a calcular tu nivel de exposición frente al virus.</p>
+        <ion-item>
+            <ion-select [(ngModel)]="status">
+            <ion-option value="asi" selected>CASO ASINTOMÁTICO</ion-option>
+            <ion-option value="sos">CASO SOSPECHOSO</ion-option>
+            <ion-option value="con">CASO CONFIRMADO</ion-option>
+            <ion-option value="rec">CASO RECUPERADO</ion-option>
+            <ion-option value="sin">CON SÍNTOMAS</ion-option>
+            </ion-select>
+        </ion-item>
+
+    </div>
+
+    <hr />
+
+    <div class="container">
+
+        <h2 style="text-align: center;">Encuestas y resultados</h2>
+
+        <button ion-button icon-end full color="green" class="button" (click)="goToDiagnostic()">
+            Diagnóstico diario
+            <ion-icon name="clipboard"></ion-icon>
+        </button>
+
+        <button ion-button icon-end full color="warning" class="button">
+            Otra encuesta
+            <ion-icon name="clipboard"></ion-icon>
+        </button>
+
+        <button ion-button icon-end full color="danger" class="button" (click)="goToTestResults()">
+            Pruebas
+            <ion-icon name="search"></ion-icon>
+        </button>
+
+    </div>
+
+</ion-content>
