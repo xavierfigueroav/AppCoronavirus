@@ -106,7 +106,7 @@ export class DatabaseService {
 
     async updateScoreStatus(id: number, status: string){
         return this.isReady().then(() => {
-            return this.database.executeSql(`UPDATE score SET (status) = (${status}) WHERE id = ${id}`, []);
+            return this.database.executeSql(`UPDATE score SET status = ${status} WHERE id = ${id}`, []);
         });
     }
 

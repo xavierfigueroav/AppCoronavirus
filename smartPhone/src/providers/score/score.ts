@@ -135,7 +135,7 @@ export class ScoreProvider {
             this.storage.set('partialScore', score.completeScore);
             this.events.publish('scoreChanges', score.completeScore);
         });
-        // TODO: Run this.scoreSender.sendPendingScoresToServer();
+        this.scoreSender.sendPendingScoresToServer();
     }
 
 // Calculate and save the scores only for complete hours
@@ -195,7 +195,7 @@ export class ScoreProvider {
         locationsByHour = full ? locationsByHour : locationsByHour[-1] ? [locationsByHour[-1]] : [];
         const completeScore = this.calculateCompleteExposition(locationsByHour);
         const encodedRoute = this.getEncodedRoute(locationsByHour);
-        
+
         return {completeScore: completeScore.score, maxDistanceToHome: completeScore.maxDistanceToHome, maxTimeAway: completeScore.maxTimeAway, encodedRoute: encodedRoute}
 
     }
@@ -259,11 +259,11 @@ export class ScoreProvider {
             return encodedRoute;
         }
         return "";
-    }  
+    }
 
     async calculatePopulationDensityScore(){
         //TODO implement
         return 1;
     }
-    
+
 }
