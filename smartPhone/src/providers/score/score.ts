@@ -11,8 +11,7 @@ import {
     BackgroundGeolocationConfig
 } from '@ionic-native/background-geolocation';
 import { Events } from 'ionic-angular';
-import { Encoding, ILatLng } from "@ionic-native/google-maps";
-import value from '*.json';
+import { Encoding, LatLng, ILatLng } from "@ionic-native/google-maps";
 
 declare var WifiWizard2: any;
 
@@ -232,7 +231,7 @@ export class ScoreProvider {
         var maxDistanceToHome = 0;
         var maxTimeAway = 0;
         var completeScore = Number(await this.storage.get("partialScore")) || 1;
-        
+
         if(locations !== undefined && locations.length > 0){
             locations.forEach((location) =>{
                 scores.push(this.calculateExpositionScore(location.distance_score, location.wifi_score, location.populations_density, location.time_score));
@@ -251,11 +250,11 @@ export class ScoreProvider {
 
     getEncodedRoute(locations : any[]){
         if(locations.length > 0){
-            const latLngs =locations.map((location) => {return {"lat": location.latitude, "lng": location.longitude};} );
-            var encodedRoute = Encoding.encodePath(latLngs);
+            const latLngs: ILatLng[] = locations.map((location) => { return new LatLng(location.latitude, location.longitude); });
+            const encodedRoute = Encoding.encodePath(latLngs);
             return encodedRoute;
         }
-        return "";
+        return '';
     }
 
     async calculatePopulationDensityScore(){
