@@ -80,7 +80,6 @@
     "rxjs": "5.5.11",
     "sw-toolbox": "3.6.0",
     "ts-md5": "^1.2.4",
-    "wifiwizard": "0.2.11",
     "zone.js": "0.8.26"
   },
   "devDependencies": {
@@ -117,7 +116,6 @@
       },
       "cordova-plugin-file-transfer": {},
       "cordova-clipboard": {},
-      "com.pylonproducts.wifiwizard": {},
       "wifiwizard2": {},
       "cordova-plugin-mauron85-background-geolocation": {
         "GOOGLE_PLAY_SERVICES_VERSION": "11+",
