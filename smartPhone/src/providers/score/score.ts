@@ -43,7 +43,7 @@ export class ScoreProvider {
             startOnBoot : true,
             notificationsEnabled: false,
             saveBatteryOnBackground: true,
-            interval: 4000
+            interval: 15000
         };
     }
 
@@ -135,7 +135,7 @@ export class ScoreProvider {
             this.storage.set('partialScore', score.completeScore);
             this.events.publish('scoreChanges', score.completeScore);
         });
-        // TODO: Run this.scoreSender.sendPendingScoresToServer();
+        this.scoreSender.sendPendingScoresToServer();
     }
 
 // Calculate and save the scores only for complete hours
@@ -193,7 +193,7 @@ export class ScoreProvider {
     async calculateCompleteScore(hour: number, full = true): Promise< {completeScore: number, maxDistanceToHome: number, maxTimeAway: number, encodedRoute: string}>{
         let locationsByHour = await this.database.getLocationByHour(hour);
         locationsByHour = full ? locationsByHour : locationsByHour[-1] ? [locationsByHour[-1]] : [];
-        const completeScore = this.calculateCompleteExposition(locationsByHour);
+        const completeScore = await this.calculateCompleteExposition(locationsByHour);
         const encodedRoute = this.getEncodedRoute(locationsByHour);
         
         return {completeScore: completeScore.score, maxDistanceToHome: completeScore.maxDistanceToHome, maxTimeAway: completeScore.maxTimeAway, encodedRoute: encodedRoute}
@@ -227,12 +227,12 @@ export class ScoreProvider {
         return {score: 1, time:0};
     }
 
-    calculateCompleteExposition(locations: any[]): {score: number, maxDistanceToHome: number, maxTimeAway: number} {
-        var scores: number[];
+    async calculateCompleteExposition(locations: any[]): Promise<{score: number, maxDistanceToHome: number, maxTimeAway: number}> {
+        var scores: number[] = [];
         var maxDistanceToHome = 0;
         var maxTimeAway = 0;
-        console.log("locations",locations);
-        var completeScore = -1;
+        var completeScore = Number(await this.storage.get("partialScore")) || 1;
+        
         if(locations !== undefined && locations.length > 0){
             locations.forEach((location) =>{
                 scores.push(this.calculateExpositionScore(location.distance_score, location.wifi_score, location.populations_density, location.time_score));
@@ -240,8 +240,7 @@ export class ScoreProvider {
                 maxTimeAway += location.time_away;
             });
             completeScore = Math.max(...scores);
-        }
-        console.log("locations2",locations);
+            }
         return {score: completeScore, maxDistanceToHome: maxDistanceToHome, maxTimeAway: maxTimeAway};
     }
 
@@ -253,9 +252,7 @@ export class ScoreProvider {
     getEncodedRoute(locations : any[]){
         if(locations.length > 0){
             const latLngs =locations.map((location) => {return {"lat": location.latitude, "lng": location.longitude};} );
-            console.log("latLong",latLngs);
             var encodedRoute = Encoding.encodePath(latLngs);
-            console.log("encodedRoute",encodedRoute);
             return encodedRoute;
         }
         return "";
