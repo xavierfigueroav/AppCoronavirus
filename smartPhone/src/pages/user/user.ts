@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { NavController, NavParams, App, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { AuthPage } from '../auth/auth';
@@ -31,11 +31,12 @@ export class UserPage implements OnInit{
         private location: LocationProvider,
         private database: DatabaseService,
         private scoreService: ScoreProvider,
-        private events: Events
+        private events: Events,
+        private ngZone: NgZone
         ) {
             this.events.subscribe('scoreChanges', (score: number) => {
-                this.currentScore = score || -2;
-                this.currentScoreColor = this.getColorByScore(this.currentScore);
+                this.updateCurrentScore(score);
+                this.updateCurrentScoreColor(score);
                 this.fillScores();
             });
          }
@@ -62,13 +63,33 @@ export class UserPage implements OnInit{
                 score.color = this.getColorByScore(score.score);
             });
 
-            this.scores = scores;
+            let scoresToShow = scores;
 
-            for(let i = scores.length + 1; i < 25; i++){
+            for(let i = scoresToShow.length + 1; i < 25; i++){
                 const missingScore = {'hour': i, 'score': -2};
                 missingScore['color'] = this.getColorByScore(missingScore.score);
-                this.scores.push(missingScore);
+                scoresToShow.push(missingScore);
             }
+
+            this.updateScores(scoresToShow);
+        });
+    }
+
+    updateCurrentScore(score: number) {
+        this.ngZone.run(() => {
+            this.currentScore = score || -2;
+        });
+    }
+
+    updateCurrentScoreColor(score: number) {
+        this.ngZone.run(() => {
+            this.currentScoreColor = this.getColorByScore(score);
+        });
+    }
+
+    updateScores(scores: any[]) {
+        this.ngZone.run(() => {
+            this.scores = scores;
         });
     }
 

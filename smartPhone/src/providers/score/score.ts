@@ -119,7 +119,7 @@ export class ScoreProvider {
         console.log("timeScore",timeScore);
         const populationDensityScore = await this.calculatePopulationDensityScore();
         console.log("populationDensityScore",populationDensityScore);
-        this.database.addLocation(location.latitude, location.longitude, location.time, distanceScore.score, distanceScore.distance, timeScore.time, timeScore.score, wifiScore, populationDensityScore);
+        await this.database.addLocation(location.latitude, location.longitude, location.time, distanceScore.score, distanceScore.distance, timeScore.time, timeScore.score, wifiScore, populationDensityScore);
 
         this.calculateAndStoreExpositionScores();
     }
@@ -191,7 +191,8 @@ export class ScoreProvider {
 
     async calculateCompleteScore(hour: number, full = true): Promise< {completeScore: number, maxDistanceToHome: number, maxTimeAway: number, encodedRoute: string}>{
         let locationsByHour = await this.database.getLocationByHour(hour);
-        locationsByHour = full ? locationsByHour : locationsByHour[-1] ? [locationsByHour[-1]] : [];
+        const lastElement = locationsByHour[locationsByHour.length - 1];
+        locationsByHour = full ? locationsByHour : lastElement ? [lastElement] : [];
         const completeScore = await this.calculateCompleteExposition(locationsByHour);
         const encodedRoute = this.getEncodedRoute(locationsByHour);
 
