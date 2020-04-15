@@ -46,7 +46,7 @@ export class UserPage implements OnInit{
     ngOnInit() {
         console.log('ngOnInit UserPage');
 
-        this.colors = {'1': '#32c800', '2': '#FFC800', '3': '#FF0000', '-1': '#000000', '-2': '#999999'};
+        this.colors = {'1': '#32c800', '2': '#FFC800', '3': '#FF0000', '-1': '#999999'};
         this.showingForm = true;
 
         this.storage.get('homeLocation').then(location => {
@@ -68,7 +68,7 @@ export class UserPage implements OnInit{
             let scoresToShow = scores;
 
             for(let i = scoresToShow.length + 1; i < 25; i++){
-                const missingScore = {'hour': i, 'score': -2};
+                const missingScore = {'hour': i, 'score': -1};
                 missingScore['color'] = this.getColorByScore(missingScore.score);
                 scoresToShow.push(missingScore);
             }
@@ -79,7 +79,7 @@ export class UserPage implements OnInit{
 
     updateCurrentScore(score: number) {
         this.ngZone.run(() => {
-            this.currentScore = score || -2;
+            this.currentScore = score || -1;
         });
     }
 
