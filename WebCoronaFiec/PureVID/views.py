@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+from .models import *
+from .forms import *
 
 # Create your views here.
 import sys
@@ -161,10 +163,18 @@ def clave_app(request):
 
 @csrf_exempt
 def registro_muestra(request):
-	datos = json.loads(str(request.body)[2:-1])
-	codigo_muestra = datos.get("codigo_muestra")
-	cedula = datos.get("cedula")
-	codigo_lab = datos.get("codigo_lab")
+	#datos = json.loads(str(request.body)[2:-1])
+	
+	#codigo_muestra = datos.get("codigo_muestra")
+	#cedula = datos.get("cedula")
+	#codigo_lab = datos.get("codigo_lab")
+	
+	datos = str(request.body).split("&")
+
+	codigo_muestra = datos[3].split("=")[1]
+	cedula = datos[1].split("=")[1]
+	codigo_lab = datos[2].split("=")[1]
+
 	parametros = {"tabla" : "integracion_pruebas",
 	"operador": "and",
 	"valores": {
@@ -280,4 +290,13 @@ def actualizar_estado_muestra(request):
 	return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
 
+def push_muestra(request):
 
+	if request.method == "POST":
+		print("HEEELLOOO")
+		form = MuestraForm(request.POST)
+		print(request.body)
+		registro_muestra(request)
+	else:
+		form = MuestraForm()
+	return render(request, 'PureVID/muestra.html', {'form': form})
