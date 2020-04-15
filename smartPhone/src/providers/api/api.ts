@@ -177,6 +177,45 @@ export class APIProvider {
         return JSON.stringify(data);
     }
 
+    validateUser(app_code: string) {
+        return new Promise<any>((resolve, reject) => {
+            const httpOptions = {
+                headers: new HttpHeaders({ 'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'  })
+            };
+            const data = this.generateValidationUserBody(app_code);
+            console.log("ENTRO A VALIDAR USUARIO");
+            this.httpClient.post(Constants.READ_REGISTRY_URL, data, httpOptions)
+            .toPromise().then(response => {
+                if(response['data'].length > 0) {
+                    console.log('SUCCESS READ');
+                    resolve(1);
+                } else {
+                    resolve(0);
+                }
+            }).catch(error => reject(
+                resolve(-1)
+            ));
+        });
+    }
+
+    generateValidationUserBody(app_code: string) {
+        const data = {
+            "tabla": "integracion_usuario",
+            "operador": "and",
+            "columnas": [
+                "telefono_id"
+            ],
+            "condiciones": [
+                {
+                    "columna": "telefono_id",
+                    "comparador": "==",
+                    "valor": app_code
+                }
+            ]
+        }
+        return JSON.stringify(data);
+    }
+
     createUser(app_code: string) {
         return new Promise<any>((resolve, reject) => {
             const httpOptions = {
@@ -204,6 +243,50 @@ export class APIProvider {
             "datos": [
                 {
                     "telefono_id": app_code
+                }
+            ]
+        }
+        return JSON.stringify(data);
+    }
+
+    updateUser(app_code: string, campo: string, valor: string | number) {
+        return new Promise<any>((resolve, reject) => {
+            const httpOptions = {
+                headers: new HttpHeaders({ 'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'  })
+            };
+            const data = this.generateUpdateUSerBody(app_code, campo, valor);
+            console.log("ENTRO A MODIFICAR USUARIO");
+            this.httpClient.post(Constants.UPDATE_REGISTRY_URL, data, httpOptions)
+            .toPromise().then(response => {
+                if(response['success']) {
+                    if(response['data'].rows_updated > 0) {
+                        console.log('SE MODIFICÓ EL USUARIO CORRECTAMENTE EN LA TABLA');
+                        resolve(1);
+                    } else {
+                        console.log('NO SE MODIFICÓ EL USUARIO CORRECTAMENTE EN LA TABLA');
+                        resolve(0);
+                    }
+                } else {
+                    resolve(-1);
+                }
+            }).catch(error => reject(
+                resolve(-1)
+            ));
+        });
+    }
+
+    generateUpdateUSerBody(app_code: string, campo: string, valor: string | number) {
+        const data = {
+            "tabla": "integracion_usuario",
+            "operador": "and",
+            "valores": {
+                "cedula": valor
+            },
+            "condiciones": [
+                {
+                    "columna": "telefono_id",
+                    "comparador": "==",
+                    "valor": app_code
                 }
             ]
         }

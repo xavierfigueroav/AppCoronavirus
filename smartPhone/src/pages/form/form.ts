@@ -12,6 +12,7 @@ import { HomePage } from '../home/home';
 import { TabsPage } from '../tabs/tabs';
 import { PopoverPage } from './popover';
 import { PopoverPage2 } from './popover2';
+import { APIProvider } from '../../providers/api/api';
 
 @Component({
     selector: 'page-form',
@@ -34,6 +35,7 @@ export class FormPage extends PopoverPage {
     infoTemplateIndex;
     id_dataset;
     indice_seccion;
+    linkedUser;
 
     @ViewChild(Navbar) navbarName: Navbar;
 
@@ -55,7 +57,8 @@ export class FormPage extends PopoverPage {
         public viewCtrl: ViewController,
         public appCtrl: App,
         private file: File,
-        public loadingCtrl: LoadingController,) {
+        public loadingCtrl: LoadingController,
+        public api: APIProvider) {
         super(viewCtrl);
 
         try {
@@ -65,6 +68,12 @@ export class FormPage extends PopoverPage {
 
             this.storage.get('id_dataset').then((id_dataset) => {
                 this.id_dataset = id_dataset;
+            }).catch(error => {
+                console.log(JSON.stringify(error, Object.getOwnPropertyNames(error)));
+            });
+
+            this.storage.get('linkedUser').then((linkedUser) => {
+                this.linkedUser = linkedUser;
             }).catch(error => {
                 console.log(JSON.stringify(error, Object.getOwnPropertyNames(error)));
             });
@@ -311,29 +320,50 @@ export class FormPage extends PopoverPage {
         }
     }
 
-    enviarFormulario() {
+    async enviarFormulario() {
         console.log("ENVIAR FORMULARIO");
-        this.storage.get('pendingForms').then((pendingForms) => {
-            console.log("ENVIAR FORMULARIO 2");
-            if((pendingForms != null) && (pendingForms.length > 0)) {
-                console.log("HAY PENDING FORMS");
-                var url = "http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create";
-                //for(let pendingForm of pendingForms) {
-                    var pendingForm = pendingForms[pendingForms.length - 1];
-                    var id_dataset = pendingForm.id_dataset;
-                    var string_cuerpo = '{"id_dataset":"'+id_dataset+'","form":"'+pendingForm+'"}';
-                    var objeto = JSON.parse(string_cuerpo);
-                    this.subirArchivo(pendingForm, id_dataset);
-                //}
-            } else {
-                let alert = this.alertCtrl.create({
-                    subTitle: "No hay nuevos datos. No se ha enviado ningún formulario",
-                    buttons: ["cerrar"]
-                });
-                alert.present();
-                this.appCtrl.getRootNav().setRoot(TabsPage);
-            }
-        });
+        var pendingForms = await this.storage.get('pendingForms');
+        console.log("ENVIAR FORMULARIO 2");
+        if((pendingForms != null) && (pendingForms.length > 0)) {
+            console.log("HAY PENDING FORMS");
+            var url = "http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create";
+            //for(let pendingForm of pendingForms) {
+                var pendingForm = pendingForms[pendingForms.length - 1];
+                console.log("PENDING FORM: ", pendingForm);
+                if(pendingForm.formData.type == 'initial') {
+                    var cedula = pendingForm.formData.data.children[0].children[0].value;
+                    console.log("CEDULA: ", cedula);
+                    var app_code = this.linkedUser.codigo_app;
+                    console.log("CODIGO APP: ", app_code);
+                    var respuesta_modificacion_usuario = await this.api.updateUser(app_code, "cedula", cedula);
+                    if(respuesta_modificacion_usuario == 0) {
+                        let alert = this.alertCtrl.create({
+                            subTitle: "Hubo un problema en la actualización de los datos. Por favor inténtelo de nuevo más tarde.",
+                            buttons: ["cerrar"]
+                        });
+                        alert.present();
+                    } else if(respuesta_modificacion_usuario == -1) {
+                        let alert = this.alertCtrl.create({
+                            subTitle: "Hubo un problema al comunicarse con el servidor. Por favor verifique su conexión a internet o inténtelo más tarde.",
+                            buttons: ["cerrar"]
+                        });
+                        alert.present();
+                    }
+                }
+
+                var id_dataset = pendingForm.id_dataset;
+                var string_cuerpo = '{"id_dataset":"'+id_dataset+'","form":"'+pendingForm+'"}';
+                var objeto = JSON.parse(string_cuerpo);
+                this.subirArchivo(pendingForm, id_dataset);
+            //}
+        } else {
+            let alert = this.alertCtrl.create({
+                subTitle: "No hay nuevos datos. No se ha enviado ningún formulario",
+                buttons: ["cerrar"]
+            });
+            alert.present();
+            this.appCtrl.getRootNav().setRoot(TabsPage);
+        }
     }
 
     subirArchivo(pendingForm, id_dataset) {
@@ -552,10 +582,6 @@ export class FormPage extends PopoverPage {
             let parametrosMapeados = this.mappingParametros(args);
             let stringFuncionMapeada = this.construirFuncionDinamicaString('funcion', 'parametrosMapeados', parametrosMapeados.length);
             var valor = eval(stringFuncionMapeada);
-            console.log("FUNCIÓN: ", funcion);
-            console.log("PARAMETROS MAPEADOS: ", parametrosMapeados);
-            console.log("STRING FUNCION MAPEADA: ", stringFuncionMapeada);
-            console.log("VALOR DE LA FUNCION: ", valor);
             return valor;
         }
         catch (err) {
