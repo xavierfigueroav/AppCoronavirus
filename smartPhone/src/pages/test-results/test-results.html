@@ -15,20 +15,28 @@
         <h2 class="title">Busca tu prueba</h2>
         <p class="description">Necesitas el código de muestra que fue provisto por la persona que te atendió en el centro de salud o laboratorio.</p>
         <div class="form">
-            <ion-input type="text" placeholder="Ingresa el código aquí"></ion-input>
-            <button ion-button class="button" color="green" (click)="resultFound=true">Buscar</button>
+            <ion-input type="text" placeholder="Ingresa el código aquí" [(ngModel)]="sampleId"></ion-input>
+            <button ion-button class="button" color="green" (click)="searchTestResults()">Buscar</button>
         </div>
     </div>
 
-    <ion-card *ngIf="resultFound">
+    <div *ngIf="!testFound" class="not-found-message">
+        <p>No se ha encontrado ninguna prueba con ese código</p>
+    </div>
+
+    <ion-card *ngIf="result">
         <ion-card-header style="text-align: center;">
-            Exámen ASUER
+            Resultado
         </ion-card-header>
 
         <ion-card-content style="padding-top:10px;">
             <div class="result-container">
-                <span class="result1-label result-text">Estado: </span><span class="result-value value-1 result-text">En proceso</span>
-                <span class="result2-label result-text">Resultado: </span><span class="result-value value-2 result-text">Pendiente</span>
+                <span class="result1-label result-text">Estado: </span><span class="result-value value-1 result-text">{{ testStatuses[result.estado] }}</span>
+                <span class="result2-label result-text">Resultado: </span><span class="result-value value-2 result-text">{{ testResults[result.resultado] }}</span>
+                <div class="advice">
+                    <p class="advice-title">Recomendación</p>
+                    <p class="advice-content">{{ result['recomendación'] }}</p>
+                </div>
             </div>
         </ion-card-content>
     </ion-card>

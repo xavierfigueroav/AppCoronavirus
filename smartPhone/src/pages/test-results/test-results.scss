@@ -44,9 +44,34 @@ page-test-results {
         grid-column-start: 1;
     }
 
+    .value-1 {
+        grid-row-start: 1;
+        grid-column-start: 2;
+    }
+
     .result2-label {
         grid-row-start: 2;
         grid-column-start: 1;
+    }
+
+    .value-2 {
+        grid-row-start: 2;
+        grid-column-start: 2;
+    }
+
+    .advice {
+        grid-row-start: 3;
+        grid-column-start: 1;
+        grid-column-end: 3;
+    }
+
+    .advice-title {
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .advice-content {
+        text-align: justify;
     }
 
     .result-value {
@@ -56,14 +81,10 @@ page-test-results {
         text-align: center;
     }
 
-    .value-1 {
-        grid-row-start: 1;
-        grid-column-start: 2;
-    }
-
-    .value-2 {
-        grid-row-start: 2;
-        grid-column-start: 2;
+    .not-found-message {
+        font-weight: bold;
+        color: #FF0000;
+        text-align: center;
     }
 
 }

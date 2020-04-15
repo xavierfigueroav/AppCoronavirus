@@ -92,6 +92,20 @@ export class APIProvider {
         return JSON.stringify(data);
     }
 
+    getTestResultsBySampleId(sampleId: string) {
+        return new Promise<any>((resolve, reject) => {
+            console.log('Requesting tests...');
+            const data = this.generateReadTestBody(sampleId);
+            const httpOptions = {
+                headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+            };
+            this.httpClient.post(Constants.READ_REGISTRY_URL, data, httpOptions)
+            .toPromise().then(response => {
+                resolve(response['data'][0]);
+            }).catch(error => reject(error));
+        });
+    }
+
     generateInsertScoreBody(phone_id: string | number, datetime: string){
         const data = {
             "tabla": "integracion_score_diario",
