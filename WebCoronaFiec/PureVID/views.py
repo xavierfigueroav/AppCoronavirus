@@ -221,8 +221,9 @@ def muestras_lab(request):
 
 @csrf_exempt
 def estado_muestra(request):
-	datos = json.loads(str(request.body)[2:-1])
-	codigo_muestra = datos.get("codigo_muestra")
+	#datos = json.loads(str(request.body)[2:-1])
+	codigo_muestra = str(request.body).split("&")[1].split("=")[1]
+	#codigo_muestra = datos.get("codigo_muestra")
 	parametros = {"tabla" : "integracion_pruebas",
 	"operador": "and",
 	"columnas" : ["estado"],
@@ -262,6 +263,8 @@ def muestras_lab(request):
 	print(datos)
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
+	print("respuesta")
+	print(response.text)
 	return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
 
@@ -293,10 +296,19 @@ def actualizar_estado_muestra(request):
 def push_muestra(request):
 
 	if request.method == "POST":
-		print("HEEELLOOO")
 		form = MuestraForm(request.POST)
 		print(request.body)
 		registro_muestra(request)
 	else:
 		form = MuestraForm()
 	return render(request, 'PureVID/muestra.html', {'form': form})
+
+def get_muestra(request):
+
+	if request.method == "POST":
+		form = ConsultaMuestraForm(request.POST)
+		print(request.body)
+		estado_muestra(request)
+	else:
+		form = ConsultaMuestraForm()
+	return render(request, 'PureVID/consultaMuestra.html', {'form': form})
