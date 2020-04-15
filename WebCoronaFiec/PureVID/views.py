@@ -163,6 +163,7 @@ def clave_app(request):
 
 @csrf_exempt
 def registro_muestra(request):
+	print(request.body)
 	#datos = json.loads(str(request.body)[2:-1])
 	
 	#codigo_muestra = datos.get("codigo_muestra")
@@ -297,8 +298,8 @@ def push_muestra(request):
 
 	if request.method == "POST":
 		form = MuestraForm(request.POST)
-		print(request.body)
-		registro_muestra(request)
+		#print(request.body)
+		#registro_muestra(request)
 	else:
 		form = MuestraForm()
 	return render(request, 'PureVID/muestra.html', {'form': form})
@@ -308,7 +309,8 @@ def get_muestra(request):
 	if request.method == "POST":
 		form = ConsultaMuestraForm(request.POST)
 		print(request.body)
-		estado_muestra(request)
+		a = estado_muestra(request)
+		print(a.body)
 	else:
 		form = ConsultaMuestraForm()
 	return render(request, 'PureVID/consultaMuestra.html', {'form': form})
