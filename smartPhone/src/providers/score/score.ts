@@ -3,7 +3,7 @@ import { DatabaseService } from '../../service/database-service';
 import { Storage } from '@ionic/storage';
 import { WifiScore } from '../../utils_score/wifi_score';
 import { DistanceScore } from '../../utils_score/distance_score';
-import { ScoreSender } from '../score-sender/score-sender'
+import { APIProvider } from '../api/api';
 import {
     BackgroundGeolocation,
     BackgroundGeolocationResponse,
@@ -30,7 +30,7 @@ export class ScoreProvider {
         private storage: Storage,
         public backgroundGeolocation: BackgroundGeolocation,
         public database:DatabaseService,
-        public scoreSender: ScoreSender,
+        public api: APIProvider,
         private events: Events
         ) {
         console.log('Hello ScoreProvider Provider');
@@ -134,7 +134,7 @@ export class ScoreProvider {
             this.storage.set('partialScore', score.completeScore);
             this.events.publish('scoreChanges', score.completeScore);
         });
-        this.scoreSender.sendPendingScoresToServer();
+        this.api.sendPendingScoresToServer();
     }
 
 // Calculate and save the scores only for complete hours

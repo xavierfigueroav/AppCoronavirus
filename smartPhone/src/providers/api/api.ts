@@ -14,7 +14,7 @@ import * as moment from 'moment';
   and Angular DI.
 */
 @Injectable()
-export class ScoreSender {
+export class APIProvider {
 
     constructor(
         private database:DatabaseService,
@@ -49,14 +49,16 @@ export class ScoreSender {
         this.httpClient.post(Constants.UPDATE_REGISTRY_URL, data, httpOptions)
         .toPromise().then(response => {
             pendingScores.forEach(score => {
-                this.database.updateScoreStatus(score.id, 'SENT');
+                this.database.updateScoreStatus(score.id, 'SENT').catch(error => {
+                    console.log('ERROR UPDATE SCORE', error);
+                });
             });
         }).catch(error => {
             console.log("Error when updating", error);
             //TODO check if the register hasn't been created. If it hasn't, create it and send the method again
             //TODO if the error isn't about register, pass
             const data = this.generateInsertScoreBody(phone_id, datetime);
-            this.httpClient.post(Constants.INSERT_REGISTRY_URL, data, httpOptions)
+            this.httpClient.post(Constants.CREATE_REGISTRY_URL, data, httpOptions)
             .toPromise().then(response => {
                 console.log('SUCCESS CREATE', response);
             }).catch(error => {
@@ -99,6 +101,20 @@ export class ScoreSender {
                 "dia": datetime,
                 "score_0": 20
             }
+            ]
+        };
+        return JSON.stringify(data);
+    }
+
+    generateReadTestBody(sampleId: string){
+        const data = {
+            "tabla": "integracion_pruebas",
+            "condiciones": [
+                {
+                    "columna": "muestra_id",
+                    "comparador": "==",
+                    "valor": sampleId
+                }
             ]
         };
         return JSON.stringify(data);
