@@ -79,7 +79,7 @@ import { APIProvider } from '../providers/api/api';
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(),
     HttpClientModule,
-    ComponentsModule
+    ComponentsModule,
 
     //LongPressModule
   ],

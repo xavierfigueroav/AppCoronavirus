@@ -3,6 +3,7 @@ page-user {
     .circle-container {
         margin-top: 5%;
         margin-bottom: 3%;
+
     }
 
     #score-bar {
@@ -46,8 +47,14 @@ page-user {
     }
 
     .container {
-        margin-top: 10px;
-        margin-bottom: 10px;
+        margin-top: 10%;
+
+        #enviarUbicacion{
+            margin-bottom: 13%;
+            font-weight: bold;
+            font-size: 80%;
+            color:#eeeeee!important;      
+        }
     }
 
     .description {
@@ -83,16 +90,20 @@ page-user {
 
     .info-button{
         display: inline-block;
+        font-weight: bold;
+        margin-bottom: 10%;
     }
 
     .home-registered-message {
         text-align: center;
         color: #32c800;
+        font-size: 125%;
     }
 
     .home-unregistered-message {
         text-align: center;
         color: #FF0000;
+        font-size: 125%;
     }
 
     ion-input {
@@ -124,15 +135,53 @@ page-user {
         color: #999999;
     }
 
-    #low-score {
-        color: #32c800;
+    #nivelExposicion {
+        position: relative;
+        text-align: center;
+        margin-top: 5%;
+        border-radius: 10px !important;
+        
+        .card-title {
+            position: center;
+            margin-top: 5%;
+            margin-left: 5%;
+            margin-bottom: 0%;
+            font-size: 1.5em;
+            width: 100%;
+            font-weight: bold;
+            color: #6e6e6e;
+        }
+
     }
 
-    #mid-score {
-        color: #FFC800;
+    #info{
+        color: #0300c8;
+        display: inline-block;
+        margin-right: 9%;
+        margin-top: -3%;
+        font-weight: bold;
+    }
+    
+    #homeTitle{
+        margin-top: 5%;
+        margin-bottom: 8%;
+        h2{
+            font-weight: bold !important;
+        }
     }
 
-    #high-score {
-        color: #FF0000;
+    #exposicionDiaria{
+        font-weight: bold;
+        margin-top: 12%;
+        margin-bottom: 5%;
+    }
+
+    .icon{
+        color: #eeeeee;
+        display: inline-block;
+    }
+    #enviarRadio{
+        color: #eeeeee;
+        margin-top: 4%;
     }
 }

@@ -34,7 +34,7 @@ $app-direction: ltr;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    #488aff,
+  primary:    #0e29a5,
   secondary:  #6b7e9b,
   danger:     #f53d3d,
   warning:     #F4B400,
@@ -101,5 +101,15 @@ $select-md-placeholder-color: black;
 // Fonts
 // --------------------------------------------------
 
-@import "roboto";
-@import "noto-sans";
+//@import "roboto";
+//@import "noto-sans";
+
+@font-face{
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: "400";
+  src: url($font-path+'/Manrope/static/Manrope-Regular.ttf');
+}
+
+$font-family-base:'Manrope';
+$button-md-text-color: #eeeeee;

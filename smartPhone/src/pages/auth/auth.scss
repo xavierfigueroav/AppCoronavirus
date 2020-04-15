@@ -24,4 +24,15 @@ page-auth {
       text-align: center !important;
     }
     $text-input-md-show-focus-highlight:false;
+    *{
+      font-family: $font-family-base;
+      color: #04034d;
+    }
+
+    #ingresarButtonText{
+      color: #eeeeee;
+      font-weight: bold;
+      font-size: 110%;
+      margin-top: 4%;
+    }
 }

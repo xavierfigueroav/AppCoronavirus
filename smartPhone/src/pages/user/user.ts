@@ -180,4 +180,15 @@ export class UserPage implements OnInit{
         const date = new Date(timestamp);
         return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
     }
+
+    scoreInformation(){
+        const alert = this.alertCtrl.create({
+            title: 'Nivel de exposición según los colores',
+            subTitle: "<br/><li>Bajo: verde</li>"+
+                      "<li>Medio: naranja</li>"+
+                      "<li>Alto: rojo</li>",
+            buttons: ['OK']
+          });
+          alert.present();
+    }
 }

@@ -58,7 +58,8 @@ export class MyApp {
         platform: Platform,
         statusBar: StatusBar,
         splashScreen: SplashScreen,
-        private scoreService: ScoreProvider) {
+        private scoreService: ScoreProvider
+        ) {
             platform.ready().then(() => {
 
                 this.scoreService.startBackgroundGeolocation();

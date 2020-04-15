@@ -27,7 +27,9 @@
             <ion-input type="password" placeholder="Clave" [(ngModel)]="user.password" name="password"></ion-input>
         </ion-item-->
         <br>
-        <button class="btn-login" color="button" [disabled]="!codigo_app" ion-button block (click)="attemptAuth()">Ingresar</button>
+        <button class="btn-login" color="primary" [disabled]="!codigo_app" ion-button block (click)="attemptAuth()">
+            <p id="ingresarButtonText">Ingresar</p>
+        </button>
         <!--button class="btn-login" ion-button icon-start size="small" *ngIf="linkedUser" block (click)="attemptAuth()">Ingresar</button>
         <button class="btn-unlink" ion-button icon-end size="small" *ngIf="linkedUser" block (click)="desvincular()">Ingresar con otra identificación</button-->
         <br>

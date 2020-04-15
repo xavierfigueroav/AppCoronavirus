@@ -53,6 +53,12 @@ ion-icon .icon-menu, .icon-close, .icon-send{
 }
 .button-md {
 	font-size: 11px;
+	color: #eeeeee;
+}
+
+button,ion-button{
+	font-size: 11px;
+	color: #eeeeee;
 }
 
 .menu-items{
@@ -74,4 +80,9 @@ ion-icon .icon-menu, .icon-close, .icon-send{
 }
 .rounded-edges{
 	border-radius: 25px;
+}
+
+*{
+	font-family: $font-family-base;
+	color: #04034d;
 }
