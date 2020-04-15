@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'^login_laboratoristas', views.login_laboratorista),
     url(r'^login_recolectores', views.login_recolector),
     url(r'^claves_app', views.clave_app),
+    url(r'^registro_muestra', views.registro_muestra),
 ]
