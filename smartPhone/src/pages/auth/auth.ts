@@ -16,6 +16,7 @@ import { FormPage } from '../form/form';
 import { File } from '@ionic-native/file';
 import uuid from 'uuid/v4';
 import { DatabaseService } from '../../service/database-service';
+import { APIProvider } from '../../providers/api/api';
 
 
 @Component({
@@ -36,6 +37,7 @@ export class AuthPage {
     coordinates = null;
     formsData = {};
     pendingForms = [];
+    loader;
 
     constructor(private intelSecurity: IntelSecurity,
         public httpClient: HttpClient, public appCtrl: App,
@@ -44,7 +46,7 @@ export class AuthPage {
         public navParams: NavParams, public http: HTTP, private file: File,
         public network: Network, public loadingCtrl: LoadingController, private geolocation: Geolocation,
         public alertCtrl: AlertController, private diagnostic: Diagnostic, private locationAccuracy: LocationAccuracy,
-        public database:DatabaseService) {
+        public database:DatabaseService, public api: APIProvider) {
 
         this.menuCtrl.enable(false);
         this.file = file;
@@ -94,7 +96,7 @@ export class AuthPage {
         });
     }
 
-    attemptAuth() {
+    async attemptAuth() {
         if (this.linkedUser) {
             const loader = this.loadingCtrl.create({
                 content: "Espere ...",
@@ -124,117 +126,87 @@ export class AuthPage {
                 }) // Resolves to 'Sample Data'
                 .catch((error: any) => console.log(error));
         } else {
-            /*this.http.post(this.url, { username: this.user.username, password: this.user.password }, {})
-                .then(res => {
-                    const alert = this.alertCtrl.create({
-                        subTitle: JSON.parse(res.data).msg,
-                        buttons: ['OK']
-                    });
-                    alert.present();
-                    if (JSON.parse(res.data).uid != undefined) {
-                        this.intelSecurity.data.createFromData({ data: this.user.password })
-                            .then((instanceID: Number) => {
-                                this.intelSecurity.storage.write({
-                                    id: "usuarioClave",
-                                    instanceID: instanceID
-                                });
-                                this.storage.set('templates', JSON.parse(res.data).templates)
-                                this.storage.set('linkedUser', {
-                                    username: this.user.username,
-                                    sesion: true,
-                                    uid: JSON.parse(res.data).uid
-                                }).then((data) => {
-                                    loader.dismiss();
-                                    this.getInfoPlantilla().then((result) => {
-                                        this.appCtrl.getRootNav().setRoot(HomePage);
-                                    });
-                                }).catch(error => {
-                                    loader.dismiss();
-                                    console.log('error de guardado storage', error);
-                                });
+            var resultado_validacion = await this.validarCodigoApp();  
+            if(resultado_validacion) {
+                this.crearUsuario();
+            }            
+        }
+        this.checkforInestimableScores();
+    }
 
-                            })
-                            .catch((error: any) => {
-                                console.log(error);
-                            });
-                    } else {
-                        loader.dismiss();
-                    }
-                })
-                .catch(error => {
+    async validarCodigoApp() {
+        this.loader = this.loadingCtrl.create({
+            content: "Espere ...",
+        });
+        this.loader.present();
 
-                    console.log("error", error);
+        var resultado_validacion = await this.api.validateAppCode(this.codigo_app.toLowerCase());
+        console.log("CODIGO VALIDACION: ", resultado_validacion);
 
-                    loader.dismiss();
-                    if (error.status == 403) {
-                        const alert = this.alertCtrl.create({
-                            subTitle: 'Hubo un problema de conexión. Intentelo más tarde',
-                            buttons: ['OK']
-                        });
-                        alert.present();
-                    } else if (error.status == 500) {
-                        const alert = this.alertCtrl.create({
-                            subTitle: 'Lo sentimos, hubo un problema en el servidor. Intentelo más tarde',
-                            buttons: ['OK']
-                        });
-                        alert.present();
-                    }
-                    else {
-                        const alert = this.alertCtrl.create({
-                            subTitle: 'Usuario o contraseña incorrectos',
-                            buttons: ['OK']
-                        });
-                        alert.present();
-                    }
-                });*/
-            const loader = this.loadingCtrl.create({
-                content: "Espere ...",
+        if(resultado_validacion == 1) {
+            console.log("EL CÓDIGO DE LA APP ES CORRECTO");
+            return 1;
+        } else if(resultado_validacion == 0) {
+            const alert = this.alertCtrl.create({
+                subTitle: 'El código de la app no es válido.',
+                buttons: ['OK']
             });
-            loader.present();
-            /*if(isNaN(Number(this.codigo_app)) || !Number.isInteger(Number(this.codigo_app)) || Number(this.codigo_app) < 0 || this.codigo_app.length != 10) {
-                loader.dismiss();
-                const alert = this.alertCtrl.create({
-                    subTitle: 'Por favor, ingrese un número de cédula válido',
-                    buttons: ['OK']
-                });
-                alert.present();
-                return 0;
-            } else {
-                loader.dismiss();
-            }*/
+            this.loader.dismiss();
+            alert.present();
+            return 0;
+        } else {
+            const alert = this.alertCtrl.create({
+                subTitle: 'Hubo un problema al comunicarse con el servidor. Por favor verifique su conexión a internet o inténtelo más tarde.',
+                buttons: ['OK']
+            });
+            this.loader.dismiss();
+            alert.present();
+            return -1;
+        }
+    }
 
+    async crearUsuario() {
+        var resultado_creacion_usuario = await this.api.createUser(this.codigo_app.toLowerCase());
+        if(resultado_creacion_usuario == 1) {
             this.httpClient.get('./assets/plantilla/plantilla.json').subscribe(res => {
-                this.storage.set('templates', res);
-                //if (JSON.parse(res.data).uid != undefined) {
-                    this.intelSecurity.data.createFromData({ data: this.codigo_app })
-                        .then((instanceID: Number) => {
-                            this.intelSecurity.storage.write({
-                                id: "codigo_app",
-                                instanceID: instanceID
-                            });
-                            //this.storage.set('templates', JSON.parse(res.data).templates)
-                            loader.dismiss();
-                            this.crearDataset();
-                        })
-                        .catch((error: any) => {
-                            console.log(error);
-                        });
-                /*} else {
-                    loader.dismiss();
-                }*/
+            this.storage.set('templates', res);
+            this.intelSecurity.data.createFromData({ data: this.codigo_app })
+                .then((instanceID: Number) => {
+                    this.intelSecurity.storage.write({
+                        id: "codigo_app",
+                        instanceID: instanceID
+                    });
+                    this.loader.dismiss();
+                    this.checkforInestimableScores();
+                    this.crearDataset();
+                })
+                .catch((error: any) => {
+                    this.loader.dismiss();
+                    console.log(error);
+                });
             }, err => {
+                this.loader.dismiss();
                 console.log('error no puede conectarse al servidor para descarga de plantilla');
                 console.log(err);
             });
 
             this.httpClient.get('./assets/calculos/calculo.json').subscribe(res => {
                 this.storage.set('calculos', res);
+                this.loader.dismiss();
             }, err => {
+                this.loader.dismiss();
                 console.log('error no puede conectarse al servidor para descarga de plantilla');
                 console.log(err);
-            }); //DESCOMENTAR
+            });
+        } else {
+            const alert = this.alertCtrl.create({
+                subTitle: 'Hubo un problema al comunicarse con el servidor. Por favor verifique su conexión a internet o inténtelo más tarde.',
+                buttons: ['OK']
+            });
+            this.loader.dismiss();
+            alert.present();
+            return 0;
         }
-        this.checkforInestimableScores();
     }
 
     crearDataset() {

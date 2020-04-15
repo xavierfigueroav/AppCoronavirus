@@ -23,6 +23,15 @@
                         "initialShow":false,
                         "children":[
                             {
+                                "label":"CÉDULA DE IDENTIDAD",
+                                "type":"input_number",
+                                "show":true,
+                                "id":"cedula_identidad",
+                                "blurFunction":"{\"validateIntegerPositiveNumber\":[\"cedula_identidad\"], \"validateEmptyShowedInput\":[\"cedula_identidad\"]}",
+                                "error":"",
+                                "value":""
+                            },
+                            {
                                 "label":"DIRECCIÓN DE RESIDENCIA HABITUAL",
                                 "type":"input_text",
                                 "show":true,
