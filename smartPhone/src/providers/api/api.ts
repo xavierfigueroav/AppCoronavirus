@@ -137,6 +137,79 @@ export class APIProvider {
         });
     }
 
+    //NO DEJA ENTRAR A LA APP SI EL CÓDIGO INGRESADO NO ESTÁ EN USO (NO HA SIDO ASIGNADO A UNA PERSONA) O SI EL CÓDIGO INGRESADO NO EXISTE
+    validateAppCode(app_code: string) {
+        return new Promise<any>((resolve, reject) => {
+            const httpOptions = {
+                headers: new HttpHeaders({ 'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'  })
+            };
+            const data = this.generateValidationCodeBody(app_code);
+            console.log("ENTRO A VALIDAR");
+            this.httpClient.post(Constants.READ_REGISTRY_URL, data, httpOptions)
+            .toPromise().then(response => {
+                if(response['data'].length > 0) {
+                    console.log('SUCCESS READ', response['data'][0].en_uso);
+                    resolve(response['data'][0].en_uso);
+                } else {
+                    resolve(0);
+                }
+            }).catch(error => reject(
+                resolve(-1)
+            ));
+        });
+    }
+
+    generateValidationCodeBody(app_code: string) {
+        const data = {
+            "tabla": "integracion_claves_app",
+            "operador": "and",
+            "columnas": [
+                "app_id", "en_uso"
+            ],
+            "condiciones": [
+                {
+                    "columna": "app_id",
+                    "comparador": "==",
+                    "valor": app_code
+                }
+            ]
+        }
+        return JSON.stringify(data);
+    }
+
+    createUser(app_code: string) {
+        return new Promise<any>((resolve, reject) => {
+            const httpOptions = {
+                headers: new HttpHeaders({ 'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'  })
+            };
+            const data = this.generateUserCreationBody(app_code);
+            console.log("ENTRO A VALIDAR");
+            this.httpClient.post(Constants.CREATE_REGISTRY_URL, data, httpOptions)
+            .toPromise().then(response => {
+                if(response['success']) {
+                    console.log('SE CREÓ EL USUARIO CORRECTAMENTE EN LA TABLA');
+                    resolve(1);
+                } else {
+                    resolve(0);
+                }
+            }).catch(error => reject(
+                resolve(-1)
+            ));
+        });
+    }
+
+    generateUserCreationBody(app_code: string) {
+        const data = {
+            "tabla": "integracion_usuario",
+            "datos": [
+                {
+                    "telefono_id": app_code
+                }
+            ]
+        }
+        return JSON.stringify(data);
+    }
+
     generateUpdateScoreBody(pendingScores: any[], phone_id: string | number, datetime: string){
         const values = {};
         pendingScores.forEach(score => {
