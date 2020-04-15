@@ -33,10 +33,14 @@ export class APIProvider {
                 pendingScores.push(score);
             }
         });
-        const user = await this.storage.get('linkedUser');
-        const phone_id = user ? user.codigo_app : user;
-        const date = moment().format('YYYY-MM-DD hh:mm:ss');
-        await this.sendPostRequest(pendingScores, phone_id, date);
+
+        if(pendingScores.length > 0) {
+            const user = await this.storage.get('linkedUser');
+            const phone_id = user ? user.codigo_app : user;
+            // FIXME: Get date from scores table in database
+            const date = moment().format('YYYY-MM-DD hh:mm:ss');
+            await this.sendPostRequest(pendingScores, phone_id, date);
+        }
     }
 
     async sendPostRequest(pendingScores: any[], phone_id: string | number, datetime: string){
@@ -47,49 +51,32 @@ export class APIProvider {
         };
 
         this.httpClient.post(Constants.UPDATE_REGISTRY_URL, data, httpOptions)
-        .toPromise().then(response => {
-            pendingScores.forEach(score => {
-                this.database.updateScoreStatus(score.id, 'SENT').catch(error => {
-                    console.log('ERROR UPDATE SCORE', error);
+        .toPromise().then((response: any) => {
+            console.log('UPDATE RESPONSE', response);
+            const updated = response.data.rows_updated;
+            if(updated) {
+                console.log('UPDATE ON SERVER');
+                pendingScores.forEach(score => {
+                    this.database.updateScoreStatus(score.id, 'SENT').then(result => {
+                        console.log('SUCCESS UPDATE SCORE IN LOCAL DATABASE', result);
+                    }).catch(error => {
+                        console.log('ERROR UPDATE SCORE IN LOCAL DATABASE', error);
+                    });
                 });
-            });
+
+            } else {
+                const data = this.generateInsertScoreBody(phone_id, datetime);
+                this.httpClient.post(Constants.CREATE_REGISTRY_URL, data, httpOptions)
+                .toPromise().then(response => {
+                    console.log('SUCCESS CREATE', response);
+                    this.sendPostRequest(pendingScores, phone_id, datetime);
+                }).catch(error => {
+                    console.log('error when creating scores', error);
+                });
+            }
         }).catch(error => {
             console.log("Error when updating", error);
-            //TODO check if the register hasn't been created. If it hasn't, create it and send the method again
-            //TODO if the error isn't about register, pass
-            const data = this.generateInsertScoreBody(phone_id, datetime);
-            this.httpClient.post(Constants.CREATE_REGISTRY_URL, data, httpOptions)
-            .toPromise().then(response => {
-                console.log('SUCCESS CREATE', response);
-            }).catch(error => {
-                console.log('error when creating scores', error);
-            });
         });
-    }
-
-    generateUpdateScoreBody(pendingScores: any[], phone_id: string | number, datetime: string){
-        const values = {};
-        pendingScores.forEach(score => {
-            values[`score_${score.hour}`] = score.score;
-        });
-        const data = {
-            "tabla": "integracion_score_diario",
-            "operador": "and",
-            "valores": values,
-            "condiciones": [
-                {
-                    "columna": "telefono_id",
-                    "comparador": "==",
-                    "valor": phone_id
-                },
-                {
-                    "columna": "dia",
-                    "comparador": "==",
-                    "valor": datetime
-                }
-            ]
-        };
-        return JSON.stringify(data);
     }
 
     getTestResultsBySampleId(sampleId: string) {
@@ -106,17 +93,37 @@ export class APIProvider {
         });
     }
 
+    generateUpdateScoreBody(pendingScores: any[], phone_id: string | number, datetime: string){
+        const values = {};
+        pendingScores.forEach(score => {
+            values[`score_${score.hour}`] = score.score;
+        });
+        const data = {
+            "tabla": "integracion_score_diario",
+            "valores": values,
+            "condiciones": [
+                {
+                    "columna": "telefono_id",
+                    "comparador": "==",
+                    "valor": phone_id
+                }
+            ]
+        };
+        console.log('data update', data);
+        return JSON.stringify(data);
+    }
+
     generateInsertScoreBody(phone_id: string | number, datetime: string){
         const data = {
             "tabla": "integracion_score_diario",
             "datos": [
-            {
-                "telefono_id": phone_id,
-                "dia": datetime,
-                "score_0": 20
-            }
+                {
+                    "telefono_id": phone_id,
+                    "dia": datetime
+                }
             ]
         };
+        console.log('data create', data);
         return JSON.stringify(data);
     }
 
