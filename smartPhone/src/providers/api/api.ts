@@ -38,7 +38,7 @@ export class APIProvider {
             const user = await this.storage.get('linkedUser');
             const phone_id = user ? user.codigo_app : user;
             // FIXME: Get date from scores table in database
-            const date = moment().format('YYYY-MM-DD hh:mm:ss');
+            const date = this.getCurrentStringDate();
             await this.sendPostRequest(pendingScores, phone_id, date);
         }
     }
@@ -93,6 +93,50 @@ export class APIProvider {
         });
     }
 
+    async postHomeInformation() {
+        const user = await this.storage.get('linkedUser');
+        const homeLocation = await this.storage.get('homeLocation');
+        const homeRadius = await this.storage.get('homeRadius');
+        const scores = await this.database.getScores();
+        // FIXME: Pass in current max distance and time to compare to previous days
+        const maxDistanceAway = this.getMaxDistanceAway(scores);
+        const maxTimeAway = this.getMaxTimeAway(scores);
+
+        const data = this.generateUpdateHomeBody(
+            user.codigo_app,
+            homeLocation,
+            homeRadius,
+            maxDistanceAway,
+            maxTimeAway
+        );
+        const httpOptions = {
+            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        };
+
+        this.httpClient.post(Constants.UPDATE_REGISTRY_URL, data, httpOptions)
+        .toPromise().then((response: any) => {
+            console.log('UPDATE HOME RESPONSE', response);
+            const updated = response.data.rows_updated;
+            if(!updated) {
+                const data = this.generateInsertHomeBody(
+                    user.codigo_app,
+                    homeLocation,
+                    homeRadius,
+                    maxDistanceAway,
+                    maxTimeAway
+                );
+                this.httpClient.post(Constants.CREATE_REGISTRY_URL, data, httpOptions)
+                .toPromise().then((response: any) => {
+                    console.log('SUCCESS HOME CREATE', response);
+                }).catch(error => {
+                    console.log('error when creating home', error);
+                });
+            }
+        }).catch(error => {
+            console.log("Error when updating home", error);
+        });
+    }
+
     generateUpdateScoreBody(pendingScores: any[], phone_id: string | number, datetime: string){
         const values = {};
         pendingScores.forEach(score => {
@@ -109,7 +153,6 @@ export class APIProvider {
                 }
             ]
         };
-        console.log('data update', data);
         return JSON.stringify(data);
     }
 
@@ -123,7 +166,6 @@ export class APIProvider {
                 }
             ]
         };
-        console.log('data create', data);
         return JSON.stringify(data);
     }
 
@@ -141,4 +183,75 @@ export class APIProvider {
         return JSON.stringify(data);
     }
 
+    generateUpdateHomeBody(
+        appId: string,
+        homeLocation: any,
+        homeRadius: any,
+        maxDistanceAway: number,
+        maxTimeAway: number
+    ) {
+        const data = {
+            "tabla": "integracion_usuario",
+            "valores": {
+                "lat_home": homeLocation.latitude,
+                "long_home": homeLocation.longitude,
+                "radio_mobilidad": maxDistanceAway,
+                "ultimo_envio_datos": this.getCurrentStringDate()
+            },
+            "condiciones": [
+                {
+                    "columna": "telefono_id",
+                    "comparador": "==",
+                    "valor": appId
+                }
+            ]
+        };
+        return JSON.stringify(data);
+    }
+
+    generateInsertHomeBody(
+        appId: string,
+        homeLocation: any,
+        homeRadius: any,
+        maxDistanceAway: number,
+        maxTimeAway: number
+    ) {
+        const data = {
+            "tabla": "integracion_usuario",
+            "datos": [
+                {
+                    "telefono_id": appId,
+                    "lat_home": homeLocation.latitude,
+                    "long_home": homeLocation.longitude,
+                    "radio_mobilidad": maxDistanceAway,
+                    "ultimo_envio_datos": this.getCurrentStringDate()
+                }
+            ]
+        };
+        return JSON.stringify(data);
+    }
+
+    getMaxDistanceAway(scores: any[]) {
+        let maxDistanceAway = 0;
+        scores.forEach(score => {
+            if(score.score !== -1 && score.max_distance_home > maxDistanceAway){
+                maxDistanceAway = score.max_distance_home;
+            }
+        });
+        return maxDistanceAway;
+    }
+
+    getMaxTimeAway(scores: any[]) {
+        let maxTimeAway = 0;
+        scores.forEach(score => {
+            if(score.score !== -1 && score.max_time_away > maxTimeAway){
+                maxTimeAway = score.max_time_away;
+            }
+        });
+        return maxTimeAway;
+    }
+
+    getCurrentStringDate() {
+        return moment().format('YYYY-MM-DD hh:mm:ss');
+    }
 }

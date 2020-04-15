@@ -6,6 +6,7 @@ import { AlertController } from 'ionic-angular';
 import { LocationProvider } from '../../providers/location/location';
 import { DatabaseService } from '../../service/database-service';
 import { ScoreProvider } from '../../providers/score/score';
+import { APIProvider } from '../../providers/api/api';
 
 @Component({
 	selector: 'page-user',
@@ -31,6 +32,7 @@ export class UserPage implements OnInit{
         private location: LocationProvider,
         private database: DatabaseService,
         private scoreService: ScoreProvider,
+        private api: APIProvider,
         private events: Events,
         private ngZone: NgZone
         ) {
@@ -137,48 +139,29 @@ export class UserPage implements OnInit{
                 console.log('getCurrentLocation called');
                 return this.location.getCurrentLocation();
             }).then(location => {
-
                 console.log('getCurrentLocation resolved');
+                this.homeLocationDate = location.timestamp;
 
-                this.storage.set('homeLocation', {
+                return this.storage.set('homeLocation', {
                     latitude: location.coords.latitude,
                     longitude: location.coords.longitude,
                     date: location.timestamp
-                }).then(() => {
-                    this.homeLocationDate = location.timestamp;
-                    this.alertCtrl.create({
-                        title: 'La ubicación de tu casa fue almacenada exitósamente',
-                        subTitle: 'Esto nos permitirá brindarte información actualizada sobre tu nivel de exposición.',
-                        buttons: ['OK']
-                    }).present();
+                });
+            }).then(() => {
+                this.alertCtrl.create({
+                    title: 'La ubicación de tu casa fue almacenada exitósamente',
+                    subTitle: 'Esto nos permitirá brindarte información actualizada sobre tu nivel de exposición.',
+                    buttons: ['OK']
+                }).present();
 
-                    this.showingForm = false;
-
-                    return this.scoreService.backgroundGeolocation.checkStatus();
-                }).then(status => {
-                    console.log('backgroundGeolocation.checkStatus resolved', status);
-                    // if(status.isRunning) {
-
-                    //     this.scoreService.backgroundGeolocation.stop()
-                    //     this.scoreService.startBackgroundGeolocation();
-
-                    // } else {
-                    //     this.scoreService.startBackgroundGeolocation();
-                    // }
-                    this.scoreService.startBackgroundGeolocation();
-                    this.scoreService.calculateAndStoreExpositionScores();
-                }).catch(() => {
-                    this.alertCtrl.create({
-                        title: 'Ocurrió un problema al almacenar lar ubicación de tu casa',
-                        subTitle: 'Inténtalo de nuevo. Sin ella no prodremos brindarte información actualizada sobre tu nivel de exposición.',
-                        buttons: ['OK']
-                    }).present();
-                })
-
+                this.showingForm = false;
+                this.api.postHomeInformation();
+                this.scoreService.startBackgroundGeolocation();
+                this.scoreService.calculateAndStoreExpositionScores();
             }).catch(() => {
                 this.alertCtrl.create({
-                    title: 'La ubicación de tu casa no fue almacenada',
-                    subTitle: 'Sin la ubicación de tu casa no podemos brindarte información actualizada sobre tu nivel de exposición.',
+                    title: 'Ocurrió un problema al almacenar lar ubicación de tu casa',
+                    subTitle: 'Inténtalo de nuevo. Sin ella no prodremos brindarte información actualizada sobre tu nivel de exposición.',
                     buttons: ['OK']
                 }).present();
             });
