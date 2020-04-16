@@ -175,12 +175,82 @@ def registro_muestra(request):
 	codigo_muestra = datos[3].split("=")[1][:-1]
 	cedula = datos[1].split("=")[1]
 	codigo_lab = datos[2].split("=")[1]
+	parametros = {"tabla" : "integracion_usuario",
+	"operador": "and",
+	"columnas" : ["telefono_id"],
+	"condiciones" : [
+		{
+			"columna" : "cedula",
+			"comparador" : "==",
+			"valor" : cedula
+		}
+		]
+	}
+	datos = json.dumps(parametros)
+	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	respuesta = json.loads(response.text)
+
+	if len(respuesta.get("data")) == 0:
+		parametros = {"tabla" : "integracion_claves_app",
+		"operador": "and",
+		"columnas" : ["app_id"],
+		"condiciones" : [
+			{
+				"columna" : "en_uso",
+				"comparador" : "==",
+				"valor" : 0
+			}
+			]
+		}
+		datos = json.dumps(parametros)
+		response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+		respuesta = json.loads(response.text)
+		codigo = response.get("data")[0].get("app_id")
+		parametros=	{"tabla" : "integracion_usuario",
+			"datos":[ {
+				"cedula":cedula,
+				"telefono_id": codigo
+			}],
+			
+		}
+		datos = json.dumps(parametros)
+		response = requests.post('http://3.17.143.36:5000/api/integracion/table/insert', data = datos)
+		respuesta = json.loads(response.text)
+		parametros={"tabla": "integracion_claves_app",
+			"operador": "and",
+			"valores": {
+				"en_uso":1
+			},
+			"condiciones": [
+				{
+					"columna": "app_id",
+					"comparador": "==",
+					"valor": codigo
+				}
+			]
+		}
+		datos = json.dumps(parametros)
+		response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
+		respuesta = {"data": [
+		        {
+		            "telefono_id": codigo
+		        }
+		    ],
+		    "mensaje": "",
+		    "success": False
+		}
+	else:
+		codigo = respuesta.get("data").get("telefono_id")
 
 	parametros = {"tabla" : "integracion_pruebas",
 	"datos":[ {
 		"muestra_id":codigo_muestra,
 		"lab_id": codigo_lab,
-		"cedula" : cedula
+		"cedula" : cedula,
+		"user_lab": "USERLAB0001", #por ahora va quemado
+		"recolector_id": "REC0001 ", #por ahora va quemado
+		"app_id": codigo,
+		"resultado": "Procesando"
 	}],
 	
 	}
