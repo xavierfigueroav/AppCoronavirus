@@ -37,11 +37,7 @@ export class TestResultsPage implements OnInit {
   }
 
   cerrarSesion() {
-    this.storage.get('linkedUser').then((val) => {
-        this.storage.set('linkedUser', null).then(data => {
-            this.appCtrl.getRootNav().setRoot(AuthPage);
-        });
-    });
+    this.appCtrl.getRootNav().setRoot(AuthPage);
     }
 
     searchTestResults() {

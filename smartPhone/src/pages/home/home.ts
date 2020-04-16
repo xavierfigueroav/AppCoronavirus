@@ -164,7 +164,7 @@ export class HomePage {
             }
         });
 
-        //AQUÍ ENVIAR ALGÚN PENDINGFORM SI HAY 
+        //AQUÍ ENVIAR ALGÚN PENDINGFORM SI HAY
         this.crearDirectorio();
         //this.events.publish('pendingForms:enviarFormularios', this.pendingForms);
 
@@ -215,7 +215,7 @@ export class HomePage {
                 console.log('SE CREÓ EL DIRECTORIO');
             }).catch(err => {
                 console.log('ERROR AL CREAR EL DIRECTORIO');
-            }); 
+            });
         });
     }
 
@@ -231,7 +231,7 @@ export class HomePage {
         var fecha_formateada = fecha_actual.getDate() + "-" + mes_actual + "-" + fecha_actual.getFullYear() + "_" + fecha_actual.getHours() + "-"+ fecha_actual.getMinutes();
         var nombre_archivo = nombre_archivo + "_" + fecha_formateada + ".json";
         var string_form = JSON.stringify(pendingForm, null, 2);
-        
+
         this.file.createFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, true).then((response) => {
             console.log('SE CREÓ EL ARCHIVO');
             this.file.writeFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, string_form, {replace:true, append:false}).then((response) => {
@@ -264,7 +264,7 @@ export class HomePage {
             console.log(err);
             console.log('NO SE CREÓ EL ARCHIVO');
         });
-       
+
     }
 
     ionViewWillEnter(){
@@ -803,11 +803,7 @@ export class HomePage {
     }
 
     cerrarSesion() {
-        this.storage.get('linkedUser').then((val) => {
-            this.storage.set('linkedUser', null).then(data => {
-                this.appCtrl.getRootNav().setRoot(AuthPage);
-            });
-        });
+        this.appCtrl.getRootNav().setRoot(AuthPage);
     }
 
 }
