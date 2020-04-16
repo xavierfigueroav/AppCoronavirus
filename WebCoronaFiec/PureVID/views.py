@@ -130,7 +130,7 @@ def clave_app(request):
 			]
 		}
 		datos = json.dumps(parametros)
-		response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+		response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
 		respuesta = json.loads(response.text)
 		parametros={"tabla": "integracion_claves_app",
 			"operador": "and",
@@ -146,7 +146,7 @@ def clave_app(request):
 			]
 		}
 		datos = json.dumps(parametros)
-		response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+		response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
 		respuesta = {"data": [
 		        {
 		            "telefono_id": codigo
@@ -177,22 +177,16 @@ def registro_muestra(request):
 	codigo_lab = datos[2].split("=")[1]
 
 	parametros = {"tabla" : "integracion_pruebas",
-	"operador": "and",
-	"valores": {
+	"datos":[ {
 		"muestra_id":codigo_muestra,
-		"lab_id": codigo_lab
-	},
-	"condiciones" : [
-		{
-			"columna" : "cedula",
-			"comparador" : "==",
-			"valor" : cedula
-		}
-		]
+		"lab_id": codigo_lab,
+		"cedula" : cedula
+	}],
+	
 	}
 	datos = json.dumps(parametros)
 	print(datos)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
+	response = requests.post('http://3.17.143.36:5000/api/integracion/table/insert', data = datos)
 	respuesta = json.loads(response.text)
 	return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
@@ -240,6 +234,7 @@ def estado_muestra(request):
 	print(datos)
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
+	print(respuesta)
 	return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
 
@@ -310,7 +305,6 @@ def get_muestra(request):
 		form = ConsultaMuestraForm(request.POST)
 		print(request.body)
 		a = estado_muestra(request)
-		print(a.body)
 	else:
 		form = ConsultaMuestraForm()
 	return render(request, 'PureVID/consultaMuestra.html', {'form': form})
