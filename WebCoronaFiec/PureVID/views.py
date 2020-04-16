@@ -297,7 +297,7 @@ def estado_muestra(request):
 	#codigo_muestra = datos.get("codigo_muestra")
 	parametros = {"tabla" : "integracion_pruebas",
 	"operador": "and",
-	"columnas" : ["estado", "resultado"]
+	"columnas" : ["estado", "resultado"],
 	"condiciones" : [
 		{
 			"columna" : "muestra_id",
@@ -311,9 +311,17 @@ def estado_muestra(request):
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
 	print(respuesta)
+	estado = "en proceso"
+	resultado = "sin confirmar"
+	if respuesta.get("data")[0].get("estado") == 1:
+		estado = "procesada"
+		if respuesta.get("data")[0].get("resultado") == 1:
+			resultado = "positivo a COVID-19"
+		elif respuesta.get("data")[0].get("resultado") == 0:
+			resultado = "negativo a COVID-19"
 	#return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
     #    , content_type='application/json')
-	return render(request, 'PureVID/consultaMuestra.html',{"resultado":respuesta})
+	return render(request, 'PureVID/diagnostico.html',{"resultado":resultado, "estado":estado})
 
 
 
@@ -390,4 +398,14 @@ def get_muestra(request):
 def result_muestra(request):
 
 	
-	return render(request, 'PureVID/resultadoMuestra.html', {})
+	return render(request, 'PureVID/resultado.html', {})
+
+
+def get_result(request):
+
+	if request.method == "POST":
+		form = ConsultaMuestraForm(request.POST)
+		print(request.body)
+	else:
+		form = ConsultaMuestraForm()
+	return render(request, 'PureVID/ingresarResultado.html', {'form': form})
