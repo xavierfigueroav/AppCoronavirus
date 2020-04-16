@@ -250,17 +250,17 @@ def registro_muestra(request):
 		"lab_id": codigo_lab,
 		"cedula" : cedula,
 		"user_lab": "USERLAB0001", #por ahora va quemado
-		"recolector_id": "REC0001 ", #por ahora va quemado
+		"recolector_id": "REC0001", #por ahora va quemado
 		"app_id": codigo,
-		"estado" : 0,
-		"resultado": 0
+		"estado" : 0, #por ahora quemado
+		"resultado": 0 #por ahora quemado
 	}],
 	
 	}
 	datos = json.dumps(parametros)
 	print(datos)
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/insert', data = datos)
-	#print(response.text)
+	print(response.text)
 	respuesta = json.loads(response.text)
 
 	#return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
@@ -293,11 +293,11 @@ def muestras_lab(request):
 @csrf_exempt
 def estado_muestra(request):
 	#datos = json.loads(str(request.body)[2:-1])
-	codigo_muestra = str(request.body).split("&")[1].split("=")[1]
+	codigo_muestra = str(request.body).split("&")[1].split("=")[1][:-1]
 	#codigo_muestra = datos.get("codigo_muestra")
 	parametros = {"tabla" : "integracion_pruebas",
 	"operador": "and",
-	"columnas" : ["estado", "resultado"],
+	"columnas" : ["estado", "resultado"]
 	"condiciones" : [
 		{
 			"columna" : "muestra_id",
@@ -313,7 +313,7 @@ def estado_muestra(request):
 	print(respuesta)
 	#return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
     #    , content_type='application/json')
-	return render(request, 'PureVID/resultadoMuestra.html', respuesta)
+	return render(request, 'PureVID/consultaMuestra.html',{"resultado":respuesta})
 
 
 
