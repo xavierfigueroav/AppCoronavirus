@@ -41,8 +41,16 @@
       text-align:center;
       fone-size:18;
       }
+      h1 {
+      text-align:center;
+      fone-size:16;
+      }
       button:hover {
       opacity: 0.8;
+
+      }
+      button{
+      display: flex; justify-content: center;
       }
       .formcontainer {
       text-align: center;
@@ -90,19 +98,18 @@
         <input type="checkbox"  checked="checked" name="remember"> Remember me
         </label>
         <span class="psw"><a href="#">Forgot password?</a></span-->
-<form method="POST" class="meta-form" action=/purevid/estado_muestra>{% csrf_token %}
-    <h1>CONSULTA DE MUESTRA</h1>
-      <div class="icon">
-        <i class="fas fa-bug-circle"></i>
-      </div>
-      <div class="formcontainer">
-      <div class="container">
-    
-        {{ form.as_p }}
-        <button type="submit" class="save btn btn-default">Consultar</button>
-    </form>
-    
-      </div>
-    </form>
+          <div>
+            <form method="GET" class="meta-form" action="/purevid/consultaMuestra">
+        
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            {% if data.data %}
+              {% for test in data.data%}
+              <h1> La muestra # {{test.muestra_id}}  ingresada! </h1>
+              <h2> Descarga tu app con el código {{test.app_id}} para consultar el resultado en 48 horas</h2>
+            {% endfor %}
+            {% endif %}
+            <button type="submit" class="save btn btn-default center">Ok!</button>
+            </form>
+          </div>
   </body>
 </html>
