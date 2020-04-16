@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <title>Recolección Muestra</title>
+  <title>Consulta tu examen!</title>
   <head>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
@@ -41,8 +41,16 @@
       text-align:center;
       fone-size:18;
       }
+      h1 {
+      text-align:center;
+      fone-size:16;
+      }
       button:hover {
       opacity: 0.8;
+
+      }
+      button{
+      display: flex; justify-content: center;
       }
       .formcontainer {
       text-align: center;
@@ -51,9 +59,6 @@
       .container {
       padding: 16px 0;
       text-align:left;
-      }
-      button{
-      display: flex; justify-content: center;
       }
       span.psw {
       float: right;
@@ -93,20 +98,18 @@
         <input type="checkbox"  checked="checked" name="remember"> Remember me
         </label>
         <span class="psw"><a href="#">Forgot password?</a></span-->
-<form method="POST" class="meta-form" action="/purevid/registro_muestra">{% csrf_token %}
-    <h1>REGISTRO DE MUESTRA</h1>
-      <div class="icon">
-        <i class="fas fa-bug-circle">
-        </i>
-      </div>
-      <div class="formcontainer">
-      <div class="container">
-    
-        {{ form.as_p }}
-        <button type="submit" class="save btn btn-default center">Guardar</button>
-    </form>
-    
-      </div>
-    </form>
+          <div>
+            <form method="GET" class="meta-form" action="/purevid/muestra">{% csrf_token %}
+        
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            {% if data.data %}
+              {% for test in data.data%}
+              <h1> Su muestra # {{test.muestra_id}} ha sido ingresada! </h1>
+              <h2> Descarga tu app con el código {{test.app_id}} para consultar el resultado en 48 horas</h2>
+            {% endfor %}
+            {% endif %}
+            <button type="submit" class="save btn btn-default center">Ok!</button>
+            </form>
+          </div>
   </body>
 </html>
