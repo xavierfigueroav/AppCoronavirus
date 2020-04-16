@@ -10,11 +10,6 @@
 </ion-header>
 
 <ion-content padding>
-    <div id='homeTitle'>
-        <h2>Bienvenido,</h2>
-        <h4>Cuéntanos cómo estas?</h4>
-    </div>
-
     <ion-card id="nivelExposicion"> 
         <ion-card-title>
             Nivel de exposición
@@ -28,7 +23,7 @@
             <svg id="svg0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                 width="50%" height="50%" viewBox="0, 0, 400,400">
                 <g id="svgg">
-                    <text x="50%" y="50%" text-anchor="middle" style="font-size: 40px;">Ahora: {{ currentScore }}</text>
+                    <text x="50%" y="50%" text-anchor="middle" style="font-size: 40px;">Ahora</text>
                     <path id="path0" stroke="none" [attr.fill]="currentScoreColor" fill-rule="evenodd" d="M184.000 0.438 C 60.298 11.121,-24.063 128.609,5.862 248.524 C 32.599 355.662,141.307 420.894,248.524 394.138 C 365.703 364.895,430.494 238.821,386.120 126.400 C 353.970 44.949,270.553 -7.037,184.000 0.438 M216.371 67.769 C 300.590 78.997,352.967 162.420,326.182 242.670 C 304.327 308.151,234.662 346.094,167.400 329.150 C 92.186 310.203,49.160 231.207,73.818 157.330 C 90.058 108.673,134.814 72.696,185.400 67.636 C 187.820 67.394,190.340 67.122,191.000 67.031 C 193.700 66.661,212.068 67.195,216.371 67.769 "></path>
                 </g>
             </svg>
@@ -36,7 +31,7 @@
     </ion-card-content>
     </ion-card>
 
-    <h4 id="exposicionDiaria">
+    <h4 class="subTitulo">
         Exposición diaria
     </h4>
 
@@ -47,27 +42,32 @@
         <div class="score-square" *ngFor="let score of scores"  [ngStyle]="{ 'background-color': score.color }"></div>
     </div>
 
+    <h4 id="ubicacionCasaTitle" class="subTitulo">
+        Ubicación de la casa
+        <ion-icon id="infoUbicacion" name="ios-information-circle-outline" 
+                  (click)="infoUbicacionCasa()">
+        </ion-icon>
+    </h4>        
+
     <div class="container">
-
-        <div id="form-feedback">
-            <button ion-button class="info-button" (click)="showingForm = !showingForm" clear>
-                <span class="home-registered-message" *ngIf="homeLocationDate !== undefined">
-                    ACTUALIZA LA UBICACION DE TU CASA
-                </span>
-                <span class="home-unregistered-message" *ngIf="homeLocationDate === undefined">
-                    REGISTRA LA UBICACIÓN DE TU CASA
-                </span>
-                <ion-icon [name]="showingForm ? 'ios-arrow-up' : 'ios-arrow-down'"></ion-icon>
-            </button>
-        </div>
-
-        <div class="form-body" [ngClass]="{'hidden': !showingForm}">
-            <p id="description">Para empezar a calcular tu nivel de exposición necesitamos conocer la ubicación de tu casa y su tamaño. Cuando estés en ella, toca el botón para registrarla.</p>
-            <ion-input type="number" placeholder="RADIO DE TU CASA" [(ngModel)]="homeRadius"></ion-input>
-            <button id="enviarUbicacion" ion-button icon-end full (click)="registerHomeHandler()">
-                <p id="enviarRadio">Enviar radio y ubicación</p>
-                <ion-icon name="pin"></ion-icon>
-            </button>
+        <div class="form-body">
+            <ion-grid id="gridUbicacionCasa">
+                <ion-row>
+                    <ion-col id="iconColumn">
+                        <ion-icon id="locationIconGreen" name="pin" *ngIf="homeLocationDate !== undefined"></ion-icon>
+                        <ion-icon id="locationIconRed" name="pin" *ngIf="homeLocationDate == undefined"></ion-icon>
+                    </ion-col>
+                    <ion-col id="radiusColumn">
+                        <ion-input id="inputRadioCasa" type="number" placeholder="RADIO DE CASA"></ion-input>
+                    </ion-col>
+                    <ion-col id="saveColumn">
+                        <button id="enviarUbicacionButton" ion-button>
+                        <!-- (click)="registerHomeHandler()"> -->
+                            <p id="enviarRadioText">Guardar</p>
+                        </button>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
         </div>
     </div>
 </ion-content>

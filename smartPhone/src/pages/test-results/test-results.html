@@ -15,8 +15,10 @@
         <h2 class="title">Busca tu prueba</h2>
         <p class="description">Necesitas el código de muestra que fue provisto por la persona que te atendió en el centro de salud o laboratorio.</p>
         <div class="form">
-            <ion-input type="text" placeholder="Ingresa el código aquí" [(ngModel)]="sampleId"></ion-input>
-            <button ion-button class="button" color="green" (click)="searchTestResults()">Buscar</button>
+            <ion-input id="ingresaCodigoInput" type="text" placeholder="Ingresa el código aquí" [(ngModel)]="sampleId"></ion-input>
+            <button ion-button class="button" (click)="searchTestResults()">
+                <p id="buscarButtonText">Buscar</p>
+            </button>
         </div>
     </div>
 
