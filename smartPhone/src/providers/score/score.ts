@@ -42,7 +42,7 @@ export class ScoreProvider {
             startOnBoot : true,
             notificationsEnabled: false,
             saveBatteryOnBackground: true,
-            interval: 15000
+            interval: 300000
         };
     }
 

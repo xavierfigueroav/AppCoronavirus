@@ -26,6 +26,12 @@ page-test-results {
 
     .button {
         margin-top: 15px;
+        color:#0e29a5;
+        font-weight: bold;
+    }
+
+    #ingresaCodigoInput, .button{
+        border-radius: 10px !important;
     }
 
     .result-container {
@@ -87,4 +93,15 @@ page-test-results {
         text-align: center;
     }
 
+    .icon{
+        color: #eeeeee;
+        display: inline-block;
+    }
+
+    #buscarButtonText{
+        color: #eeeeee;
+        margin-top: 15%;
+        font-weight: bold;
+        
+    }
 }

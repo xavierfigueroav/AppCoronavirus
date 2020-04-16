@@ -11,7 +11,7 @@
                 <ion-icon style="margin-right: 10px;color: white !important;" name="arrow-forward"></ion-icon>
             </button>
             <button ion-button icon-only *ngIf="(selectedTemplate?.children.length-1)==indice_seccion" (click)="finalizarEncuesta()">
-                Finalizar
+                <p id="finalizarButtonText">Finalizar</p>
             </button>
         </ion-buttons>
     </ion-navbar>

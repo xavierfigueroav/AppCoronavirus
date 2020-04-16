@@ -107,24 +107,6 @@ export class UserPage implements OnInit{
         });
     }
 
-    infoActual() {
-        const alert = this.alertCtrl.create({
-          title: 'Exposicion actual',
-          subTitle: 'El valor que se muestra aquí es el nivel de exposición de contagio en la hora actual.',
-          buttons: ['OK']
-        });
-        alert.present();
-    }
-
-    infoAllDay(){
-        const alert = this.alertCtrl.create({
-            title: 'Exposición durante las últimas 24 horas',
-            subTitle: 'Esta barra muestra el nivel de exposición por cada hora del día.',
-            buttons: ['OK']
-          });
-          alert.present();
-    }
-
     async registerHomeHandler() {
         if(this.homeRadius !== undefined) {
 
@@ -183,12 +165,23 @@ export class UserPage implements OnInit{
 
     scoreInformation(){
         const alert = this.alertCtrl.create({
-            title: 'Nivel de exposición según los colores',
+            title: 'Nivel de exposición',
             subTitle: "<br/><li>Bajo: verde</li>"+
                       "<li>Medio: naranja</li>"+
                       "<li>Alto: rojo</li>",
             buttons: ['OK']
           });
           alert.present();
+    }
+
+    infoUbicacionCasa() {
+        const alert = this.alertCtrl.create({
+          title: 'Registra la ubicación de tu casa',
+          subTitle: '<br/><li>Si el globo está de color ROJO significa que no has registrado tu domicilio.</li><br/>'+
+                    '<li>Para empezar a calcular tu nivel de exposición ingresa el radio de tu casa y toca <b>GUARDAR</b>.</li><br/>'+
+                    '<li>Puedes actualizar tu domocilio en cualquier momento.</li>',
+          buttons: ['OK']
+        });
+        alert.present();
     }
 }

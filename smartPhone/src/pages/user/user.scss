@@ -49,11 +49,11 @@ page-user {
     .container {
         margin-top: 10%;
 
-        #enviarUbicacion{
-            margin-bottom: 13%;
+        #enviarUbicacionButton{
             font-weight: bold;
-            font-size: 80%;
-            color:#eeeeee!important;      
+            height: 98%;
+            margin-top: 0%;
+            color:#eeeeee!important;     
         }
     }
 
@@ -79,6 +79,7 @@ page-user {
 
         height: auto; opacity: 1;
         transition: height 0ms 400ms, opacity 400ms 0ms;
+        margin-bottom: 7%;
 
     }
 
@@ -139,7 +140,6 @@ page-user {
         position: relative;
         text-align: center;
         margin-top: 5%;
-        border-radius: 10px !important;
         
         .card-title {
             position: center;
@@ -161,18 +161,22 @@ page-user {
         margin-top: -3%;
         font-weight: bold;
     }
-    
-    #homeTitle{
-        margin-top: 5%;
-        margin-bottom: 8%;
-        h2{
-            font-weight: bold !important;
-        }
+
+    #infoUbicacion{
+        color: #0300c8;
+        display: inline-block;
+        margin-left: 2%;
+        font-weight: bold;
     }
 
-    #exposicionDiaria{
+    #ubicacionCasaTitle{
+        margin-left: 8%;
+    }
+
+    .subTitulo{
         font-weight: bold;
-        margin-top: 12%;
+        text-align: center;
+        margin-top: 10%;
         margin-bottom: 5%;
     }
 
@@ -180,8 +184,39 @@ page-user {
         color: #eeeeee;
         display: inline-block;
     }
-    #enviarRadio{
+    #enviarRadioText{
         color: #eeeeee;
-        margin-top: 4%;
+        margin-top: 15%;
+    }
+
+    #locationIconRed{
+        color:#FF0000;
+        font-size: xxx-large;
+        margin-top: -5%;
+        margin-left: 7%;
+    }
+    #locationIconGreen{
+        color: #32c800;
+        font-size: xxx-large;
+        margin-top: -5%;
+        margin-left: 7%;
+    }
+
+    #radiusColumn{
+        flex: 0 0 56%;
+    }
+    #iconColumn{
+        flex: 0 0 14%;
+    }
+    #saveColumn{
+        flex: 0 0 30%;
+    }
+
+    #gridUbicacionCasa{
+        margin-top: -8%;
+    }
+
+    #inputRadioCasa,#nivelExposicion,#enviarUbicacionButton{
+        border-radius: 10px !important;
     }
 }

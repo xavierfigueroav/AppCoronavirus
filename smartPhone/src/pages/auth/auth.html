@@ -9,12 +9,12 @@
     <div padding text-center>
         <br>
         <br>
-        <br>
         <p style="font-size:40px">AutoSalud</p>
         <ion-item style="margin-top:90px;" class="input-username" margin-top color="light">
             <ion-icon color="navbar" name="person"></ion-icon>
             <ion-input type="text" class="ion-text-center" placeholder="Ingrese el código de la app" [(ngModel)]="codigo_app" name="codigo_app"></ion-input>
         </ion-item>
+        <br>
         <!--button class="input-username" ion-item color="light" margin-top *ngIf="linkedUser">
             <ion-icon color="navbar" name="person" item-start></ion-icon>
             <ion-label color="navbar" margin-left item-start>{{linkedUser.codigo_app}}</ion-label>
@@ -26,7 +26,6 @@
             </ion-label>
             <ion-input type="password" placeholder="Clave" [(ngModel)]="user.password" name="password"></ion-input>
         </ion-item-->
-        <br>
         <button class="btn-login" color="primary" [disabled]="!codigo_app" ion-button block (click)="attemptAuth()">
             <p id="ingresarButtonText">Ingresar</p>
         </button>
@@ -36,7 +35,10 @@
         <br>
         <br>
         <br>
-        <p style="font-size:15px; margin-bottom: 0">Powered By</p>
-        <img src="./assets/imgs/logo_espol.png" height="50" width="120" >
+        <br>
+        <p style="font-size:15px; margin-bottom: 0">Un aporte a la comunidad de:</p>
+        <img id="logoEspol" src="./assets/imgs/logo_espol.png" height="35" width="84" >
+        <img id="logoBcoPichincha" src="./assets/imgs/auspiciantes/logo-banco-pichincha.svg" height="50" width="120" >
+        <!-- <img id="logoCrisfe"src="./assets/imgs/auspiciantes/logo-crisfe.svg" height="50" width="120" > -->
     </div>
 </ion-content>
