@@ -163,18 +163,20 @@ def clave_app(request):
 
 @csrf_exempt
 def registro_muestra(request):
-	print(request.body)
+	#print(request.body)
 	#datos = json.loads(str(request.body)[2:-1])
 	
 	#codigo_muestra = datos.get("codigo_muestra")
 	#cedula = datos.get("cedula")
 	#codigo_lab = datos.get("codigo_lab")
-	print(str(request.body))
+	#print(str(request.body))
 	datos = str(request.body).split("&")
 
 	codigo_muestra = datos[3].split("=")[1][:-1]
 	cedula = datos[1].split("=")[1]
 	codigo_lab = datos[2].split("=")[1]
+
+
 
 	parametros = {"tabla" : "integracion_pruebas",
 	"datos":[ {
@@ -187,9 +189,12 @@ def registro_muestra(request):
 	datos = json.dumps(parametros)
 	print(datos)
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/insert', data = datos)
+	#print(response.text)
 	respuesta = json.loads(response.text)
-	return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
-        , content_type='application/json')
+
+	#return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
+    #    , content_type='application/json')
+	return render(request, 'PureVID/resultadoMuestra.html',{'data':respuesta} )
 
 
 @csrf_exempt
@@ -221,7 +226,7 @@ def estado_muestra(request):
 	#codigo_muestra = datos.get("codigo_muestra")
 	parametros = {"tabla" : "integracion_pruebas",
 	"operador": "and",
-	"columnas" : ["estado"],
+	"columnas" : ["stado"],
 	"condiciones" : [
 		{
 			"columna" : "muestra_id",
@@ -235,8 +240,9 @@ def estado_muestra(request):
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
 	print(respuesta)
-	return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
-        , content_type='application/json')
+	#return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
+    #    , content_type='application/json')
+	return render(request, 'PureVID/resultadoMuestra.html', respuesta)
 
 
 
@@ -308,3 +314,9 @@ def get_muestra(request):
 	else:
 		form = ConsultaMuestraForm()
 	return render(request, 'PureVID/consultaMuestra.html', {'form': form})
+
+
+def result_muestra(request):
+
+	
+	return render(request, 'PureVID/resultadoMuestra.html', {})
