@@ -151,14 +151,26 @@ export class ScoreProvider {
                 } else{                          // if we are in the same day, only calculate the score from the last score hour to the current hour
                     for (let hour = lastScoreHour+1; hour < currentHour; hour++) {
                         const score = await this.calculateCompleteScore(hour);
-                        this.database.saveScore(score.completeScore, hour, score.maxDistanceToHome, score.maxTimeAway, score.encodedRoute);
+                        this.database.saveScore(
+                            score.completeScore,
+                            hour,
+                            score.maxDistanceToHome,
+                            score.maxTimeAway,
+                            score.encodedRoute
+                        );
                         this.database.deleteLocationsByHour(hour);
                     }
                 }
             } else{   //there aren't scores yet, calculate all scores until the current hour
                 for (let hour = 1; hour < currentHour; hour++) {
                     const score = await this.calculateCompleteScore(hour);
-                    this.database.saveScore(score.completeScore, hour, score.maxDistanceToHome, score.maxTimeAway, score.encodedRoute);
+                    this.database.saveScore(
+                        score.completeScore,
+                        hour,
+                        score.maxDistanceToHome,
+                        score.maxTimeAway,
+                        score.encodedRoute
+                    );
                     this.database.deleteLocationsByHour(hour);
                 }
             }

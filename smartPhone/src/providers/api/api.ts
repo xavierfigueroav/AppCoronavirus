@@ -3,6 +3,7 @@ import * as Constants from '../../data/constants';
 import { Storage } from '@ionic/storage';
 import { DatabaseService } from '../../service/database-service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Encoding } from "@ionic-native/google-maps";
 
 import * as moment from 'moment';
 
@@ -28,7 +29,7 @@ export class APIProvider {
         const scores = await this.database.getScores();
         const pendingScores = [];
         scores.forEach(score => {
-            if(score.status === 'PENDING'){
+            if(score.status === 'PENDING' && score.score !== -1){
                 if(score.hour === 24 ) score.hour = 0;
                 pendingScores.push(score);
             }
@@ -298,6 +299,7 @@ export class APIProvider {
         pendingScores.forEach(score => {
             values[`score_${score.hour}`] = score.score;
         });
+        values['gps_point'] = this.joinEncodedRoutes(pendingScores);
         const data = {
             "tabla": "integracion_score_diario",
             "valores": values,
@@ -310,6 +312,17 @@ export class APIProvider {
             ]
         };
         return JSON.stringify(data);
+    }
+
+    joinEncodedRoutes(pendingScores: any[]) {
+        const points = [];
+        pendingScores.forEach(score => {
+            if(score.encoded_route) {
+                const decoded = Encoding.decodePath(score.encoded_route);
+                points.push(...decoded);
+            }
+        });
+        return Encoding.encodePath(points);
     }
 
     generateInsertScoreBody(phone_id: string | number, datetime: string){
@@ -408,6 +421,6 @@ export class APIProvider {
     }
 
     getCurrentStringDate() {
-        return moment().format('YYYY-MM-DD hh:mm:ss');
+        return moment().startOf('day').format('YYYY-MM-DD hh:mm:ss');
     }
 }
