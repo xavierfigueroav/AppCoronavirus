@@ -10,23 +10,23 @@
 </ion-header>
 
 <ion-content padding>
-    <ion-card id="nivelExposicion"> 
+    <ion-card id="nivelExposicion">
         <ion-card-title>
             Nivel de exposición
-            <ion-icon id="info" name="ios-information-circle-outline" 
+            <ion-icon id="info" name="ios-information-circle-outline"
                       style="float: right;" (click)="scoreInformation()">
             </ion-icon>
         </ion-card-title>
 
         <ion-card-content>
         <div class="circle-container" style="text-align: center;">
-            <svg id="svg0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="50%" height="50%" viewBox="0, 0, 400,400">
-                <g id="svgg">
-                    <text x="50%" y="50%" text-anchor="middle" style="font-size: 40px;">Ahora</text>
-                    <path id="path0" stroke="none" [attr.fill]="currentScoreColor" fill-rule="evenodd" d="M184.000 0.438 C 60.298 11.121,-24.063 128.609,5.862 248.524 C 32.599 355.662,141.307 420.894,248.524 394.138 C 365.703 364.895,430.494 238.821,386.120 126.400 C 353.970 44.949,270.553 -7.037,184.000 0.438 M216.371 67.769 C 300.590 78.997,352.967 162.420,326.182 242.670 C 304.327 308.151,234.662 346.094,167.400 329.150 C 92.186 310.203,49.160 231.207,73.818 157.330 C 90.058 108.673,134.814 72.696,185.400 67.636 C 187.820 67.394,190.340 67.122,191.000 67.031 C 193.700 66.661,212.068 67.195,216.371 67.769 "></path>
-                </g>
-            </svg>
+            <div class="circle" [ngClass]="{
+                'green': currentScore <= 1,
+                'orange': currentScore > 1 && currentScore <= 2,
+                'red': currentScore > 2 && currentScore <= 3
+            }">
+                <span class="circle-text">Actual</span>
+            </div>
         </div>
     </ion-card-content>
     </ion-card>
@@ -44,10 +44,10 @@
 
     <h4 id="ubicacionCasaTitle" class="subTitulo">
         Ubicación de la casa
-        <ion-icon id="infoUbicacion" name="ios-information-circle-outline" 
+        <ion-icon id="infoUbicacion" name="ios-information-circle-outline"
                   (click)="infoUbicacionCasa()">
         </ion-icon>
-    </h4>        
+    </h4>
 
     <div class="container">
         <div class="form-body">
@@ -58,11 +58,10 @@
                         <ion-icon id="locationIconRed" name="pin" *ngIf="homeLocationDate == undefined"></ion-icon>
                     </ion-col>
                     <ion-col id="radiusColumn">
-                        <ion-input id="inputRadioCasa" type="number" placeholder="RADIO DE CASA"></ion-input>
+                        <ion-input id="inputRadioCasa" type="number" min="2" [(ngModel)]="homeRadius" placeholder="RADIO DE CASA"></ion-input>
                     </ion-col>
                     <ion-col id="saveColumn">
-                        <button id="enviarUbicacionButton" ion-button>
-                        <!-- (click)="registerHomeHandler()"> -->
+                        <button id="enviarUbicacionButton" ion-button (click)="registerHomeHandler()">
                             <p id="enviarRadioText">Guardar</p>
                         </button>
                     </ion-col>

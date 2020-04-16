@@ -35,9 +35,9 @@
             <div class="result-container">
                 <span class="result1-label result-text">Estado: </span><span class="result-value value-1 result-text">{{ testStatuses[result.estado] }}</span>
                 <span class="result2-label result-text">Resultado: </span><span class="result-value value-2 result-text">{{ testResults[result.resultado] }}</span>
-                <div class="advice">
+                <div class="advice" *ngIf="result['recomendacion'] !== undefined">
                     <p class="advice-title">Recomendación</p>
-                    <p class="advice-content">{{ result['recomendación'] }}</p>
+                    <p class="advice-content">{{ result['recomendacion'] }}</p>
                 </div>
             </div>
         </ion-card-content>

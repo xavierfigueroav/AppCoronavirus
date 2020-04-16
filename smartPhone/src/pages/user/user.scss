@@ -3,7 +3,39 @@ page-user {
     .circle-container {
         margin-top: 5%;
         margin-bottom: 3%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
+    .circle {
+        height: 250px;
+        width: 250px;
+        background-color: #999999;
+        border-radius: 200px 200px 200px 200px;
+        -moz-border-radius: 200px 200px 200px 200px;
+        -webkit-border-radius: 200px 200px 200px 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .circle-text {
+        color: #FFFFFF;
+        font-weight: bold;
+        font-size: 25px;
+    }
+
+    .green {
+        background-color: #32c800;
+    }
+
+    .orange {
+        background-color: #FFC800;
+    }
+
+    .red {
+        background-color: #FF0000;
     }
 
     #score-bar {
@@ -53,7 +85,7 @@ page-user {
             font-weight: bold;
             height: 98%;
             margin-top: 0%;
-            color:#eeeeee!important;     
+            color:#eeeeee!important;
         }
     }
 
@@ -140,7 +172,7 @@ page-user {
         position: relative;
         text-align: center;
         margin-top: 5%;
-        
+
         .card-title {
             position: center;
             margin-top: 5%;

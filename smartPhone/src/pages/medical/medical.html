@@ -21,7 +21,8 @@
         <ion-card-content>
             <ion-item>
                 <ion-select [(ngModel)]="status">
-                <ion-option value="asi" selected>CASO ASINTOMÁTICO</ion-option>
+                <ion-option value="sal" selected>SALUDABLE</ion-option>
+                <ion-option value="asi">CASO ASINTOMÁTICO</ion-option>
                 <ion-option value="sos">CASO SOSPECHOSO</ion-option>
                 <ion-option value="con">CASO CONFIRMADO</ion-option>
                 <ion-option value="rec">CASO RECUPERADO</ion-option>
@@ -30,7 +31,6 @@
             </ion-item>
         </ion-card-content>
     </ion-card>
-   
 
     <div class="container">
 
@@ -40,10 +40,6 @@
 
         <button ion-button icon-end full class="button" (click)="goToDiagnostic()">
             <p> ENVIAR REPORTE DIARIO DE SALUD</p>
-        </button>
-
-        <button ion-button icon-end full class="button">
-            <p>RESPONDER ENCUESTAS</p>
         </button>
 
     </div>
