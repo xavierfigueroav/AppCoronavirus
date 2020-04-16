@@ -77,10 +77,10 @@ export class SurveyPage {
             this.pendingForms = pendingForms;
         });
 
-        this.storage.get('infoTemplates').then((templates) => {
+        /*this.storage.get('infoTemplates').then((templates) => {
             this.infoTemplates = templates;
             this.selectedSection = templates[0];
-        });
+        });*/
 
         this.httpClient.get('./assets/calculos/calculo.json').subscribe(res => {
             this.storage.set('calculos', res);
@@ -108,10 +108,52 @@ export class SurveyPage {
                         this.clickEditForm(this.j);
                     }
                 }
+            } else {
+                this.getInfoPlantilla().then((result) => {
+                    //this.appCtrl.getRootNav().setRoot(TabsPage);
+                    this.storage.get("infoTemplates").then((info_templates) => {
+                        var info_template = info_templates[0];
+                        console.log("INFO TEMPLATE LOGIN: ", info_template);
+                        this.startForm(info_template, 'initial', 0);
+                    });
+                });
+
+
+                /*this.storage.get("infoTemplates").then((info_templates) => {
+                    var info_template = info_templates[0];
+                    this.startForm(info_template, 'initial', 0);
+                });*/
             }
         });
 
 	}
+
+    async getInfoPlantilla() {
+        await this.storage.get('templates').then((templates) => {
+            for (let template of templates) {
+                if (template.type == "SIMPLE") {
+                    this.infoTemplates.push({
+                        uuid: template.uid,
+                        name: template.name,
+                        type: template.type,
+                        gps: template.gps,
+                        set_id: template.set_id,
+                        data: template.data
+                    });
+                } else {
+                    this.infoTemplates.push({
+                        uuid: template.uid,
+                        name: template.name,
+                        type: template.type,
+                        gps: template.gps,
+                        set_id: template.set_id,
+                        data: template.data
+                    });
+                }
+            }
+        });
+        await this.storage.set('infoTemplates', this.infoTemplates);
+    }
 
     /*ionViewWillEnter(){
         this.storage.get('infoTemplates').then((templates) => {
@@ -245,6 +287,7 @@ export class SurveyPage {
                     indice_seccion: 0
                 };
                 this.storage.set("formulario_uso", formulario_uso);
+                this.loader.dismiss();
                 this.appCtrl.getRootNav().setRoot(FormPage);
             });
         });
