@@ -169,10 +169,10 @@ def registro_muestra(request):
 	#codigo_muestra = datos.get("codigo_muestra")
 	#cedula = datos.get("cedula")
 	#codigo_lab = datos.get("codigo_lab")
-	
+	print(str(request.body))
 	datos = str(request.body).split("&")
 
-	codigo_muestra = datos[3].split("=")[1]
+	codigo_muestra = datos[3].split("=")[1][:-1]
 	cedula = datos[1].split("=")[1]
 	codigo_lab = datos[2].split("=")[1]
 
