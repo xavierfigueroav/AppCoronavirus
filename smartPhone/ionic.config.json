@@ -1,0 +1,9 @@
+{
+  "name": "AutoSalud",
+  "integrations": {
+    "cordova": {},
+    "capacitor": {}
+  },
+  "type": "ionic-angular",
+  "app_id": ""
+}
