@@ -205,7 +205,7 @@ def registro_muestra(request):
 		datos = json.dumps(parametros)
 		response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
 		respuesta = json.loads(response.text)
-		codigo = response.get("data")[0].get("app_id")
+		codigo = respuesta.get("data")[0].get("app_id")
 		parametros=	{"tabla" : "integracion_usuario",
 			"datos":[ {
 				"cedula":cedula,
@@ -240,7 +240,7 @@ def registro_muestra(request):
 		    "success": False
 		}
 	else:
-		codigo = respuesta.get("data").get("telefono_id")
+		codigo = respuesta.get("data")[0].get("telefono_id")
 
 
 
@@ -252,7 +252,8 @@ def registro_muestra(request):
 		"user_lab": "USERLAB0001", #por ahora va quemado
 		"recolector_id": "REC0001 ", #por ahora va quemado
 		"app_id": codigo,
-		"resultado": "Procesando"
+		"estado" : 0,
+		"resultado": 0
 	}],
 	
 	}
@@ -296,7 +297,7 @@ def estado_muestra(request):
 	#codigo_muestra = datos.get("codigo_muestra")
 	parametros = {"tabla" : "integracion_pruebas",
 	"operador": "and",
-	"columnas" : ["stado"],
+	"columnas" : ["estado", "resultado"],
 	"condiciones" : [
 		{
 			"columna" : "muestra_id",
