@@ -40,9 +40,7 @@ export class MyApp {
     observacionPage;
     fenomenosPage;
     sendingForms = false;
-    // urlServerEnvioFormulario = "https://insavit.espol.edu.ec/api/send_form/";
-    // urlServerPlantilla = "https://insavit.espol.edu.ec/api/templates/";
-    // urlServerCalculos = "https://insavit.espol.edu.ec/api/validations/";
+    sentForms;
 
     constructor(private diagnostic: Diagnostic,
         private locationAccuracy: LocationAccuracy,
@@ -81,15 +79,66 @@ export class MyApp {
 
                 this.storage.get('linkedUser').then((val) => {
                     this.params.linkedUser = val;
+                    console.log("VAL: ", val);
                     if (val != null && val.sesion) {
-                        //this.selectItemMenuGeneral(this.listaGeneral[0], 0, null);
-                        this.appCtrl.getRootNav().setRoot(TabsPage);
+                        //this.appCtrl.getRootNav().setRoot(TabsPage);
+                        this.llenarAutodiagnostico();
                     } else {
-                        this.appCtrl.getRootNav().setRoot(TabsPage);
+                        this.appCtrl.getRootNav().setRoot(AuthPage);
                     }
                 });
 
             });
+    }
+
+    llenarAutodiagnostico() {
+        console.log("ENTRO A AUTODIAGNOSTICO");
+        this.storage.get('sentForms').then((sentForms) => {
+            this.sentForms = sentForms;
+            console.log("APP SENT FORMS: ", this.sentForms);
+            if(this.sentForms != null && this.sentForms.length >0) {
+                var fecha_ultimo_autodiagnostico = null;
+                for(let sentForm of this.sentForms) {
+                    if(sentForm.formData.type=='follow_up') {
+                        fecha_ultimo_autodiagnostico = (sentForm.formData.saveDate).substr(0, 10);
+                        console.log("FECHA SAVE DATE: ", sentForm.formData.saveDate);
+                        console.log("FECHA ULTIMO AUTODIAGNOSTICO: ", fecha_ultimo_autodiagnostico);
+                    }
+                }
+                if(fecha_ultimo_autodiagnostico != null) {
+                    var fecha = new Date();
+                    var fecha_mes_temp = fecha.getMonth() + 1;
+                    var fecha_mes = fecha_mes_temp.toString();
+                    if(fecha_mes_temp <= 9) {
+                        fecha_mes = '0' + fecha_mes;
+                    }
+                    var fecha_dia_temp = fecha.getDate();
+                    var fecha_dia = fecha_dia_temp.toString();
+                    if(fecha_dia_temp <= 9) {
+                        fecha_dia = '0' + fecha_dia;
+                    }
+                    var fecha_hoy = fecha.getFullYear() + '-' + fecha_mes + '-' + fecha_dia;
+                    console.log("FECHA HOY", fecha_hoy);
+                    if(fecha_ultimo_autodiagnostico == fecha_hoy) {
+                        this.appCtrl.getRootNav().setRoot(TabsPage);
+                    } else {
+                        /*const alert = this.alertCtrl.create({
+                            subTitle: 'No ha llenado su reporte diario de salud. Por favor hágalo ahora',
+                            buttons: ['OK']
+                        });
+                        alert.present();*/
+                        this.appCtrl.getRootNav().setRoot(DiagnosticPage);
+                    }
+                } else {
+                    /*const alert = this.alertCtrl.create({
+                        subTitle: 'No ha llenado su reporte diario de salud. Por favor hágalo ahora',
+                        buttons: ['OK']
+                    });
+                    alert.present();*/
+                    this.appCtrl.getRootNav().setRoot(DiagnosticPage);
+                }
+            }
+        });
     }
 
     promesaEnvioFormulario(linkedUser, formulario, templateUuid, setId) {
@@ -249,6 +298,10 @@ export class MyApp {
     }
 
     cerrarSesion() {
-        this.appCtrl.getRootNav().setRoot(AuthPage);
+        this.storage.get('linkedUser').then((val) => {
+            this.storage.set('linkedUser', null).then(data => {
+                this.appCtrl.getRootNav().setRoot(AuthPage);
+            });
+        });
     }
 }

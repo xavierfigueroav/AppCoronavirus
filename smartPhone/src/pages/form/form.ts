@@ -257,6 +257,7 @@ export class FormPage extends PopoverPage {
             console.log("SELECTED TEMPLATE SAVE", this.selectedTemplate);
             console.log("FORM DATA SAVE", this.formData);
             console.log("CURRENT FORM SAVE", this.currentForm);
+            console.log("PENDING FORM INDEX", pending_form_index);
             this.pendingForms[pending_form_index].formData = this.currentForm;
             this.pendingForms[pending_form_index].id_dataset = this.id_dataset;
             this.storage.set("pendingForms", this.pendingForms);
@@ -282,6 +283,7 @@ export class FormPage extends PopoverPage {
             let formDataExists = (this.formsData != null &&
                 this.formsData.hasOwnProperty(this.templateUuid));
             let currentFormExists = false;
+            console.log("SAVE FORMSDATA: ", this.formsData);
             let pending_form_index = this.pendingForms.length - 1;
             if (formsDataIsNull || !formDataExists) {
                 this.save(this.forms.length - 1, pending_form_index);
@@ -298,6 +300,7 @@ export class FormPage extends PopoverPage {
                 }
                 pending_form_index = 0;
 
+                //COMENTAR ESTE BLOQUE
                 for (let pendingForm of this.pendingForms) {
                     if (pendingForm.formData.uuid == this.currentForm.uuid) {
                         break;
@@ -323,12 +326,12 @@ export class FormPage extends PopoverPage {
     async enviarFormulario() {
         console.log("ENVIAR FORMULARIO");
         var pendingForms = await this.storage.get('pendingForms');
-        console.log("ENVIAR FORMULARIO 2");
+        console.log("TODOS PENDING FORMS: ", pendingForms);
         if((pendingForms != null) && (pendingForms.length > 0)) {
             console.log("HAY PENDING FORMS");
             var url = "http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create";
             //for(let pendingForm of pendingForms) {
-                var pendingForm = pendingForms[pendingForms.length - 1];
+                var pendingForm = pendingForms[0];
                 console.log("PENDING FORM: ", pendingForm);
                 if(pendingForm.formData.type == 'initial') {
                     var cedula = pendingForm.formData.data.children[0].children[0].value;

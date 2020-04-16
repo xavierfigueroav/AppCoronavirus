@@ -803,7 +803,11 @@ export class HomePage {
     }
 
     cerrarSesion() {
-        this.appCtrl.getRootNav().setRoot(AuthPage);
+        this.storage.get('linkedUser').then((val) => {
+            this.storage.set('linkedUser', null).then(data => {
+                this.appCtrl.getRootNav().setRoot(AuthPage);
+            });
+        });
     }
 
 }

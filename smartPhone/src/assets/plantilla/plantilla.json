@@ -5,12 +5,21 @@
         "gps": "required",
         "notifications": [
             {
-                "date":"2019-08-05",
-                "time":"13:15"
-            },
-            {
-                "date":"2019-08-05",
-                "time":"13:16"
+                "type":"PERIÓDICA",
+                "interval_type":"day",
+                "interval_value":"1",
+                "children":[
+                    {
+                        "type":"start",
+                        "date":"2020-04-17",
+                        "time":"10:00"
+                    },
+                    {
+                        "type":"end",
+                        "date":"2020-05-16",
+                        "time":"10:00"
+                    }
+                ]
             }
         ],
         "data": {

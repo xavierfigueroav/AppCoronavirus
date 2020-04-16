@@ -13,6 +13,8 @@ import { Diagnostic } from '@ionic-native/diagnostic';
 import { Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { FormPage } from '../form/form';
+import { SurveyPage } from '../survey/survey';
+import { DiagnosticPage } from '../diagnostic/diagnostic';
 import { File } from '@ionic-native/file';
 import uuid from 'uuid/v4';
 import { DatabaseService } from '../../service/database-service';
@@ -38,6 +40,7 @@ export class AuthPage {
     formsData = {};
     pendingForms = [];
     loader;
+    sentForms;
 
     constructor(private intelSecurity: IntelSecurity,
         public httpClient: HttpClient, public appCtrl: App,
@@ -58,6 +61,8 @@ export class AuthPage {
             console.log('Hubo un error al obtener los cálculos');
             console.log(err);
         });
+
+        this.storage.set('notifications', null);
 
         this.crearDirectorio();
 
@@ -96,6 +101,44 @@ export class AuthPage {
         });
     }
 
+    llenarAutodiagnostico() {
+        this.storage.get('sentForms').then((sentForms) => {
+            this.sentForms = sentForms;
+            if(this.sentForms != null && this.sentForms.length >0) {
+                var fecha_ultimo_autodiagnostico = null;
+                for(let sentForm of this.sentForms) {
+                    if(sentForm.formData.type=='follow_up') {
+                        fecha_ultimo_autodiagnostico = (sentForm.formData.saveDate).substr(0, 10);
+                        console.log("FECHA SAVE DATE: ", sentForm.formData.saveDate);
+                        console.log("FECHA ULTIMO AUTODIAGNOSTICO: ", fecha_ultimo_autodiagnostico);
+                    }
+                }
+                if(fecha_ultimo_autodiagnostico != null) {
+                    var fecha = new Date();
+                    var fecha_hoy = fecha.getFullYear() + '-' + (fecha.getMonth()+1) + '-' + fecha.getDate();
+                    console.log("FECHA HOY", fecha_hoy);
+                    if(fecha_ultimo_autodiagnostico == fecha_hoy) {
+                        this.appCtrl.getRootNav().setRoot(TabsPage);
+                    } else {
+                        const alert = this.alertCtrl.create({
+                            subTitle: 'No ha llenado su reporte diario de salud. Por favor hágalo ahora',
+                            buttons: ['OK']
+                        });
+                        alert.present();
+                        this.appCtrl.getRootNav().setRoot(DiagnosticPage);
+                    }
+                } else {
+                    const alert = this.alertCtrl.create({
+                        subTitle: 'No ha llenado su reporte diario de salud. Por favor hágalo ahora',
+                        buttons: ['OK']
+                    });
+                    alert.present();
+                    this.appCtrl.getRootNav().setRoot(DiagnosticPage);
+                }
+            }
+        });
+    }
+
     async attemptAuth() {
         if (this.linkedUser) {
             const loader = this.loadingCtrl.create({
@@ -110,8 +153,7 @@ export class AuthPage {
                         this.linkedUser.sesion = true;
                         this.getInfoPlantilla().then((result) => {
                             this.storage.set('linkedUser', this.linkedUser).then(data => {
-                                this.appCtrl.getRootNav().setRoot(TabsPage);
-                                //var infotemplate = this.storage.get("")
+                                this.llenarAutodiagnostico();
                             });
                         });
                     } else {
@@ -185,7 +227,7 @@ export class AuthPage {
                                 sesion: true
                             }).then((data) => {
                                 //loader.dismiss();
-                                this.appCtrl.getRootNav().setRoot(TabsPage);
+                                this.appCtrl.getRootNav().setRoot(SurveyPage);
                             }).catch(error => {
                                 this.loader.dismiss();
                                 console.log('error de guardado storage', error);
@@ -291,6 +333,7 @@ export class AuthPage {
                             //this.appCtrl.getRootNav().setRoot(TabsPage);
                             this.storage.get("infoTemplates").then((info_templates) => {
                                 var info_template = info_templates[0];
+                                console.log("INFO TEMPLATE LOGIN: ", info_template);
                                 this.startForm(info_template, 'initial', 0);
                             });
                         });
