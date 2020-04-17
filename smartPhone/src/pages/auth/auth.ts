@@ -79,12 +79,19 @@ export class AuthPage {
             });
         });*/
 
-        /*this.httpClient.get('./assets/calculos/calculos.json').subscribe(res => {
+        this.httpClient.get('./assets/calculos/calculos.json').subscribe(res => {
             this.storage.set('calculos', res);
         }, err => {
             console.log('Hubo un error al obtener los cálculos');
             console.log(err);
-        });*/
+        });
+
+        this.httpClient.get('./assets/plantilla/plantilla.json').subscribe(res => {
+            this.storage.set('templates', res);
+        }, err => {
+            console.log('Hubo un error al obtener los cálculos');
+            console.log(err);
+        });
     }
 
     crearDirectorio() {
@@ -209,24 +216,23 @@ export class AuthPage {
 
     async crearUsuario() {
         var resultado_validacion_usuario = await this.api.validateUser(this.codigo_app.toLowerCase());
+        //EL USUARIO SÍ EXISTE, DEJA PASAR Y TIENE QUE LLENAR LA ENCUESTA DE DATOS PERSONALES
         if(resultado_validacion_usuario == 1) {
-            this.httpClient.get('./assets/plantilla/plantilla.json').subscribe(res => {
-                this.storage.set('templates', res);
-                this.intelSecurity.data.createFromData({ data: this.codigo_app })
-                    .then((instanceID: Number) => {
+                var instanceID = await this.intelSecurity.data.createFromData({ data: this.codigo_app });
+                    
                         this.intelSecurity.storage.write({
                             id: "codigo_app",
                             instanceID: instanceID
                         });
                         this.checkforInestimableScores();
-                        //this.crearDataset();
+                        await this.crearDataset();
                         this.storage.set('id_dataset', this.codigo_app).then((data) => {
                             console.log("SE GUARDÓ EL ID DATASET");
                             this.storage.set('linkedUser', {
                                 codigo_app: this.codigo_app,
                                 sesion: true
                             }).then((data) => {
-                                //loader.dismiss();
+                                this.loader.dismiss();
                                 this.appCtrl.getRootNav().setRoot(SurveyPage);
                             }).catch(error => {
                                 this.loader.dismiss();
@@ -236,58 +242,24 @@ export class AuthPage {
                             this.loader.dismiss();
                             console.log('ERROR AL GUARDAR EL ID DATASET', error);
                         });
-                    })
-                    .catch((error: any) => {
-                        this.loader.dismiss();
-                        console.log(error);
-                    });
-                }, err => {
-                    this.loader.dismiss();
-                    console.log('error no puede conectarse al servidor para descarga de plantilla');
-                    console.log(err);
-                });
+                    
+                
 
-                this.httpClient.get('./assets/calculos/calculo.json').subscribe(res => {
-                    this.storage.set('calculos', res);
-                    this.loader.dismiss();
-                }, err => {
-                    this.loader.dismiss();
-                    console.log('error no puede conectarse al servidor para descarga de plantilla');
-                    console.log(err);
-                });
+                
+        //EL USUARIO NO EXISTE (POR ALGÚN ERROR AL GENERAR EL CÓDIGO DESDE LA PÁGINA WEB)
         } else if(resultado_validacion_usuario == 0) {
             var resultado_creacion_usuario = await this.api.createUser(this.codigo_app.toLowerCase());
             if(resultado_creacion_usuario == 1) {
-                this.httpClient.get('./assets/plantilla/plantilla.json').subscribe(res => {
-                    this.storage.set('templates', res);
-                    this.intelSecurity.data.createFromData({ data: this.codigo_app })
-                        .then((instanceID: Number) => {
+                    var instanceID = await this.intelSecurity.data.createFromData({ data: this.codigo_app });
                             this.intelSecurity.storage.write({
                                 id: "codigo_app",
                                 instanceID: instanceID
                             });
                             this.loader.dismiss();
                             this.checkforInestimableScores();
-                            this.crearDataset();
-                        })
-                        .catch((error: any) => {
-                            this.loader.dismiss();
-                            console.log(error);
-                        });
-                }, err => {
-                    this.loader.dismiss();
-                    console.log('error no puede conectarse al servidor para descarga de plantilla');
-                    console.log(err);
-                });
-
-                this.httpClient.get('./assets/calculos/calculo.json').subscribe(res => {
-                    this.storage.set('calculos', res);
-                    this.loader.dismiss();
-                }, err => {
-                    this.loader.dismiss();
-                    console.log('error no puede conectarse al servidor para descarga de plantilla');
-                    console.log(err);
-                });
+                            await this.crearDataset();
+                        
+            
             } else {
                 const alert = this.alertCtrl.create({
                     subTitle: 'Hubo un problema al comunicarse con el servidor. Por favor verifique su conexión a internet o inténtelo más tarde.',
@@ -329,14 +301,13 @@ export class AuthPage {
                         sesion: true
                     }).then((data) => {
                         //loader.dismiss();
-                        this.getInfoPlantilla().then((result) => {
-                            //this.appCtrl.getRootNav().setRoot(TabsPage);
+                        /*this.getInfoPlantilla().then((result) => {
                             this.storage.get("infoTemplates").then((info_templates) => {
                                 var info_template = info_templates[0];
                                 console.log("INFO TEMPLATE LOGIN: ", info_template);
                                 this.startForm(info_template, 'initial', 0);
                             });
-                        });
+                        });*/
                     }).catch(error => {
                         //loader.dismiss();
                         console.log('error de guardado storage', error);
@@ -348,6 +319,7 @@ export class AuthPage {
             .catch(error => {
                 console.log("ERROR AL CREAR DATASET");
                 console.log(error);
+                this.loader.dismiss();
                 if(error.status == 0) {
                     const alert = this.alertCtrl.create({
                         title: "Error",

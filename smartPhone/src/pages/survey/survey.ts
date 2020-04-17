@@ -109,15 +109,14 @@ export class SurveyPage {
                     }
                 }
             } else {
-                this.getInfoPlantilla().then((result) => {
-                    //this.appCtrl.getRootNav().setRoot(TabsPage);
+                /*this.getInfoPlantilla().then((result) => {
                     this.storage.get("infoTemplates").then((info_templates) => {
                         var info_template = info_templates[0];
                         console.log("INFO TEMPLATE LOGIN: ", info_template);
                         this.startForm(info_template, 'initial', 0);
                     });
-                });
-
+                });*/
+                this.getInfoPlantilla();
 
                 /*this.storage.get("infoTemplates").then((info_templates) => {
                     var info_template = info_templates[0];
@@ -128,8 +127,8 @@ export class SurveyPage {
 
 	}
 
-    async getInfoPlantilla() {
-        await this.storage.get('templates').then((templates) => {
+    getInfoPlantilla() {
+        this.storage.get('templates').then((templates) => {
             for (let template of templates) {
                 if (template.type == "SIMPLE") {
                     this.infoTemplates.push({
@@ -151,8 +150,16 @@ export class SurveyPage {
                     });
                 }
             }
+            this.storage.set('infoTemplates', this.infoTemplates).then((result) => {
+                this.storage.get("infoTemplates").then((info_templates) => {
+                    var info_template = info_templates[0];
+                    console.log("INFO TEMPLATE LOGIN: ", info_template);
+                    this.startForm(info_template, 'initial', 0);
+                });
+            }).catch((error) => {
+                console.log("ERROR EN INFO PLANTILLA", error);
+            });
         });
-        await this.storage.set('infoTemplates', this.infoTemplates);
     }
 
     /*ionViewWillEnter(){
