@@ -303,7 +303,7 @@ export class UserPage implements OnInit{
 
     scoreInformation(){
         const alert = this.alertCtrl.create({
-            title: 'Nivel de exposición',
+            title: '<p align="center">Nivel de exposición</p>',
             subTitle: "<br/><li>Bajo: verde</li>"+
                       "<li>Medio: naranja</li>"+
                       "<li>Alto: rojo</li>",
@@ -314,7 +314,7 @@ export class UserPage implements OnInit{
 
     infoUbicacionCasa() {
         const alert = this.alertCtrl.create({
-          title: 'Registra la ubicación de tu casa',
+          title: '<p align="center">Registra la ubicación de tu casa</p>',
           subTitle: '<br/><li>Si el globo está de color ROJO significa que no has registrado tu domicilio.</li><br/>'+
                     '<li>Para empezar a calcular tu nivel de exposición ingresa el radio de tu casa y toca <b>GUARDAR</b>.</li><br/>'+
                     '<li>Puedes actualizar tu domocilio en cualquier momento.</li>',

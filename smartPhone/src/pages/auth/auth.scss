@@ -6,6 +6,10 @@ page-auth {
     .btn-login{
       box-shadow: none !important;
       border-radius: 20px;
+      margin-bottom: 5%;
+    }
+    ion-input{
+      border-radius: 10px;
     }
     .btn-unlink{
       color: #536d38 !important;
@@ -19,6 +23,7 @@ page-auth {
     }
     .input-username, .input-password{
       border-radius: 25px !important;
+      margin-bottom: 8%;
     }
     .text-input {
       text-align: center !important;
@@ -34,6 +39,12 @@ page-auth {
       font-weight: bold;
       font-size: 110%;
       margin-top: 4%;
+    }
+
+    #contrasena {
+      color: #069;
+      font-size: 100%;
+      margin-top: 10%;
     }
 
     #logoBcoPichincha{

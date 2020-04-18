@@ -17,6 +17,8 @@ import uuid from 'uuid/v4';
 import { DatabaseService } from '../../service/database-service';
 import { APIProvider } from '../../providers/api/api';
 import { AlertProvider } from '../../providers/alert/alert';
+import { EmailValidator } from '@angular/forms/src/directives/validators';
+
 
 
 @Component({
@@ -465,5 +467,59 @@ export class AuthPage {
                 this.database.saveScore(-1, hour, 0, 0, '');
             }
         }
+    }
+
+    validateEmail(email) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    passwordRecover(){
+        const prompt = this.alertCtrl.create({
+            title: '<p align="center">Recuperación de contraseña</p>',
+            message: "Escriba una dirección de correo electrónico válida a la que podamos enviar su contraseña.",
+            inputs: [
+              {
+                name: 'email',
+                type: "email",
+                placeholder: 'usuario@correo.com'
+              },
+            ],
+            buttons: [
+              {
+                text: 'Cancelar',
+                handler: data => { console.log('Cancel envio de correo.');}
+              },
+              {
+                text: 'Enviar',
+                handler: data => {
+                    if (this.validateEmail(data.email)) {
+                        console.log('Enviar correo.');
+                        this.confirmacionEnvioCorreo();
+                    }else{
+                        console.log((this.validateEmail(data.email)));
+                        this.correoInvalido();
+                    }
+                }
+              }
+            ]
+        });
+          prompt.present();
+    }
+
+    correoInvalido(){
+        const alert = this.alertCtrl.create({
+            subTitle: 'Correo inválido!',
+            buttons: ['OK']
+          });
+          alert.present();
+    }
+
+    confirmacionEnvioCorreo() {
+        const alert = this.alertCtrl.create({
+          subTitle: 'Se ha enviado su contraseña al correo electrónico que ha proporcionado. Por favor, revise su bandeja de entrada.',
+          buttons: ['OK']
+        });
+        alert.present();
     }
 }
