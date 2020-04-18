@@ -1,14 +1,11 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, LoadingController, AlertController, ViewController, Events, MenuController, App } from 'ionic-angular';
+import { NavController, NavParams, LoadingController, AlertController, MenuController, App } from 'ionic-angular';
 import { HTTP } from '@ionic-native/http';
 import { Network } from '@ionic-native/network';
-import { HomePage } from '../home/home';
 import { TabsPage } from '../tabs/tabs';
 import { Storage } from '@ionic/storage';
 import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage';
-import { Md5 } from 'ts-md5/dist/md5';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import { IntelSecurity } from '@ionic-native/intel-security';
+import { HttpClient } from '@angular/common/http';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
@@ -19,6 +16,7 @@ import { File } from '@ionic-native/file';
 import uuid from 'uuid/v4';
 import { DatabaseService } from '../../service/database-service';
 import { APIProvider } from '../../providers/api/api';
+import { AlertProvider } from '../../providers/alert/alert';
 
 
 @Component({
@@ -42,14 +40,14 @@ export class AuthPage {
     loader;
     sentForms;
 
-    constructor(private intelSecurity: IntelSecurity,
-        public httpClient: HttpClient, public appCtrl: App,
+    constructor(public httpClient: HttpClient, public appCtrl: App,
         public menuCtrl: MenuController, private secureStorage: SecureStorage,
         private storage: Storage, public navCtrl: NavController,
         public navParams: NavParams, public http: HTTP, private file: File,
         public network: Network, public loadingCtrl: LoadingController, private geolocation: Geolocation,
         public alertCtrl: AlertController, private diagnostic: Diagnostic, private locationAccuracy: LocationAccuracy,
-        public database:DatabaseService, public api: APIProvider) {
+        public database:DatabaseService, public api: APIProvider,
+        private alerts: AlertProvider) {
 
         this.menuCtrl.enable(false);
         this.file = file;
@@ -65,19 +63,6 @@ export class AuthPage {
         this.storage.set('notifications', null);
 
         this.crearDirectorio();
-
-        /*this.httpClient.get(this.urlFunctions).subscribe(res => {
-            this.storage.set('calculos', res);
-        }, err => {
-            console.log('error no puede conectarse al servidor para descarga de calculos');
-            console.log(err);
-            this.httpClient.get('./assets/calculos/calculos.json').subscribe(res => {
-                this.storage.set('calculos', res);
-            }, err => {
-                console.log('Hubo un error al obtener los cálculos');
-                console.log(err);
-            });
-        });*/
 
         this.httpClient.get('./assets/calculos/calculos.json').subscribe(res => {
             this.storage.set('calculos', res);
@@ -104,7 +89,7 @@ export class AuthPage {
                 console.log('SE CREÓ EL DIRECTORIO');
             }).catch(err => {
                 console.log('ERROR AL CREAR EL DIRECTORIO');
-            }); 
+            });
         });
     }
 
@@ -147,189 +132,57 @@ export class AuthPage {
     }
 
     async attemptAuth() {
-        if (this.linkedUser) {
-            const loader = this.loadingCtrl.create({
-                content: "Espere ...",
-            });
-            loader.present();
-            this.intelSecurity.storage.read({ id: 'codigo_app' })
-                .then((instanceID: number) => this.intelSecurity.data.getData(instanceID))
-                .then((data: string) => {
-                    if (this.codigo_app == data) {
-                        loader.dismiss();
-                        this.linkedUser.sesion = true;
-                        this.getInfoPlantilla().then((result) => {
-                            this.storage.set('linkedUser', this.linkedUser).then(data => {
-                                this.llenarAutodiagnostico();
-                            });
-                        });
-                    } else {
-                        loader.dismiss();
-                        const alert = this.alertCtrl.create({
-                            title: 'Credenciales incorrectas!',
-                            subTitle: 'Inténtelo de nuevo',
-                            buttons: ['OK']
-                        });
-                        alert.present();
-                    }
-                }) // Resolves to 'Sample Data'
-                .catch((error: any) => console.log(error));
-        } else {
-            var resultado_validacion = await this.validarCodigoApp();  
-            if(resultado_validacion == 1) {
-                this.crearUsuario();
-            }            
-        }
-        this.checkforInestimableScores();
-    }
-
-    async validarCodigoApp() {
         this.loader = this.loadingCtrl.create({
-            content: "Espere ...",
+            content: "Espere...",
         });
         this.loader.present();
 
-        var resultado_validacion = await this.api.validateAppCode(this.codigo_app.toLowerCase());
-        console.log("CODIGO VALIDACION: ", resultado_validacion);
+        try {
+            const appIdIsValid = await this.api.validateAppCode(this.codigo_app);
+            if(!appIdIsValid){
+                this.loader.dismiss();
+                this.alerts.showInvalidAppIdAlert();
+                return;
+            }
+        } catch {
+            this.loader.dismiss();
+            this.alerts.showConnectionErrorAlert();
+            return;
+        }
 
-        if(resultado_validacion == 1) {
-            console.log("EL CÓDIGO DE LA APP ES CORRECTO");
-            return 1;
-        } else if(resultado_validacion == 0) {
-            const alert = this.alertCtrl.create({
-                subTitle: 'El código de la app no es válido.',
-                buttons: ['OK']
-            });
+        let datasetCreated: any;
+        try {
+            datasetCreated = await this.api.createFormsDataSet(this.codigo_app);
+        } catch {
             this.loader.dismiss();
-            alert.present();
-            return 0;
+            this.alerts.showConnectionErrorAlert();
+            return;
+        } finally {
+            this.loader.dismiss();
+        }
+
+        try {
+            await this.storeUser();
+            await this.checkforInestimableScores();
+        } catch {
+            this.loader.dismiss();
+            this.alerts.showLocalStorageError();
+            return;
+        }
+
+        if(datasetCreated === 0) { // Already created
+            this.appCtrl.getRootNav().setRoot(TabsPage);
         } else {
-            const alert = this.alertCtrl.create({
-                subTitle: 'Hubo un problema al comunicarse con el servidor. Por favor verifique su conexión a internet o inténtelo más tarde.',
-                buttons: ['OK']
-            });
-            this.loader.dismiss();
-            alert.present();
-            return -1;
+            this.appCtrl.getRootNav().setRoot(SurveyPage);
         }
     }
 
-    async crearUsuario() {
-        var resultado_validacion_usuario = await this.api.validateUser(this.codigo_app.toLowerCase());
-        //EL USUARIO SÍ EXISTE, DEJA PASAR Y TIENE QUE LLENAR LA ENCUESTA DE DATOS PERSONALES
-        if(resultado_validacion_usuario == 1) {
-                var instanceID = await this.intelSecurity.data.createFromData({ data: this.codigo_app });
-                    
-                        this.intelSecurity.storage.write({
-                            id: "codigo_app",
-                            instanceID: instanceID
-                        });
-                        this.checkforInestimableScores();
-                        await this.crearDataset();
-                        this.storage.set('id_dataset', this.codigo_app).then((data) => {
-                            console.log("SE GUARDÓ EL ID DATASET");
-                            this.storage.set('linkedUser', {
-                                codigo_app: this.codigo_app,
-                                sesion: true
-                            }).then((data) => {
-                                this.loader.dismiss();
-                                this.appCtrl.getRootNav().setRoot(SurveyPage);
-                            }).catch(error => {
-                                this.loader.dismiss();
-                                console.log('error de guardado storage', error);
-                            });
-                        }).catch(error => {
-                            this.loader.dismiss();
-                            console.log('ERROR AL GUARDAR EL ID DATASET', error);
-                        });
-                    
-                
-
-                
-        //EL USUARIO NO EXISTE (POR ALGÚN ERROR AL GENERAR EL CÓDIGO DESDE LA PÁGINA WEB)
-        } else if(resultado_validacion_usuario == 0) {
-            var resultado_creacion_usuario = await this.api.createUser(this.codigo_app.toLowerCase());
-            if(resultado_creacion_usuario == 1) {
-                    var instanceID = await this.intelSecurity.data.createFromData({ data: this.codigo_app });
-                            this.intelSecurity.storage.write({
-                                id: "codigo_app",
-                                instanceID: instanceID
-                            });
-                            this.loader.dismiss();
-                            this.checkforInestimableScores();
-                            await this.crearDataset();
-                        
-            
-            } else {
-                const alert = this.alertCtrl.create({
-                    subTitle: 'Hubo un problema al comunicarse con el servidor. Por favor verifique su conexión a internet o inténtelo más tarde.',
-                    buttons: ['OK']
-                });
-                this.loader.dismiss();
-                alert.present();
-                return 0;
-            }
-        } else if(resultado_validacion_usuario == -1) {
-            const alert = this.alertCtrl.create({
-                subTitle: 'Hubo un problema al comunicarse con el servidor. Por favor verifique su conexión a internet o inténtelo más tarde.',
-                buttons: ['OK']
-            });
-            this.loader.dismiss();
-            alert.present();
-            return 0;
-        }  
-    }
-
-    crearDataset() {
-        var string_codigo = '{"name":"'+this.codigo_app+'","owner_org":"0daa04ac-4b43-4316-bbf0-537cd5b881ac"}';
-        var objeto = JSON.parse(string_codigo);
-        var url = "http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/package_create";
-        console.log("SE CREARÁ EL DATASET");
-
-        const httpOptions = {
-            headers: new HttpHeaders({ 'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'  })
-        };
-            
-        this.httpClient.post(url, objeto, httpOptions)
-        //this.http.post(url, objeto, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'})
-            .toPromise().then(res => {
-                console.log("EXITO AL CREAR DATASET");
-                this.storage.set('id_dataset', this.codigo_app).then((data) => {
-                    console.log("SE GUARDÓ EL ID DATASET");
-                    this.storage.set('linkedUser', {
-                        codigo_app: this.codigo_app,
-                        sesion: true
-                    }).then((data) => {
-                        //loader.dismiss();
-                        /*this.getInfoPlantilla().then((result) => {
-                            this.storage.get("infoTemplates").then((info_templates) => {
-                                var info_template = info_templates[0];
-                                console.log("INFO TEMPLATE LOGIN: ", info_template);
-                                this.startForm(info_template, 'initial', 0);
-                            });
-                        });*/
-                    }).catch(error => {
-                        //loader.dismiss();
-                        console.log('error de guardado storage', error);
-                    });
-                }).catch(error => {
-                    console.log('ERROR AL GUARDAR EL ID DATASET', error);
-                });
-            })
-            .catch(error => {
-                console.log("ERROR AL CREAR DATASET");
-                console.log(error);
-                this.loader.dismiss();
-                if(error.status == 0) {
-                    const alert = this.alertCtrl.create({
-                        title: "Error",
-                        subTitle: 'Por favor asegúrese que cuenta con una conexión a internet.',
-                        buttons: ['OK']
-                    });
-                    alert.present();
-                    return 0;
-                }
-            });
+    async storeUser() {
+        await this.storage.set('id_dataset', this.codigo_app);
+        await this.storage.set('linkedUser', {
+            codigo_app: this.codigo_app,
+            sesion: true
+        });
     }
 
     async getInfoPlantilla() {
@@ -603,16 +456,14 @@ export class AuthPage {
         confirm.present();
     }
 
-    checkforInestimableScores(){
-        this.database.getScores().then(scores => {
-            if(scores.length == 0){
-                const date = new Date();
-                const currentHour = date.getHours();
-                for (let hour = 1; hour <= currentHour -1; hour++) {
-                    this.database.saveScore(-1, hour, 0, 0, '');
-                }
+    async checkforInestimableScores(){
+        const scores = await this.database.getScores();
+        if(scores.length === 0){
+            const date = new Date();
+            const currentHour = date.getHours();
+            for (let hour = 1; hour <= currentHour -1; hour++) {
+                this.database.saveScore(-1, hour, 0, 0, '');
             }
-        })
+        }
     }
-
-}  
+}

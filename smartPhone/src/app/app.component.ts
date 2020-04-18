@@ -1,27 +1,19 @@
 import { Component } from '@angular/core';
-import { Platform, Events, MenuController, NavController, App, LoadingController, AlertController } from 'ionic-angular';
+import { Platform, Events, MenuController, App, LoadingController, AlertController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Storage } from '@ionic/storage';
 import { AuthPage } from '../pages/auth/auth';
-//import { AuthCVRPage } from '../pages/authCVR/authCVR';
 import { HomePage } from '../pages/home/home';
-//import {HomePage2} from '../pages/home2/home2';
 import { PerfilPage } from '../pages/perfil/perfil';
-import { SentFormsPage } from '../pages/sentForms/sentForms';
 import { FormulariosPage } from '../pages/formularios/formularios';
 import { HTTP } from '@ionic-native/http';
 import { HttpClient } from '@angular/common/http';
-import { Coordinates, Geolocation } from '@ionic-native/geolocation';
+import { Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Diagnostic } from '@ionic-native/diagnostic';
-import { FormPage } from '../pages/form/form';
-import { FollowUpPage } from '../pages/followUp/followUp';
 import { TabsPage } from '../pages/tabs/tabs';
-import { DiagnosticPage } from '../pages/diagnostic/diagnostic';
 import { ScoreProvider } from '../providers/score/score';
-
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
     templateUrl: 'app.html'
@@ -81,64 +73,13 @@ export class MyApp {
                     this.params.linkedUser = val;
                     console.log("VAL: ", val);
                     if (val != null && val.sesion) {
-                        //this.appCtrl.getRootNav().setRoot(TabsPage);
-                        this.llenarAutodiagnostico();
+                        this.appCtrl.getRootNav().setRoot(TabsPage);
                     } else {
                         this.appCtrl.getRootNav().setRoot(AuthPage);
                     }
                 });
 
             });
-    }
-
-    llenarAutodiagnostico() {
-        console.log("ENTRO A AUTODIAGNOSTICO");
-        this.storage.get('sentForms').then((sentForms) => {
-            this.sentForms = sentForms;
-            console.log("APP SENT FORMS: ", this.sentForms);
-            if(this.sentForms != null && this.sentForms.length >0) {
-                var fecha_ultimo_autodiagnostico = null;
-                for(let sentForm of this.sentForms) {
-                    if(sentForm.formData.type=='follow_up') {
-                        fecha_ultimo_autodiagnostico = (sentForm.formData.saveDate).substr(0, 10);
-                        console.log("FECHA SAVE DATE: ", sentForm.formData.saveDate);
-                        console.log("FECHA ULTIMO AUTODIAGNOSTICO: ", fecha_ultimo_autodiagnostico);
-                    }
-                }
-                if(fecha_ultimo_autodiagnostico != null) {
-                    var fecha = new Date();
-                    var fecha_mes_temp = fecha.getMonth() + 1;
-                    var fecha_mes = fecha_mes_temp.toString();
-                    if(fecha_mes_temp <= 9) {
-                        fecha_mes = '0' + fecha_mes;
-                    }
-                    var fecha_dia_temp = fecha.getDate();
-                    var fecha_dia = fecha_dia_temp.toString();
-                    if(fecha_dia_temp <= 9) {
-                        fecha_dia = '0' + fecha_dia;
-                    }
-                    var fecha_hoy = fecha.getFullYear() + '-' + fecha_mes + '-' + fecha_dia;
-                    console.log("FECHA HOY", fecha_hoy);
-                    if(fecha_ultimo_autodiagnostico == fecha_hoy) {
-                        this.appCtrl.getRootNav().setRoot(TabsPage);
-                    } else {
-                        /*const alert = this.alertCtrl.create({
-                            subTitle: 'No ha llenado su reporte diario de salud. Por favor hágalo ahora',
-                            buttons: ['OK']
-                        });
-                        alert.present();*/
-                        this.appCtrl.getRootNav().setRoot(DiagnosticPage);
-                    }
-                } else {
-                    /*const alert = this.alertCtrl.create({
-                        subTitle: 'No ha llenado su reporte diario de salud. Por favor hágalo ahora',
-                        buttons: ['OK']
-                    });
-                    alert.present();*/
-                    this.appCtrl.getRootNav().setRoot(DiagnosticPage);
-                }
-            }
-        });
     }
 
     promesaEnvioFormulario(linkedUser, formulario, templateUuid, setId) {

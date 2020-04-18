@@ -48,6 +48,7 @@ import { MedicalPage } from '../pages/medical/medical';
 import { TestResultsPage } from '../pages/test-results/test-results';
 import { ScoreProvider } from '../providers/score/score';
 import { APIProvider } from '../providers/api/api';
+import { AlertProvider } from '../providers/alert/alert';
 
 @NgModule({
   declarations: [
@@ -129,7 +130,8 @@ import { APIProvider } from '../providers/api/api';
     DatabaseService,
     ScoreProvider,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    APIProvider
+    APIProvider,
+    AlertProvider
   ]
 })
 
