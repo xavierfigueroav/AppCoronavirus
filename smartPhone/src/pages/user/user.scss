@@ -27,15 +27,15 @@ page-user {
     }
 
     .green {
-        background-color: #32c800;
+        background-color: #49BEAA;
     }
 
     .orange {
-        background-color: #FFC800;
+        background-color: #EEB868;
     }
 
     .red {
-        background-color: #FF0000;
+        background-color: #EF767A;
     }
 
     #score-bar {
@@ -85,7 +85,7 @@ page-user {
             font-weight: bold;
             height: 98%;
             margin-top: 0%;
-            color:#eeeeee!important;
+            //color:#eeeeee!important;
         }
     }
 
@@ -127,18 +127,6 @@ page-user {
         margin-bottom: 10%;
     }
 
-    .home-registered-message {
-        text-align: center;
-        color: #32c800;
-        font-size: 125%;
-    }
-
-    .home-unregistered-message {
-        text-align: center;
-        color: #FF0000;
-        font-size: 125%;
-    }
-
     ion-input {
         background-color: #eeeeee;
         padding-left: 10px;
@@ -158,14 +146,6 @@ page-user {
     .label {
         margin: 0 5px 15px 5px;
         font-weight: bold;
-    }
-
-    #incalculable {
-        color: #000000;
-    }
-
-    #before-calculation {
-        color: #999999;
     }
 
     #nivelExposicion {
@@ -219,29 +199,31 @@ page-user {
     #enviarRadioText{
         color: #eeeeee;
         margin-top: 15%;
+        size: 100%;
     }
 
     #locationIconRed{
-        color:#FF0000;
+        color:#D32F2F;
         font-size: xxx-large;
         margin-top: -5%;
         margin-left: 7%;
     }
     #locationIconGreen{
-        color: #32c800;
+        color: #50C878;
         font-size: xxx-large;
         margin-top: -5%;
         margin-left: 7%;
     }
 
     #radiusColumn{
-        flex: 0 0 56%;
+        flex: 0 0 58%;
     }
     #iconColumn{
         flex: 0 0 14%;
     }
     #saveColumn{
-        flex: 0 0 30%;
+        flex: 0 0 28%;
+        margin-right: -10% !important;
     }
 
     #gridUbicacionCasa{

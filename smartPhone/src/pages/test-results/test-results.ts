@@ -19,7 +19,8 @@ import { APIProvider } from '../../providers/api/api';
 export class TestResultsPage implements OnInit {
 
     result: any;
-    sampleId: string;
+    testsResultsMap: {};
+    usersIds: any[];
     testFound: boolean;
     testStatuses = { 0: 'EN PROCESO', 1: 'TERMINADA' };
     testResults = { 0: 'NEGATIVO', 1: 'POSITIVO' };
@@ -30,6 +31,7 @@ export class TestResultsPage implements OnInit {
 
   ngOnInit() {
     this.testFound = true;
+    this.searchTestResults();
   }
 
   ionViewDidLoad() {
@@ -44,31 +46,44 @@ export class TestResultsPage implements OnInit {
         });
     }
 
-    searchTestResults() {
-
-        if(this.sampleId){
-
-            this.api.getTestResultsBySampleId(this.sampleId).then(result => {
-                if(result) {
-                    this.result = result;
-                    this.testFound = true;
+    searchTestResults(){
+        this.storage.get("linkedUser").then(user=>{
+            this.api.getTestResultsByAppId(user.codigo_app).then(results => {
+                console.log(user.codigo_app);
+                console.log(results);
+                if(results) {
+                    var resultsMap = {string:[]};
+                    results.forEach(function(result){
+                        if(result.cedula){
+                            if(result.cedula in resultsMap){
+                                resultsMap[result.cedula].push(result);
+                            }else{
+                                resultsMap[result.cedula] = [result];
+                            }
+                        }else{
+                            if(result.referencia in resultsMap){
+                                resultsMap[result.referencia].push(result);
+                            }else{
+                                resultsMap[result.referencia] = [result];
+                            }
+                        }
+                        
+                    });
+                    //sort by date
+                    for(const userId of Object.keys(resultsMap)){
+                        resultsMap[userId] = resultsMap[userId].sort((a, b) => (a.fecha_recoleccion > b.fecha_recoleccion) ? 1 
+                                                      : (a.fecha_recoleccion === b.fecha_recoleccion) ? ((a.muestra_id > b.muestra_id) ? 1 : -1) : -1 );
+                    }
+                    this.testsResultsMap = resultsMap;
+                    console.log(this.testsResultsMap);
+                    this.usersIds =  Object.keys(this.testsResultsMap);
                 } else {
-                    this.result = undefined;
                     this.testFound = false;
                 }
             }).catch(error => {
                 console.log('ERROR AL BUSCAR LA PRUEBA', error);
             });
-
-
-        } else {
-            this.alertCtrl.create({
-                title: 'Código no válido',
-                subTitle: 'El campo no puede estar vacío',
-                buttons: ['OK']
-            }).present();
-        }
-
+        });
     }
 
 }

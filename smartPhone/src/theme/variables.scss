@@ -34,7 +34,7 @@ $app-direction: ltr;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    #0e29a5,
+  primary:   #23427C,
   secondary:  #6b7e9b,
   danger:     #f53d3d,
   warning:     #F4B400,
@@ -56,6 +56,24 @@ $colors: (
   button2: #ffffff,
   green: #0F9D58
 );
+
+:root {
+  --ion-color-tabs: #ffffff;
+  --ion-color-tabs-rgb: 255,255,255;
+  --ion-color-tabs-contrast: #23427C;
+  --ion-color-tabs-contrast-rgb: 35,66,124;
+  --ion-color-tabs-shade: #23427C;
+  --ion-color-tabs-tint: #23427C;
+}
+
+.ion-color-tabs {
+  --ion-color-tabs: var(--ion-color-tabs);
+  --ion-color-tabs-rgb: var(--ion-color-white-tabs);
+  --ion-color-tabs: var(--ion-color-white-tabs);
+  --ion-color-tabs-rgb: var(--ion-color-tabs-contrast-rgb);
+  --ion-color-tabs: var(--ion-color-tabs-shade);
+  --ion-color-tabs: var(--ion-color-tabs-tint);
+}
 
 $text-input-md-show-focus-highlight:false;
 $text-input-md-background-color:red;
