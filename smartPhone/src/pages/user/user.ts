@@ -9,6 +9,8 @@ import { ScoreProvider } from '../../providers/score/score';
 import { APIProvider } from '../../providers/api/api';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
+import * as plantilla from '../../assets/plantilla/plantilla.json';
+
 @Component({
 	selector: 'page-user',
     templateUrl: 'user.html',
@@ -16,6 +18,7 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
 
 export class UserPage implements OnInit{
 
+    templates = (<any>plantilla);
     currentScore: number;
     currentScoreColor: string;
     homeLocationDate: number;
@@ -78,123 +81,121 @@ export class UserPage implements OnInit{
         console.log("NOTIFICACIONES", this.notifications);
         console.log("ID NOTI", this.id);
 
-        this.storage.get('templates').then((templates) => {
-            console.log("TEMPLATES NOTIFICACIONES", templates);
-            for (let template of templates) {
-                if(this.notifications[template.name]) {
-                    this.localNotifications.cancel(this.notifications[template.name]);
-                }
-                this.notifications[template.name] = new Array();
-                if (template.notifications) {
-                    for (let noti of template.notifications) {
-                        var nombre = template.name;
-                        var tipo = template.type;
+        console.log("TEMPLATES NOTIFICACIONES", this.templates);
+        for (let template of this.templates) {
+            if(this.notifications[template.name]) {
+                this.localNotifications.cancel(this.notifications[template.name]);
+            }
+            this.notifications[template.name] = new Array();
+            if (template.notifications) {
+                for (let noti of template.notifications) {
+                    var nombre = template.name;
+                    var tipo = template.type;
 
-                        if (noti.type == 'SIMPLE') {
-                            for (let no of noti.children) {
-                                var fecha = no.date.split('-');
-                                var hora = no.time.split(':');
-                                this.localNotifications.schedule({
+                    if (noti.type == 'SIMPLE') {
+                        for (let no of noti.children) {
+                            var fecha = no.date.split('-');
+                            var hora = no.time.split(':');
+                            this.localNotifications.schedule({
+                                id: this.id,
+                                title: 'REPORTE DE SALUD',
+                                text: 'Se le recuerda que debe llenar un nuevo reporte diario de salud en caso de que no lo haya hecho el día de hoy',
+                                trigger: { at: new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0) },
+                                led: 'FF0000'
+                            });
+                            this.notifications[template.name].push(this.id);
+                            this.id++;
+                        }
+                    } else if (noti.type == 'PERIÓDICA') {
+                        var interval_type = noti.interval_type;
+                        var interval_value = noti.interval_value;
+                        var fecha_noti;
+
+                        for (let no of noti.children) {
+                            var fecha = no.date.split('-');
+                            var hora = no.time.split(':');
+                            if (no.type == 'start') {
+                                var fecha_inicio = new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0);
+                            } else {
+                                var fecha_fin = new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0);
+                            }
+                        }
+
+                        fecha_noti = new Date(fecha_inicio.getFullYear(), fecha_inicio.getMonth(), fecha_inicio.getDate(), fecha_inicio.getHours(), fecha_inicio.getMinutes(), 0);
+
+                        do {
+                            this.localNotifications.schedule({
+                                id: this.id,
+                                title: 'REPORTE DE SALUD',
+                                text: 'Se le recuerda que debe llenar un nuevo reporte diario de salud en caso de que no lo haya hecho el día de hoy',
+                                trigger: { at: new Date(fecha_noti.getFullYear(), fecha_noti.getMonth(), fecha_noti.getDate(), fecha_noti.getHours(), fecha_noti.getMinutes(), 0) },
+                                led: 'FF0000'
+                            });
+
+                            this.notifications[template.name].push(this.id);
+
+                            if (interval_type == 'minute') {
+                                fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 60 * 1000));
+                            } else if (interval_type == 'hour') {
+                                fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 60 * 60 * 1000));
+                            } else if (interval_type == 'day') {
+                                fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 24 * 60 * 60 * 1000));
+                            } else if (interval_type == 'week') {
+                                fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 7 * 24 * 60 * 60 * 1000));
+                            } else if (interval_type == 'month') {
+                                fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 30 * 24 * 60 * 60 * 1000));
+                            }
+
+                            this.id++;
+
+                        } while (fecha_noti.getTime() <= fecha_fin.getTime());
+                    } else if(noti.type == 'PERIÓDICA_HORA_FIJA') {
+                        var interval_type = noti.interval_type;
+                        var interval_value = noti.interval_value;
+                        var fecha_noti, fecha;
+                        var dias = [];
+                        var f2, f1;
+                        var fecha_i = noti.dates[0];
+                        var fecha_fi = noti.dates[noti.dates.length - 1];
+                        var temp = fecha_fi.split('-');
+                        var fecha_f = new Date(temp[0], temp[1] - 1, temp[2], 0, 0);
+
+                        do {
+                            dias.push(fecha_i);
+                            f1 = fecha_i.split('-');
+                            f1 = new Date(f1[0], f1[1] - 1, f1[2], 0, 0);
+                            f2 = new Date(f1.getTime() + (interval_value * 24 * 60 * 60 * 1000));
+                            fecha_i = f2.getFullYear() + '-' + (f2.getMonth()+1) + '-' + f2.getDate();
+                        } while(f2.getTime() <= fecha_f.getTime());
+
+                        for(let fe of dias) {
+                            fecha = fe.split('-');
+
+                            for(let ti of noti.times) {
+                                var hora = ti.split(':');
+                                fecha_noti = new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0);
+
+                                /*this.localNotifications.schedule({
                                     id: this.id,
+                                    icon: 'file://assets/imgs/logo_notification.png',
                                     title: 'REPORTE DE SALUD',
                                     text: 'Se le recuerda que debe llenar un nuevo reporte diario de salud en caso de que no lo haya hecho el día de hoy',
-                                    trigger: { at: new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0) },
+                                    trigger: {at: new Date(fecha_noti.getFullYear(), fecha_noti.getMonth(), fecha_noti.getDate(), fecha_noti.getHours(), fecha_noti.getMinutes(), 0)},
                                     led: 'FF0000'
-                                });
+                                });*/
+
                                 this.notifications[template.name].push(this.id);
                                 this.id++;
-                            }
-                        } else if (noti.type == 'PERIÓDICA') {
-                            var interval_type = noti.interval_type;
-                            var interval_value = noti.interval_value;
-                            var fecha_noti;
-
-                            for (let no of noti.children) {
-                                var fecha = no.date.split('-');
-                                var hora = no.time.split(':');
-                                if (no.type == 'start') {
-                                    var fecha_inicio = new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0);
-                                } else {
-                                    var fecha_fin = new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0);
-                                }
-                            }
-
-                            fecha_noti = new Date(fecha_inicio.getFullYear(), fecha_inicio.getMonth(), fecha_inicio.getDate(), fecha_inicio.getHours(), fecha_inicio.getMinutes(), 0);
-
-                            do {
-                                this.localNotifications.schedule({
-                                    id: this.id,
-                                    title: 'REPORTE DE SALUD',
-                                    text: 'Se le recuerda que debe llenar un nuevo reporte diario de salud en caso de que no lo haya hecho el día de hoy',
-                                    trigger: { at: new Date(fecha_noti.getFullYear(), fecha_noti.getMonth(), fecha_noti.getDate(), fecha_noti.getHours(), fecha_noti.getMinutes(), 0) },
-                                    led: 'FF0000'
-                                });
-
-                                this.notifications[template.name].push(this.id);
-
-                                if (interval_type == 'minute') {
-                                    fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 60 * 1000));
-                                } else if (interval_type == 'hour') {
-                                    fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 60 * 60 * 1000));
-                                } else if (interval_type == 'day') {
-                                    fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 24 * 60 * 60 * 1000));
-                                } else if (interval_type == 'week') {
-                                    fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 7 * 24 * 60 * 60 * 1000));
-                                } else if (interval_type == 'month') {
-                                    fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 30 * 24 * 60 * 60 * 1000));
-                                }
-
-                                this.id++;
-
-                            } while (fecha_noti.getTime() <= fecha_fin.getTime());
-                        } else if(noti.type == 'PERIÓDICA_HORA_FIJA') {
-                            var interval_type = noti.interval_type;
-                            var interval_value = noti.interval_value;
-                            var fecha_noti, fecha;
-                            var dias = [];
-                            var f2, f1;
-                            var fecha_i = noti.dates[0];
-                            var fecha_fi = noti.dates[noti.dates.length - 1];
-                            var temp = fecha_fi.split('-');
-                            var fecha_f = new Date(temp[0], temp[1] - 1, temp[2], 0, 0);
-
-                            do {
-                                dias.push(fecha_i);
-                                f1 = fecha_i.split('-');
-                                f1 = new Date(f1[0], f1[1] - 1, f1[2], 0, 0);
-                                f2 = new Date(f1.getTime() + (interval_value * 24 * 60 * 60 * 1000));
-                                fecha_i = f2.getFullYear() + '-' + (f2.getMonth()+1) + '-' + f2.getDate();
-                            } while(f2.getTime() <= fecha_f.getTime());
-
-                            for(let fe of dias) {
-                                fecha = fe.split('-');
-
-                                for(let ti of noti.times) {
-                                    var hora = ti.split(':');
-                                    fecha_noti = new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0);
-
-                                    /*this.localNotifications.schedule({
-                                        id: this.id,
-                                        icon: 'file://assets/imgs/logo_notification.png',
-                                        title: 'REPORTE DE SALUD',
-                                        text: 'Se le recuerda que debe llenar un nuevo reporte diario de salud en caso de que no lo haya hecho el día de hoy',
-                                        trigger: {at: new Date(fecha_noti.getFullYear(), fecha_noti.getMonth(), fecha_noti.getDate(), fecha_noti.getHours(), fecha_noti.getMinutes(), 0)},
-                                        led: 'FF0000'
-                                    });*/
-
-                                    this.notifications[template.name].push(this.id);
-                                    this.id++;
-                                }
                             }
                         }
                     }
                 }
             }
-            this.notifications['totalQuantity'] = this.id;
-            console.log("NOTIFICACIONES:", this.notifications);
-            this.storage.set('notifications', this.notifications);
-        });
-        
+        }
+        this.notifications['totalQuantity'] = this.id;
+        console.log("NOTIFICACIONES:", this.notifications);
+        this.storage.set('notifications', this.notifications);
+
     }
 
     fillScores() {

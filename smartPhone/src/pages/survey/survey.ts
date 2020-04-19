@@ -13,14 +13,16 @@ import { FormPage } from '../form/form';
 import { FollowUpPage } from '../followUp/followUp';
 import uuid from 'uuid/v4';
 
+import * as plantilla from '../../assets/plantilla/plantilla.json';
+
 @Component({
 	selector: 'page-survey',
 	templateUrl: 'survey.html',
 })
 
 export class SurveyPage {
+    templates = (<any>plantilla);
 	sentForms;
-    templates;
     infoTemplates = [];
     pendingForms = [];
     formsData = {};
@@ -65,10 +67,6 @@ export class SurveyPage {
             this.sentForms = sentForms;
         });
 
-        this.storage.get('templates').then((templates) => {
-            this.templates = templates;
-        });
-
         this.storage.get('linkedUser').then((linkedUser) => {
             this.linkedUser = linkedUser;
         });
@@ -81,13 +79,6 @@ export class SurveyPage {
             this.infoTemplates = templates;
             this.selectedSection = templates[0];
         });*/
-
-        this.httpClient.get('./assets/calculos/calculo.json').subscribe(res => {
-            this.storage.set('calculos', res);
-        }, err => {
-            console.log('Hubo un error al obtener los cálculos');
-            console.log(err);
-        });
 
         this.storage.get("formsData").then((formsData) => {
             if (formsData != null && (Object.keys(formsData).length > 0)) {
@@ -128,37 +119,35 @@ export class SurveyPage {
 	}
 
     getInfoPlantilla() {
-        this.storage.get('templates').then((templates) => {
-            for (let template of templates) {
-                if (template.type == "SIMPLE") {
-                    this.infoTemplates.push({
-                        uuid: template.uid,
-                        name: template.name,
-                        type: template.type,
-                        gps: template.gps,
-                        set_id: template.set_id,
-                        data: template.data
-                    });
-                } else {
-                    this.infoTemplates.push({
-                        uuid: template.uid,
-                        name: template.name,
-                        type: template.type,
-                        gps: template.gps,
-                        set_id: template.set_id,
-                        data: template.data
-                    });
-                }
-            }
-            this.storage.set('infoTemplates', this.infoTemplates).then((result) => {
-                this.storage.get("infoTemplates").then((info_templates) => {
-                    var info_template = info_templates[0];
-                    console.log("INFO TEMPLATE LOGIN: ", info_template);
-                    this.startForm(info_template, 'initial', 0);
+        for (let template of this.templates) {
+            if (template.type == "SIMPLE") {
+                this.infoTemplates.push({
+                    uuid: template.uid,
+                    name: template.name,
+                    type: template.type,
+                    gps: template.gps,
+                    set_id: template.set_id,
+                    data: template.data
                 });
-            }).catch((error) => {
-                console.log("ERROR EN INFO PLANTILLA", error);
+            } else {
+                this.infoTemplates.push({
+                    uuid: template.uid,
+                    name: template.name,
+                    type: template.type,
+                    gps: template.gps,
+                    set_id: template.set_id,
+                    data: template.data
+                });
+            }
+        }
+        this.storage.set('infoTemplates', this.infoTemplates).then((result) => {
+            this.storage.get("infoTemplates").then((info_templates) => {
+                var info_template = info_templates[0];
+                console.log("INFO TEMPLATE LOGIN: ", info_template);
+                this.startForm(info_template, 'initial', 0);
             });
+        }).catch((error) => {
+            console.log("ERROR EN INFO PLANTILLA", error);
         });
     }
 

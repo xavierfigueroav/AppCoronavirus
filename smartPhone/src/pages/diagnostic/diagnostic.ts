@@ -13,14 +13,16 @@ import { FormPage } from '../form/form';
 import { FollowUpPage } from '../followUp/followUp';
 import uuid from 'uuid/v4';
 
+import * as plantilla from '../../assets/plantilla/plantilla.json';
+
 @Component({
 	selector: 'page-diagnostic',
 	templateUrl: 'diagnostic.html',
 })
 
 export class DiagnosticPage {
+    templates = (<any>plantilla);
 	sentForms;
-    templates;
     infoTemplates = [];
     pendingForms = [];
     formsData = {};
@@ -63,10 +65,6 @@ export class DiagnosticPage {
             this.sentForms = sentForms;
         });
 
-        this.storage.get('templates').then((templates) => {
-            this.templates = templates;
-        });
-
         this.storage.get('linkedUser').then((linkedUser) => {
             this.linkedUser = linkedUser;
         });
@@ -80,13 +78,6 @@ export class DiagnosticPage {
             this.selectedSection = templates[0];
             var info_template = templates[0];
             this.startForm(info_template, 'follow_up', 0);
-        });
-
-        this.httpClient.get('./assets/calculos/calculo.json').subscribe(res => {
-            this.storage.set('calculos', res);
-        }, err => {
-            console.log('Hubo un error al obtener los cálculos');
-            console.log(err);
         });
 
         this.storage.get("formsData").then((formsData) => {

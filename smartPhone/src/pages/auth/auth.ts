@@ -19,7 +19,7 @@ import { APIProvider } from '../../providers/api/api';
 import { AlertProvider } from '../../providers/alert/alert';
 import { EmailValidator } from '@angular/forms/src/directives/validators';
 
-
+import * as plantilla from '../../assets/plantilla/plantilla.json';
 
 @Component({
     selector: 'page-auth',
@@ -27,8 +27,7 @@ import { EmailValidator } from '@angular/forms/src/directives/validators';
 })
 
 export class AuthPage {
-    //url = "https://insavit.espol.edu.ec/api/validate_user/";
-    //urlFunctions = "http://150.136.213.20/dataset/0cfc0e05-8e4c-435a-893b-5d12ede68f0f/resource/d0173624-db8d-4487-929e-e69872e5c840/download/calculos.json";
+    templates = (<any>plantilla);
     linkedUser = null;
     codigo_app;
     infoTemplates = [];
@@ -58,27 +57,13 @@ export class AuthPage {
                 this.linkedUser = val;
             }
         }, err => {
-            console.log('Hubo un error al obtener los cálculos');
+            console.log('Hubo un error al obtener linkedUser');
             console.log(err);
         });
 
         this.storage.set('notifications', null);
 
         this.crearDirectorio();
-
-        this.httpClient.get('./assets/calculos/calculos.json').subscribe(res => {
-            this.storage.set('calculos', res);
-        }, err => {
-            console.log('Hubo un error al obtener los cálculos');
-            console.log(err);
-        });
-
-        this.httpClient.get('./assets/plantilla/plantilla.json').subscribe(res => {
-            this.storage.set('templates', res);
-        }, err => {
-            console.log('Hubo un error al obtener los cálculos');
-            console.log(err);
-        });
     }
 
     crearDirectorio() {
@@ -188,29 +173,27 @@ export class AuthPage {
     }
 
     async getInfoPlantilla() {
-        await this.storage.get('templates').then((templates) => {
-            for (let template of templates) {
-                if (template.type == "SIMPLE") {
-                    this.infoTemplates.push({
-                        uuid: template.uid,
-                        name: template.name,
-                        type: template.type,
-                        gps: template.gps,
-                        set_id: template.set_id,
-                        data: template.data
-                    });
-                } else {
-                    this.infoTemplates.push({
-                        uuid: template.uid,
-                        name: template.name,
-                        type: template.type,
-                        gps: template.gps,
-                        set_id: template.set_id,
-                        data: template.data
-                    });
-                }
+        for (let template of this.templates) {
+            if (template.type == "SIMPLE") {
+                this.infoTemplates.push({
+                    uuid: template.uid,
+                    name: template.name,
+                    type: template.type,
+                    gps: template.gps,
+                    set_id: template.set_id,
+                    data: template.data
+                });
+            } else {
+                this.infoTemplates.push({
+                    uuid: template.uid,
+                    name: template.name,
+                    type: template.type,
+                    gps: template.gps,
+                    set_id: template.set_id,
+                    data: template.data
+                });
             }
-        });
+        }
         await this.storage.set('infoTemplates', this.infoTemplates);
     }
 
@@ -414,31 +397,6 @@ export class AuthPage {
                     handler: () => {
                         console.log('Desvincular clicked');
                         this.storage.clear().then(() => {
-                            this.httpClient.get('./assets/plantilla/plantilla.json').subscribe(res => {
-                                this.storage.set('templates', res);
-                            }, err => {
-                                console.log('error no puede conectarse al servidor para descarga de plantilla');
-                                console.log(err);
-                            });
-                            /*this.httpClient.get(this.urlFunctions).subscribe(res => {
-                                this.storage.set('calculos', res);
-                            }, err => {
-                                console.log('error no puede conectarse al servidor para descarga de calculos');
-                                console.log(err);
-                                this.httpClient.get('./assets/calculos/calculo.json').subscribe(res => {
-                                    this.storage.set('calculos', res);
-                                }, err => {
-                                    console.log('Hubo un error al obtener los cálculos');
-                                    console.log(err);
-                                }
-                                );
-                            });*/
-                            /*this.httpClient.get('./assets/calculos/calculo.json').subscribe(res => {
-                                this.storage.set('calculos', res);
-                            }, err => {
-                                console.log('Hubo un error al obtener los cálculos');
-                                console.log(err);
-                            });*/ //DESCOMENTAR
                             this.linkedUser = null;
                             this.secureStorage.create('security')
                                 .then((storage: SecureStorageObject) => {

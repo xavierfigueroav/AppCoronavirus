@@ -1,24 +1,24 @@
-import { Component, ViewChild, Injector } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { NavController, MenuController, ViewController, NavParams, Events, AlertController, Platform, App, LoadingController, Navbar, PopoverController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
-import { Coordinates, Geolocation } from '@ionic-native/geolocation';
+import { Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Diagnostic } from '@ionic-native/diagnostic';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { HTTP } from '@ionic-native/http';
 import { HttpClient } from '@angular/common/http';
 import { File } from '@ionic-native/file';
-import { HomePage } from '../home/home';
 import { TabsPage } from '../tabs/tabs';
 import { PopoverPage } from './popover';
-import { PopoverPage2 } from './popover2';
 import { APIProvider } from '../../providers/api/api';
+
+import * as calculos from '../../assets/calculos/calculo.json';
 
 @Component({
     selector: 'page-form',
     templateUrl: 'form.html'
 })
 export class FormPage extends PopoverPage {
+    calculos = (<any>calculos);
     template;
     formData;
     formsData = {};
@@ -78,13 +78,9 @@ export class FormPage extends PopoverPage {
                 console.log(JSON.stringify(error, Object.getOwnPropertyNames(error)));
             });
 
-            this.storage.get('calculos').then((calculos) => {
-                for (let calc of calculos.calculos) {
-                    this.funciones[calc.name] = eval('var a;a=' + calc.structure);
-                }
-            }).catch(error => {
-                console.log(JSON.stringify(error, Object.getOwnPropertyNames(error)));
-            });
+            for (let calc of this.calculos.calculos) {
+                this.funciones[calc.name] = eval('var a;a=' + calc.structure);
+            }
         } catch(e){
             console.log("constructor");
         }
@@ -96,7 +92,7 @@ export class FormPage extends PopoverPage {
         var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-item"));
         var elementos = [];
         var errores = 0;
-        
+
         for (var el of array) {
             if (el.id) {
                 elementos.push(el.id);
@@ -104,7 +100,7 @@ export class FormPage extends PopoverPage {
         }
 
         var params = this.mappingParametros(elementos);
-        
+
         for (var pa of params) {
             errores += this.validateBlurFunction("", pa.blurFunction);
         }
@@ -119,12 +115,12 @@ export class FormPage extends PopoverPage {
                     form_temp.indice_seccion = nuevo_indice;
                 } else {
                     form_temp.indice_seccion = null;
-                }        
+                }
                 console.log("FORM TEMP 2: ", form_temp);
                 this.storage.set("formulario_uso", form_temp).then(() => {
                     this.appCtrl.getRootNav().setRoot(FormPage);
                 });
-            });   
+            });
         }
     }
 
@@ -133,7 +129,7 @@ export class FormPage extends PopoverPage {
         var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-item"));
         var elementos = [];
         var errores = 0;
-        
+
         for (var el of array) {
             if (el.id) {
                 elementos.push(el.id);
@@ -141,7 +137,7 @@ export class FormPage extends PopoverPage {
         }
 
         var params = this.mappingParametros(elementos);
-        
+
         for (var pa of params) {
             errores += this.validateBlurFunction("", pa.blurFunction);
         }
@@ -156,12 +152,12 @@ export class FormPage extends PopoverPage {
                     form_temp.indice_seccion = nuevo_indice;
                 } else {
                     form_temp.indice_seccion = null;
-                }        
+                }
                 console.log("FORM TEMP 2: ", form_temp);
                 this.storage.set("formulario_uso", form_temp).then(() => {
                     this.appCtrl.getRootNav().setRoot(FormPage);
                 });
-            });   
+            });
         }
     }
 
@@ -170,7 +166,7 @@ export class FormPage extends PopoverPage {
         var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-item"));
         var elementos = [];
         var errores = 0;
-        
+
         for (var el of array) {
             if (el.id) {
                 elementos.push(el.id);
@@ -178,7 +174,7 @@ export class FormPage extends PopoverPage {
         }
 
         var params = this.mappingParametros(elementos);
-        
+
         for (var pa of params) {
             errores += this.validateBlurFunction("", pa.blurFunction);
         }
@@ -216,7 +212,7 @@ export class FormPage extends PopoverPage {
             if (formsData != null) {
                 this.formsData = formsData;
             }
-        }        
+        }
     }
 
     ionViewDidEnter() {
@@ -226,7 +222,7 @@ export class FormPage extends PopoverPage {
                 var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-item"));
                 var elementos = [];
                 var errores = 0;
-                
+
                 for (var el of array) {
                     if (el.id) {
                         elementos.push(el.id);
@@ -234,7 +230,7 @@ export class FormPage extends PopoverPage {
                 }
 
                 var params = this.mappingParametros(elementos);
-                
+
                 for (var pa of params) {
                     errores += this.validateBlurFunction("", pa.blurFunction);
                 }
@@ -248,7 +244,7 @@ export class FormPage extends PopoverPage {
     }
 
     save(index, pending_form_index) {
-        try {    
+        try {
             this.currentForm.saveDate = new Date();
             this.currentForm.data = this.selectedTemplate;
             this.forms[index] = this.currentForm;
@@ -278,7 +274,7 @@ export class FormPage extends PopoverPage {
     }
 
     async saveForm() {
-        try {   
+        try {
             let formsDataIsNull = this.formsData == null;
             let formDataExists = (this.formsData != null &&
                 this.formsData.hasOwnProperty(this.templateUuid));
@@ -308,7 +304,7 @@ export class FormPage extends PopoverPage {
                         pending_form_index += 1;
                     }
                 }
-                
+
                 if (!currentFormExists) {
                     //CREATE
                     this.storage.set("pendingForms", this.pendingForms);
@@ -376,11 +372,11 @@ export class FormPage extends PopoverPage {
         } else {
             var nombre_archivo = 'AUTODIAGNÓSTICO';
         }
-        
+
         var fecha_formateada = this.obtenerFechaActual();
         var nombre_archivo = nombre_archivo + "_" + fecha_formateada + ".json";
         var string_form = JSON.stringify(pendingForm, null, 2);
-        
+
         const loader = this.loadingCtrl.create({
             content: "Espere ...",
         });
@@ -517,7 +513,7 @@ export class FormPage extends PopoverPage {
     }
 
     construirFuncionDinamicaString(stringFuncion, stringParametros, lengthParametros) {
-        try {    
+        try {
             let funcionString = stringFuncion + '(';
             for (let i = 0; i < lengthParametros; i++) {
                 if (i == lengthParametros - 1) {
@@ -554,7 +550,7 @@ export class FormPage extends PopoverPage {
     }
 
     getObjects(obj, key, val) {
-        try {    
+        try {
             var objects = [];
             for (var i in obj) {
                 if (!obj.hasOwnProperty(i)) continue;
@@ -614,7 +610,7 @@ export class FormPage extends PopoverPage {
     }
 
     clickCollapseButton(index, id, $event) {
-        try {    
+        try {
             let buttonElement = $event.currentTarget;
             let collapse = document.getElementById(id);
             if (collapse.getAttribute('class') == "collapse") {
@@ -628,7 +624,7 @@ export class FormPage extends PopoverPage {
     }
 
     clickNextPage(item2,indexCategoria,indexSubCategoria) {
-        try {    
+        try {
             let param = this.navParams.data;
             param.selectedTemplate = item2;
             this.navCtrl.push(FormPage, param);
