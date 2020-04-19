@@ -1,7 +1,6 @@
-import { Component, ElementRef, ViewChild, ViewChildren, QueryList } from '@angular/core';
-import { IonicPage, NavController, NavParams, MenuController, Events, AlertController, Platform, LoadingController, App } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { NavController, MenuController, AlertController, LoadingController, App } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
-import { LocalNotifications } from '@ionic-native/local-notifications';
 import { File } from '@ionic-native/file';
 import { AuthPage } from '../auth/auth';
 import { HTTP } from '@ionic-native/http';
@@ -36,11 +35,8 @@ export class SurveyPage {
     notifications;
     loader;
     id;
-    j = -1;
 
 	constructor(private diagnostic: Diagnostic,
-        private events: Events,
-        private platform: Platform,
         public menuCtrl: MenuController,
         private locationAccuracy: LocationAccuracy,
         private geolocation: Geolocation,
@@ -51,7 +47,6 @@ export class SurveyPage {
         public http: HTTP,
         public httpClient: HttpClient,
         public appCtrl: App,
-        private localNotifications: LocalNotifications,
         public loadingCtrl: LoadingController,
         private file: File) {
 
@@ -61,117 +56,107 @@ export class SurveyPage {
         this.loader.present();
 
         this.menuCtrl.enable(true);
-        this.file = file;
-
-        this.storage.get('sentForms').then((sentForms) => {
-            this.sentForms = sentForms;
-        });
 
         this.storage.get('linkedUser').then((linkedUser) => {
             this.linkedUser = linkedUser;
         });
 
         this.storage.get('pendingForms').then((pendingForms) => {
+            console.log('[SURVEY/constructor] PENDING FORMS', pendingForms);
             this.pendingForms = pendingForms;
         });
 
-        /*this.storage.get('infoTemplates').then((templates) => {
-            this.infoTemplates = templates;
-            this.selectedSection = templates[0];
-        });*/
-
         this.storage.get("formsData").then((formsData) => {
-            if (formsData != null && (Object.keys(formsData).length > 0)) {
+            if (formsData !== null && (Object.keys(formsData).length > 0)) {
                 this.formsData = formsData;
             }
         });
 
         this.storage.get('sentForms').then((sentForms) => {
-            this.sentForms = sentForms;
-            if(this.sentForms != null && this.sentForms.length >0) {
-                console.log("HAY SENTFORMS");
-                var m = -1;
-                for(let sentForm of this.sentForms) {
-                    m++;
-                    if(sentForm.formData.type=='initial') {
-                        this.j = m;
-                        console.log("SE CAMBIÓ EL J: ", m);
-                        this.clickEditForm(this.j);
-                    }
-                }
+            console.log('[SURVEY/Constructor] sentForms', sentForms);
+            if(sentForms !== null && sentForms.length >0) {
+                const initialForms = sentForms.filter((sentForm: any) => sentForm.formData.type === 'initial');
+                console.log('[SURVEY/Constructor] initialForms', initialForms)
+                const pendingForm = initialForms[initialForms.length - 1];
+                this.clickEditForm(sentForms, pendingForm);
             } else {
-                /*this.getInfoPlantilla().then((result) => {
-                    this.storage.get("infoTemplates").then((info_templates) => {
-                        var info_template = info_templates[0];
-                        console.log("INFO TEMPLATE LOGIN: ", info_template);
-                        this.startForm(info_template, 'initial', 0);
-                    });
-                });*/
                 this.getInfoPlantilla();
-
-                /*this.storage.get("infoTemplates").then((info_templates) => {
-                    var info_template = info_templates[0];
-                    this.startForm(info_template, 'initial', 0);
-                });*/
             }
         });
+    }
 
-	}
+    async clickEditForm(sentForms: any[], pendingForm: any) {
+        try{
+            let currentForm = pendingForm.formData;
+            let templateUuid = pendingForm.template;
+            let formsData = await this.storage.get('formsData');
+            let forms = formsData[templateUuid];
+            let infoTemplates = await this.storage.get('infoTemplates');
+            console.log('[SURVEY/clickEditForm] PENDING FORM', pendingForm);
+            console.log('[SURVEY/clickEditForm] infoTemplates', infoTemplates);
+
+            let template: any;
+            let infoTemplateIndex: number;
+            for (let i = 0; i < infoTemplates.length; i++) {
+                let temp = infoTemplates[i];
+                if (temp.uuid === templateUuid) {
+                    template = temp;
+                    infoTemplateIndex = i;
+                    break;
+                }
+            }
+
+            // Although this can look dumb, it is the easiest way to make a deep copy
+            template.data = JSON.parse(JSON.stringify(currentForm.data));
+            const selectedTemplate = JSON.parse(JSON.stringify(currentForm.data));
+
+            const formulario_uso = {
+                template: template,
+                selectedTemplate: selectedTemplate,
+                formData: selectedTemplate,
+                currentForm: currentForm,
+                forms: forms,
+                formsData: formsData,
+                pendingForms: sentForms,
+                geolocationAuth: 'GRANTED',
+                infoTemplates: infoTemplates,
+                infoTemplateIndex: infoTemplateIndex,
+                indice_seccion: 0
+            };
+
+            this.storage.set('formulario_uso', formulario_uso);
+            this.loader.dismiss();
+            this.appCtrl.getRootNav().setRoot(FormPage);
+
+        } catch(err) {
+            console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
+        }
+    }
 
     getInfoPlantilla() {
         for (let template of this.templates) {
-            if (template.type == "SIMPLE") {
-                this.infoTemplates.push({
-                    uuid: template.uid,
-                    name: template.name,
-                    type: template.type,
-                    gps: template.gps,
-                    set_id: template.set_id,
-                    data: template.data
-                });
-            } else {
-                this.infoTemplates.push({
-                    uuid: template.uid,
-                    name: template.name,
-                    type: template.type,
-                    gps: template.gps,
-                    set_id: template.set_id,
-                    data: template.data
-                });
-            }
-        }
-        this.storage.set('infoTemplates', this.infoTemplates).then((result) => {
-            this.storage.get("infoTemplates").then((info_templates) => {
-                var info_template = info_templates[0];
-                console.log("INFO TEMPLATE LOGIN: ", info_template);
-                this.startForm(info_template, 'initial', 0);
+            this.infoTemplates.push({
+                uuid: template.uid,
+                name: template.name,
+                type: template.type,
+                gps: template.gps,
+                set_id: template.set_id,
+                data: template.data
             });
+        }
+
+        console.log('[SURVEY/getInfoPlantilla] this.infoTemplates', this.infoTemplates);
+        this.storage.set('infoTemplates', this.infoTemplates).then(() => {
+            const info_template = this.infoTemplates[0];
+            if (info_template.gps === 'required') {
+                this.requestLocationAuthorization(info_template, info_template.uuid, 'initial', 0);
+            } else {
+                this.chooseFormTypeToInit(info_template, info_template.uuid, 'initial', 0);
+            }
         }).catch((error) => {
             console.log("ERROR EN INFO PLANTILLA", error);
         });
     }
-
-    /*ionViewWillEnter(){
-        this.storage.get('infoTemplates').then((templates) => {
-            this.infoTemplates = templates;
-            this.selectedSection = templates[0];
-        });
-
-        this.storage.get('sentForms').then((sentForms) => {
-            this.sentForms = sentForms;
-            if(this.sentForms != null && this.sentForms.length >0) {
-                console.log("HAY SENTFORMS");
-                var m = -1;
-                for(let sentForm of this.sentForms) {
-                    m++;
-                    if(sentForm.formData.type=='initial') {
-                        this.j = m;
-                        console.log("SE CAMBIÓ EL J");
-                    }
-                }
-            }
-        });
-    }*/
 
     async startFollowUpForm(template, selectedTemplate, templateUuid, index) {
         this.formsData = await this.storage.get("formsData");
@@ -208,48 +193,46 @@ export class SurveyPage {
 
     startInitialForm(template, selectedTemplate, templateUuid, formUuid, type, index) {
         this.storage.get('formsData').then((formsData) => {
+            console.log('[SURVEY/startInitialForm] formsData', formsData);
+            console.log('[SURVEY/startInitialForm] this.formsData', this.formsData);
+            console.log('[SURVEY/startInitialForm] formsData === this.formsData', formsData === this.formsData);
             this.formsData = formsData;
             let currentForm = {};
             let forms;
+            // NUNCA SE CUMPLE EN EL VERY FIRST LOGIN
             if (this.formsData != null && (Object.keys(this.formsData).length > 0) && this.formsData.hasOwnProperty(templateUuid)) {
                 forms = this.formsData[templateUuid].slice(0);
+                console.log('[SURVEY/startInitialForm] this.formsData[templateUuid]', this.formsData[templateUuid]);
+            }
+            console.log('[SURVEY/startInitialForm] forms', forms);
+            currentForm = {
+                uuid: formUuid,
+                version: 0,
+                type: type,
+                name: template.name,
+                gps: template.gps,
+                data: {},
+                createdDate: new Date()
+            };
+            if (template.gps == "required") {
+                currentForm["coordinates"] = this.coordinates;
             }
             if (forms != null && (forms.length > 0)) {
-                let form = forms[forms.length - 1];
-                currentForm = {
-                    uuid: formUuid,
-                    version: 0,
-                    type: type,
-                    name: template.name,
-                    gps: template.gps,
-                    data: {},
-                    createdDate: new Date()
-                };
-                if (template.gps == "required") {
-                    currentForm["coordinates"] = this.coordinates;
-                }
                 forms.push(currentForm);
             } else {
-                currentForm = {
-                    uuid: formUuid,
-                    version: 0,
-                    type: type,
-                    name: template.name,
-                    gps: template.gps,
-                    data: {},
-                    createdDate: new Date()
-                };
-                if (template.gps == "required") {
-                    currentForm["coordinates"] = this.coordinates;
-                }
                 forms = [currentForm];
             }
-            var pendingForms = []
             this.storage.get('pendingForms').then((pendingForms) => {
+                console.log('[SURVEY/startInitialForm] pendingForms', pendingForms);
+                console.log('[SURVEY/startInitialForm] this.pendingForms', this.pendingForms);
+                console.log('[SURVEY/startInitialForm] pendingForms === this.pendingForms', pendingForms === this.pendingForms);
                 this.pendingForms = pendingForms;
+                console.log('[SURVEY/startInitialForm] pendingForms === this.pendingForms', pendingForms === this.pendingForms);
                 if (this.pendingForms != null && (this.pendingForms.length > 0)) {
                     pendingForms = this.pendingForms.slice(0);
+                    console.log('[SURVEY/startInitialForm] pendingForms === this.pendingForms', pendingForms === this.pendingForms);
                     let idx = 0;
+                    console.log('[SURVEY/startInitialForm] forms', forms);
                     if (this.formsData != null && this.formsData[templateUuid] != null) {
                         idx = this.formsData[templateUuid].length;
                     }
@@ -282,86 +265,12 @@ export class SurveyPage {
                     infoTemplateIndex: index,
                     indice_seccion: 0
                 };
+                console.log('[SURVEY/startInitialForm] formulario_uso', formulario_uso);
                 this.storage.set("formulario_uso", formulario_uso);
                 this.loader.dismiss();
                 this.appCtrl.getRootNav().setRoot(FormPage);
             });
         });
-    }
-
-    async clickEditForm(j) {
-        try{
-            //SE EDITA LA QUE YA SE ENVIÓ AUTOMÁTICAMENTE AL INICIO DE LA APP
-            let sentForms = await this.storage.get("sentForms");
-            console.log("PENDING FORMS: ", sentForms);
-            let pendingForm = sentForms[j];
-            let currentF = pendingForm.formData;
-            let templateUuid = pendingForm.template;
-            let template;
-            let selectedTemplate;
-            let infoTemplateIndex;
-            let formsData = await this.storage.get("formsData");
-            let forms = formsData[templateUuid];
-            let currentForm;
-            for (let form of forms){
-              if(form.uuid == currentF.uuid){
-                currentForm = form;
-                break;
-              }
-            }
-            let infoTemplates = await this.storage.get("infoTemplates");
-            console.log("pendingForm: ",pendingForm);
-            console.log("infoTemplates: ",infoTemplates);
-            console.log("currentForm: ",currentForm);
-            for (let k = 0; k < infoTemplates.length; k++) {
-                let temp = infoTemplates[k];
-                if (temp.uuid == templateUuid) {
-                    template = temp;
-                    infoTemplateIndex = k;
-                    break;
-                }
-            }
-            template.data = JSON.parse(JSON.stringify(currentForm.data));
-            selectedTemplate = JSON.parse(JSON.stringify(currentForm.data));
-
-            if (template.gps == "required") {
-                var formulario_uso = {
-                    template: template,
-                    selectedTemplate: selectedTemplate,
-                    formData: selectedTemplate,
-                    currentForm: currentForm,
-                    forms: forms,
-                    formsData: formsData,
-                    pendingForms: sentForms,
-                    geolocationAuth: "GRANTED",
-                    infoTemplates: infoTemplates,
-                    infoTemplateIndex: infoTemplateIndex,
-                    indice_seccion: 0
-                };
-                this.storage.set("formulario_uso", formulario_uso);
-                this.loader.dismiss();
-                this.appCtrl.getRootNav().setRoot(FormPage);
-            } else {
-                var formulario_uso = {
-                    template: template,
-                    selectedTemplate: selectedTemplate,
-                    formData: selectedTemplate,
-                    currentForm: currentForm,
-                    forms: forms,
-                    formsData: formsData,
-                    pendingForms: sentForms,
-                    geolocationAuth: "GRANTED",
-                    infoTemplates: infoTemplates,
-                    infoTemplateIndex: infoTemplateIndex,
-                    indice_seccion: 0
-                };
-                this.storage.set("formulario_uso", formulario_uso);
-                this.loader.dismiss();
-                this.appCtrl.getRootNav().setRoot(FormPage);
-            }
-        }catch (err) {
-            console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
-        }
     }
 
     requestLocationAuthorization(template, templateUuid, type, index) {
@@ -444,6 +353,7 @@ export class SurveyPage {
     }
 
     chooseFormTypeToInit(template, templateUuid, type, index) {
+        console.log('[SURVEY/chooseFormTypeToInit] type', type);
         if (type == "follow_up") {
             //this.startFollowUpForm(template, template.data.follow_up, templateUuid, index);
             let formUuid = uuid();
@@ -457,24 +367,6 @@ export class SurveyPage {
         }
     }
 
-    async startForm(template, type, index) {
-        // Genereate an uuid for form
-        let templateUuid = template.uuid;
-        this.storage.get('infoTemplates').then((templates) => {
-            for (let temp of templates) {
-                if (temp.uuid == template.uuid) {
-                    template = temp;
-                    break;
-                }
-            }
-            if (template.gps == "required") {
-                this.requestLocationAuthorization(template, templateUuid, type, index);
-            } else {
-                this.chooseFormTypeToInit(template, templateUuid, type, index)
-            }
-        });
-    }
-
     cerrarSesion() {
         this.storage.get('linkedUser').then((val) => {
             this.storage.set('linkedUser', null).then(data => {
@@ -482,133 +374,6 @@ export class SurveyPage {
             });
         });
     }
-
-    /*setNotificaciones() {
-        this.storage.get('notifications').then((notifications) => {
-            if(notifications) {
-                this.notifications = notifications;
-            } else {
-                this.notifications = {};
-            }
-            this.id = 0;
-        });
-        this.storage.get('templates').then((templates) => {
-            for (let template of templates) {
-                if(this.notifications[template.name]) {
-                    this.localNotifications.cancel(this.notifications[template.name]);
-                }
-                this.notifications[template.name] = new Array();
-                if (template.notifications) {
-                    for (let noti of template.notifications) {
-                        var nombre = template.name;
-                        var tipo = template.type;
-
-                        if (noti.type == 'SIMPLE') {
-                            for (let no of noti.children) {
-                                var fecha = no.date.split('-');
-                                var hora = no.time.split(':');
-                                this.localNotifications.schedule({
-                                    id: this.id,
-                                    icon: 'file://assets/imgs/logo_notification.png',
-                                    title: 'NUEVO FORMULARIO',
-                                    text: 'Tiene un nuevo formulario llamado ' + nombre + ' de tipo ' + tipo + ' por realizar',
-                                    trigger: { at: new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0) },
-                                    led: 'FF0000'
-                                });
-                                this.notifications[template.name].push(this.id);
-                                this.id++;
-                            }
-                        } else if (noti.type == 'PERIÓDICA') {
-                            var interval_type = noti.interval_type;
-                            var interval_value = noti.interval_value;
-                            var fecha_noti;
-
-                            for (let no of noti.children) {
-                                var fecha = no.date.split('-');
-                                var hora = no.time.split(':');
-                                if (no.type == 'start') {
-                                    var fecha_inicio = new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0);
-                                } else {
-                                    var fecha_fin = new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0);
-                                }
-                            }
-
-                            fecha_noti = new Date(fecha_inicio.getFullYear(), fecha_inicio.getMonth(), fecha_inicio.getDate(), fecha_inicio.getHours(), fecha_inicio.getMinutes(), 0);
-
-                            do {
-                                this.localNotifications.schedule({
-                                    id: this.id,
-                                    icon: 'file://assets/imgs/logo_notification.png',
-                                    title: 'NUEVO FORMULARIO',
-                                    text: 'Tiene un nuevo formulario llamado ' + nombre + ' de tipo ' + tipo + ' por realizar',
-                                    trigger: { at: new Date(fecha_noti.getFullYear(), fecha_noti.getMonth(), fecha_noti.getDate(), fecha_noti.getHours(), fecha_noti.getMinutes(), 0) },
-                                    led: 'FF0000'
-                                });
-
-                                this.notifications[template.name].push(this.id);
-
-                                if (interval_type == 'minute') {
-                                    fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 60 * 1000));
-                                } else if (interval_type == 'hour') {
-                                    fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 60 * 60 * 1000));
-                                } else if (interval_type == 'day') {
-                                    fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 24 * 60 * 60 * 1000));
-                                } else if (interval_type == 'week') {
-                                    fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 7 * 24 * 60 * 60 * 1000));
-                                } else if (interval_type == 'month') {
-                                    fecha_noti.setTime(fecha_noti.getTime() + (interval_value * 30 * 24 * 60 * 60 * 1000));
-                                }
-
-                                this.id++;
-
-                            } while (fecha_noti.getTime() <= fecha_fin.getTime());
-                        } else if(noti.type == 'PERIÓDICA_HORA_FIJA') {
-                            var interval_type = noti.interval_type;
-                            var interval_value = noti.interval_value;
-                            var fecha_noti, fecha;
-                            var dias = [];
-                            var f2, f1;
-                            var fecha_i = noti.dates[0];
-                            var fecha_fi = noti.dates[noti.dates.length - 1];
-                            var temp = fecha_fi.split('-');
-                            var fecha_f = new Date(temp[0], temp[1] - 1, temp[2], 0, 0);
-
-                            do {
-                                dias.push(fecha_i);
-                                f1 = fecha_i.split('-');
-                                f1 = new Date(f1[0], f1[1] - 1, f1[2], 0, 0);
-                                f2 = new Date(f1.getTime() + (interval_value * 24 * 60 * 60 * 1000));
-                                fecha_i = f2.getFullYear() + '-' + (f2.getMonth()+1) + '-' + f2.getDate();
-                            } while(f2.getTime() <= fecha_f.getTime());
-
-                            for(let fe of dias) {
-                                fecha = fe.split('-');
-
-                                for(let ti of noti.times) {
-                                    var hora = ti.split(':');
-                                    fecha_noti = new Date(fecha[0], fecha[1] - 1, fecha[2], hora[0], hora[1], 0);
-
-                                    this.localNotifications.schedule({
-                                        id: this.id,
-                                        icon: 'file://assets/imgs/logo_notification.png',
-                                        title: 'NUEVO FORMULARIO',
-                                        text: 'Tiene un nuevo formulario llamado ' + nombre + ' de tipo ' + tipo + ' por realizar',
-                                        trigger: {at: new Date(fecha_noti.getFullYear(), fecha_noti.getMonth(), fecha_noti.getDate(), fecha_noti.getHours(), fecha_noti.getMinutes(), 0)},
-                                        led: 'FF0000'
-                                    });
-
-                                    this.notifications[template.name].push(this.id);
-                                    this.id++;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            this.notifications['totalQuantity'] = this.id;
-            this.storage.set('notifications', this.notifications);
-        });
-    }*/
 
     startSimpleForm(template, selectedTemplate, templateUuid, formUuid, type, index) {
         // Generate a code for Interviewed

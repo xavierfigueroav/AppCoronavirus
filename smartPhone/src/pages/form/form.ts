@@ -64,8 +64,6 @@ export class FormPage extends PopoverPage {
         try {
             this.menuCtrl.enable(true);
 
-            this.file = file
-
             this.storage.get('id_dataset').then((id_dataset) => {
                 this.id_dataset = id_dataset;
             }).catch(error => {
@@ -85,6 +83,39 @@ export class FormPage extends PopoverPage {
             console.log("constructor");
         }
 
+    }
+
+
+    ionViewDidEnter() {
+        this.cargarDatos();
+    }
+
+    async cargarDatos() {
+        console.log("EMPIEZA LA CARGA DE DATOS");
+        var formulario_uso = await this.storage.get('formulario_uso');
+        console.log('[FORM/cargarDatos] formulario_uso', formulario_uso);
+        this.template = formulario_uso.template;
+        this.formData = formulario_uso.formData;
+        console.log('[FORM/cargarDatos] this.formData', this.formsData);
+        this.selectedTemplate = formulario_uso.selectedTemplate;
+        this.currentForm = formulario_uso.currentForm;
+        this.templateUuid = this.template.uuid;
+        this.infoTemplateIndex = formulario_uso.infoTemplateIndex;
+        this.forms = formulario_uso.forms;
+        this.geolocationAuth = formulario_uso.geolocationAuth;
+        this.pendingForms = formulario_uso.pendingForms;
+        this.infoTemplates = formulario_uso.infoTemplates;
+        this.indice_seccion = formulario_uso.indice_seccion;
+        console.log("INDICE ACTUAL: ", this.indice_seccion);
+        if(formulario_uso.formsData != null) {
+            this.formsData = formulario_uso.formsData;
+        } else {
+            var formsData = await this.storage.get("formsData");
+            console.log('[FORM/cargarDatos] if formsData', formulario_uso);
+            if (formsData != null) {
+                this.formsData = formsData;
+            }
+        }
     }
 
     siguienteSeccion(indice) {
@@ -187,62 +218,6 @@ export class FormPage extends PopoverPage {
         }
     }
 
-    async cargarDatos() {
-        console.log("EMPIEZA LA CARGA DE DATOS");
-        var formulario_uso = await this.storage.get('formulario_uso');
-        console.log("FORMULARIO USO:", formulario_uso);
-        this.template = formulario_uso.template;
-        this.formData = formulario_uso.formData;
-        console.log("FORM DATA: ", this.formData);
-        this.selectedTemplate = formulario_uso.selectedTemplate;
-        console.log("SELECTED TEMPLATE: ", this.selectedTemplate);
-        this.currentForm = formulario_uso.currentForm;
-        this.templateUuid = this.template.uuid;
-        this.infoTemplateIndex = formulario_uso.infoTemplateIndex;
-        this.forms = formulario_uso.forms;
-        this.geolocationAuth = formulario_uso.geolocationAuth;
-        this.pendingForms = formulario_uso.pendingForms;
-        this.infoTemplates = formulario_uso.infoTemplates;
-        this.indice_seccion = formulario_uso.indice_seccion;
-        console.log("INDICE ACTUAL: ", this.indice_seccion);
-        if(formulario_uso.formsData != null) {
-            this.formsData = formulario_uso.formsData;
-        } else {
-            var formsData = await this.storage.get("formsData");
-            if (formsData != null) {
-                this.formsData = formsData;
-            }
-        }
-    }
-
-    ionViewDidEnter() {
-        this.cargarDatos();
-        /*try {
-            this.navbarName.backButtonClick = () => {
-                var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-item"));
-                var elementos = [];
-                var errores = 0;
-
-                for (var el of array) {
-                    if (el.id) {
-                        elementos.push(el.id);
-                    }
-                }
-
-                var params = this.mappingParametros(elementos);
-
-                for (var pa of params) {
-                    errores += this.validateBlurFunction("", pa.blurFunction);
-                }
-                if (errores == 0) {
-                    this.navCtrl.pop();
-                }
-            }
-        } catch(e){
-            console.log("ionViewDidEnter");
-        }*/
-    }
-
     save(index, pending_form_index) {
         try {
             this.currentForm.saveDate = new Date();
@@ -323,10 +298,8 @@ export class FormPage extends PopoverPage {
         console.log("ENVIAR FORMULARIO");
         var pendingForms = await this.storage.get('pendingForms');
         console.log("TODOS PENDING FORMS: ", pendingForms);
-        if((pendingForms != null) && (pendingForms.length > 0)) {
+        if((pendingForms !== null) && (pendingForms.length > 0)) {
             console.log("HAY PENDING FORMS");
-            var url = "http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create";
-            //for(let pendingForm of pendingForms) {
                 var pendingForm = pendingForms[0];
                 console.log("PENDING FORM: ", pendingForm);
                 if(pendingForm.formData.type == 'initial') {
@@ -334,20 +307,8 @@ export class FormPage extends PopoverPage {
                     console.log("CEDULA: ", cedula);
                     var app_code = this.linkedUser.codigo_app;
                     console.log("CODIGO APP: ", app_code);
-                    var respuesta_modificacion_usuario = await this.api.updateUser(app_code, "cedula", cedula);
-                    if(respuesta_modificacion_usuario == 0) {
-                        let alert = this.alertCtrl.create({
-                            subTitle: "Hubo un problema en la actualización de los datos. Por favor inténtelo de nuevo más tarde.",
-                            buttons: ["cerrar"]
-                        });
-                        alert.present();
-                    } else if(respuesta_modificacion_usuario == -1) {
-                        let alert = this.alertCtrl.create({
-                            subTitle: "Hubo un problema al comunicarse con el servidor. Por favor verifique su conexión a internet o inténtelo más tarde.",
-                            buttons: ["cerrar"]
-                        });
-                        alert.present();
-                    }
+                    this.api.updateUser(app_code, "cedula", cedula);
+                    // Connection errors are not validated here, but later in this.subirArchivo()
                 }
 
                 var id_dataset = pendingForm.id_dataset;
@@ -366,6 +327,11 @@ export class FormPage extends PopoverPage {
     }
 
     subirArchivo(pendingForm, id_dataset) {
+        const loader = this.loadingCtrl.create({
+            content: "Espere ...",
+        });
+        loader.present();
+
         var tipo_form = pendingForm.formData.type;
         if(tipo_form == 'initial') {
             var nombre_archivo = 'DATOS-PERSONALES';
@@ -376,11 +342,6 @@ export class FormPage extends PopoverPage {
         var fecha_formateada = this.obtenerFechaActual();
         var nombre_archivo = nombre_archivo + "_" + fecha_formateada + ".json";
         var string_form = JSON.stringify(pendingForm, null, 2);
-
-        const loader = this.loadingCtrl.create({
-            content: "Espere ...",
-        });
-        loader.present();
 
         this.file.createFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, true).then((response) => {
             console.log('SE CREÓ EL ARCHIVO');
@@ -437,6 +398,13 @@ export class FormPage extends PopoverPage {
                         });
                     });
                 }).catch(err => {
+                    loader.dismiss()
+                    let alert = this.alertCtrl.create({
+                        subTitle: "Hubo un problema al comunicarse con el servidor. Por favor verifique su conexión a internet o inténtelo más tarde.",
+                        buttons: ["cerrar"]
+                    });
+                    alert.present();
+                    this.appCtrl.getRootNav().setRoot(TabsPage);
                     console.log(err);
                     console.log('NO SE LEYÓ EL ARCHIVO');
                 });
