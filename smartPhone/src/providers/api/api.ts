@@ -80,16 +80,16 @@ export class APIProvider {
         });
     }
 
-    getTestResultsBySampleId(sampleId: string) {
+    getTestResultsByAppId(appId: string) {
         return new Promise<any>((resolve, reject) => {
             console.log('Requesting tests...');
-            const data = this.generateReadTestBody(sampleId);
+            const data = this.generateReadTestBody(appId);
             const httpOptions = {
                 headers: new HttpHeaders({ 'Content-Type': 'application/json' })
             };
             this.httpClient.post(Constants.READ_REGISTRY_URL, data, httpOptions)
             .toPromise().then(response => {
-                resolve(response['data'][0]);
+                resolve(response['data']);
             }).catch(error => reject(error));
         });
     }
@@ -338,14 +338,14 @@ export class APIProvider {
         return JSON.stringify(data);
     }
 
-    generateReadTestBody(sampleId: string){
+    generateReadTestBody(appId: string){
         const data = {
             "tabla": "integracion_pruebas",
             "condiciones": [
                 {
-                    "columna": "muestra_id",
+                    "columna": "app_id",
                     "comparador": "==",
-                    "valor": sampleId
+                    "valor": appId
                 }
             ]
         };

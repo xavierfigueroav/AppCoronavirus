@@ -52,7 +52,7 @@ export class UserPage implements OnInit{
     ngOnInit() {
         console.log('ngOnInit UserPage');
 
-        this.colors = {'1': '#32c800', '2': '#FFC800', '3': '#FF0000', '-1': '#999999'};
+        this.colors = {'1': '#49BEAA', '2': '#EEB868', '3': '#EF767A', '-1': '#999999'};
         this.showingForm = true;
 
         this.storage.get('homeLocation').then(location => {

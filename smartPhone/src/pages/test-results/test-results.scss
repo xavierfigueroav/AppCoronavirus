@@ -5,10 +5,6 @@ page-test-results {
         margin-bottom: 30px;
     }
 
-    .description {
-        font-size: 16px;
-    }
-
     .form {
         text-align: center;
     }
@@ -24,13 +20,20 @@ page-test-results {
         font-size: 16px;
     }
 
-    .button {
+    #searchButton {
         margin-top: 15px;
-        color:#0e29a5;
         font-weight: bold;
+        text-align: center;
+        margin:auto;
+        display:block;
     }
 
-    #ingresaCodigoInput, .button{
+    #actualizarButtonText{
+        color: #eeeeee;
+        margin-top: 5%;
+    }
+
+    #ingresaCodigoInput, .button, ion-card{
         border-radius: 10px !important;
     }
 
@@ -71,13 +74,17 @@ page-test-results {
         grid-column-end: 3;
     }
 
-    .advice-title {
+    .title,.advice-title {
         font-weight: bold;
         text-align: center;
     }
 
+    .advice-title{
+        color:#23427C;
+    }
     .advice-content {
         text-align: justify;
+        color:#23427C;
     }
 
     .result-value {
@@ -103,5 +110,16 @@ page-test-results {
         margin-top: 15%;
         font-weight: bold;
         
+    }
+
+    #usersIdsText{
+        margin-top: 5%;
+        margin-bottom: 2%;
+        margin-left: 5%;
+    }
+
+    .description {
+        font-size: 16px;
+        text-align: justify;
     }
 }
