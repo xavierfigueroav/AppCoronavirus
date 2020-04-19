@@ -432,7 +432,7 @@ def enviar_correo(request):
 		if len(respuesta.get("data")) == 0:
 			datos_retornar = {"mensaje": "Cedula o Correo no existen"}
 			return HttpResponse(json.dumps(datos_retornar, ensure_ascii=False).encode("utf-8")\
-	                , content_type='application/json')
+	                , content_type='application/json',status = 404)
 		else:
 			codigo = respuesta.get("data")[0].get("telefono_id")
 			text = " Te informamos que tu clave de app es: \n "
