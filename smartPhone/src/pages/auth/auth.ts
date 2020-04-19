@@ -480,6 +480,11 @@ export class AuthPage {
             message: "Escriba una dirección de correo electrónico válida a la que podamos enviar su contraseña.",
             inputs: [
               {
+                name: 'cedula',
+                type: "text",
+                placeholder: 'Ingresa tu cédula'
+              },
+              {
                 name: 'email',
                 type: "email",
                 placeholder: 'usuario@correo.com'
@@ -495,31 +500,33 @@ export class AuthPage {
                 handler: data => {
                     if (this.validateEmail(data.email)) {
                         console.log('Enviar correo.');
-                        this.confirmacionEnvioCorreo();
+                        this.confirmacionEnvioCorreo(data.cedula, data.email);
                     }else{
                         console.log((this.validateEmail(data.email)));
-                        this.correoInvalido();
+                        this.alerts.showEmailErrorAlert();
                     }
                 }
               }
             ]
         });
-          prompt.present();
+        prompt.present();
     }
 
-    correoInvalido(){
-        const alert = this.alertCtrl.create({
-            subTitle: 'Correo inválido!',
-            buttons: ['OK']
-          });
-          alert.present();
-    }
-
-    confirmacionEnvioCorreo() {
-        const alert = this.alertCtrl.create({
-          subTitle: 'Se ha enviado su contraseña al correo electrónico que ha proporcionado. Por favor, revise su bandeja de entrada.',
-          buttons: ['OK']
+    confirmacionEnvioCorreo(cedula: string, emailAddress: string) {
+        this.loader = this.loadingCtrl.create({
+            content: "Espere...",
         });
-        alert.present();
+        this.loader.present();
+        this.api.sendAppIdToEmail(cedula, emailAddress).then(sent => {
+            this.loader.dismiss();
+            if(sent) {
+                this.alerts.showSentEmailSuccessAlert();
+            } else {
+                this.alerts.showPairCedulaEmailErrorAlert();
+            }
+        }).catch(() => {
+            this.loader.dismiss();
+            this.alerts.showConnectionErrorAlert();
+        });
     }
 }

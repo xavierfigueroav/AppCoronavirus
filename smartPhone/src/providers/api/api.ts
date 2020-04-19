@@ -208,6 +208,23 @@ export class APIProvider {
         });
     }
 
+    sendAppIdToEmail(cedula: string, emailAddress: string) {
+        return new Promise<any>((resolve, reject) => {
+            const data = this.generateSendAppIdToEmailBody(cedula, emailAddress);
+            const httpOptions = {
+                headers: new HttpHeaders({ 'Content-Type':'application/json' })
+            };
+
+            this.httpClient.post(Constants.SEND_EMAIL_URL, data, httpOptions)
+            .toPromise().then(() => {
+                resolve(1);
+            }).catch(error => {
+                if(error.status === 404) resolve(0);
+                reject(error);
+            });
+        });
+    }
+
     generateValidationCodeBody(app_code: string) {
         const data = {
             "tabla": "integracion_claves_app",
@@ -354,6 +371,15 @@ export class APIProvider {
         const data = {
             name: datasetId.toString(),
             owner_org: Constants.OWNER_ORG
+        };
+
+        return JSON.stringify(data);
+    }
+
+    generateSendAppIdToEmailBody(cedula: string, emailAddress: string) {
+        const data = {
+            cedula: cedula,
+            correo: emailAddress
         };
 
         return JSON.stringify(data);

@@ -8,3 +8,6 @@ export const CREATE_REGISTRY_URL = `${API_ENDPOINT}/api/integracion/table/insert
 export const READ_REGISTRY_URL = `${API_ENDPOINT}/api/integracion/table/read`;
 export const UPDATE_REGISTRY_URL = `${API_ENDPOINT}/api/integracion/table/update`;
 export const DELETE_REGISTRY_URL = `${API_ENDPOINT}/api/integracion/table/delete`;
+
+const EMAIL_API_ENDPOINT = 'http://192.168.100.241:8000';
+export const SEND_EMAIL_URL = `${EMAIL_API_ENDPOINT}/purevid/enviar_correo`;

@@ -34,4 +34,16 @@ export class AlertProvider {
         this.showOkButtonAlert('Hubo un problema al intentar acceder al almacenamiento local.');
     }
 
+    showSentEmailSuccessAlert() {
+        this.showOkButtonAlert('Se ha enviado su contraseña al correo electrónico que ha proporcionado. Por favor, revise su bandeja de entrada.')
+    }
+
+    showPairCedulaEmailErrorAlert() {
+        this.showOkButtonAlert('La combinación cédula/correo que ha proporcionado no existe.')
+    }
+
+    showEmailErrorAlert() {
+        this.showOkButtonAlert('El correo proporcionado es inválido.')
+    }
+
 }
