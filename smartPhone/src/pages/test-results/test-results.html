@@ -31,7 +31,7 @@
             </ion-card-header>
 
             <ion-card-content style="padding-top:10px;">
-                <div class="result-container">
+                <div class="result-container" *ngIf="testStatuses[result.resultado].toLowerCase() == 'terminada'; else enProceso">
                     <span class="result1-label result-text">Estado: </span><span class="result-value value-1 result-text">{{ testStatuses[result.estado] }}</span>
                     <span class="result2-label result-text">Resultado: </span><span class="result-value value-2 result-text">{{ testResults[result.resultado] }}</span>
                     <div class="advice" *ngIf="result['recomendacion'] !== undefined">
@@ -39,8 +39,31 @@
                         <p class="advice-content">{{ result['recomendacion'] }}</p>
                     </div>
                 </div>
+                <ng-template #enProceso>
+                    <span class="result1-label result-text">Estado: </span><span class="result-value value-1 result-text">{{ testStatuses[result.estado] }}</span>
+                </ng-template>
             </ion-card-content>
         </ion-card>
     </div>
 
 </ion-content>
+
+<!-- <h6 id="usersIdsText">Usuario: <b>{{userId}}</b></h6> -->
+        <!-- <ion-card *ngFor="let result of testsResultsMap[userId]">
+            <ion-card-header style="text-align: center;">
+                Prueba {{result.muestra_id}}
+            </ion-card-header>
+
+            <ion-card-content style="padding-top:10px;">
+                <div class="result-container">
+                    <span class="result1-label result-text">Estado: </span><span class="result-value value-1 result-text">{{ testStatuses[result.estado] }}</span>
+                    <div *ngIf="testStatuses[result.resultado].toLowerCase() == 'terminada'">
+                        <span class="result2-label result-text">Resultado: </span><span class="result-value value-2 result-text">{{ testResults[result.resultado] }}</span>
+                        <div class="advice" *ngIf="result['recomendacion'] !== undefined">
+                            <p class="advice-title">Recomendación</p>
+                            <p class="advice-content">{{ result['recomendacion'] }}</p>
+                        </div>
+                    </div>
+                </div>
+            </ion-card-content>
+        </ion-card> -->

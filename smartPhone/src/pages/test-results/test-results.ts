@@ -52,14 +52,28 @@ export class TestResultsPage implements OnInit {
                 console.log(user.codigo_app);
                 console.log(results);
                 if(results) {
-                    var resultsMap = {};
+                    var resultsMap = {string:[]};
                     results.forEach(function(result){
-                        if(result.cedula in resultsMap){
-                            resultsMap[result.cedula].push(result);
+                        if(result.cedula){
+                            if(result.cedula in resultsMap){
+                                resultsMap[result.cedula].push(result);
+                            }else{
+                                resultsMap[result.cedula] = [result];
+                            }
                         }else{
-                            resultsMap[result.cedula] = [result];
+                            if(result.referencia in resultsMap){
+                                resultsMap[result.referencia].push(result);
+                            }else{
+                                resultsMap[result.referencia] = [result];
+                            }
                         }
+                        
                     });
+                    //sort by date
+                    for(const userId of Object.keys(resultsMap)){
+                        resultsMap[userId] = resultsMap[userId].sort((a, b) => (a.fecha_recoleccion > b.fecha_recoleccion) ? 1 
+                                                      : (a.fecha_recoleccion === b.fecha_recoleccion) ? ((a.muestra_id > b.muestra_id) ? 1 : -1) : -1 );
+                    }
                     this.testsResultsMap = resultsMap;
                     console.log(this.testsResultsMap);
                     this.usersIds =  Object.keys(this.testsResultsMap);
