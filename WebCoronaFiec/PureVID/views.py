@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from .models import *
 from .forms import *
-
+from datetime import datetime,date
 # Create your views here.
 import sys
 from django.contrib.auth import authenticate, login, logout
@@ -174,7 +174,8 @@ def registro_muestra(request):
 	#print(str(request.body))
 	datos = str(request.body).split("&")
 
-	codigo_muestra = datos[3].split("=")[1][:-1]
+	codigo_muestra = datos[3].split("=")[1]
+	correo = datos[4].split("=")[1][:-1]
 	cedula = datos[1].split("=")[1]
 	codigo_lab = datos[2].split("=")[1]
 	parametros = {"tabla" : "integracion_usuario",
@@ -245,7 +246,8 @@ def registro_muestra(request):
 		codigo = respuesta.get("data")[0].get("telefono_id")
 
 
-
+	fecha_actual = date.today()
+	fecha_actual_str = datetime.strftime(fecha_actual, '%Y%m%d')
 	parametros = {"tabla" : "integracion_pruebas",
 	"datos":[ {
 		"muestra_id":codigo_muestra,
@@ -255,7 +257,8 @@ def registro_muestra(request):
 		"recolector_id": "REC0001", #por ahora va quemado
 		"app_id": codigo,
 		"estado" : 0, #por ahora quemado
-		"resultado": 0 #por ahora quemado
+		"resultado": 0, #por ahora quemado
+		"fecha_recoleccion": fecha_actual_str
 	}],
 	
 	}
@@ -267,6 +270,12 @@ def registro_muestra(request):
 
 	#return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
     #    , content_type='application/json')
+	codigo = respuesta.get("data")[0].get("telefono_id")
+	text = " Te informamos que tu clave de app es: \n "
+    
+	text += codigo+ "\n" + "Gracias por usar la app!"
+	send_mail("AppPrueba: AppKey", text, EMAIL_HOST_USER, [correo],fail_silently=False)
+	
 	return render(request, 'PureVID/resultadoMuestra.html',{'data':respuesta} )
 
 
