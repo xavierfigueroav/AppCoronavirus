@@ -1,0 +1,77 @@
+.container {
+	background: #212a85;
+    text-align: center;
+    border-radius: 8%;
+    max-width: 25em;
+
+
+}
+
+label {
+	color: #ece242;
+}
+
+.top{
+	height: 10em;
+}
+
+
+#popup {
+	visibility: hidden;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width:100%;
+	height:100%;
+	text-align:center;
+	z-index: 1000;
+}
+
+#popup div {
+	width:300px;
+	margin: 100px auto;
+	background-color: #ece242;
+	border-radius: 5%;
+	padding:15px;
+	text-align:center;
+}
+
+
+.loginbox *{
+	margin: 7pt;
+}
+input{
+	width: 9em;
+}
+
+.box-footer form{
+	padding-top: 1em; 
+}	
+
+.loginbox *{
+	margin: 7pt;
+}
+input{
+	width: 9em;
+}
+
+.box-footer form{
+	padding-top: 1em; 
+}	
+
+.title_message{
+	color: #ece242;
+}
+.message{
+	color: #EBF2FF;
+}
+
+.link{
+	color: #EBF2FF;
+	text-decoration: underline;
+	font-weight: bold;
+}
+
+.link:hover{
+	color: #ece242;
+}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}AutoSalud - Ingreso{% endblock %}
+
+{% block css %}
+    <link href="{% static 'css/login.css' %}" rel="stylesheet">
+    <link href="{% static 'styles/message.css' %}" rel="stylesheet">
+
+{% endblock %}
+{% block menu %}
+  <li ><a class="labels h4 " href="{% url 'login' %}">Ingresar</a> </li>
+{% endblock %}
+{% block body %}
+<div class="top"></div>
+	<div class="container">
+		
+		<div id="square">
+			<h2 class="title_message">Laboratorista</h2> 
+
+			<div class="login-box">
+				<hr class="featurette-divider">
+				<form method="Post" class="form-horizontal formLogin" action="{% url 'login_laboratorista' %}">
+        			{% csrf_token %}
+					<div class="row">
+						<div class="col-md-5">
+							<!--hr class="featurette-divider"-->
+							<label class = 'h4 pt-20 title_message' for="username">Usuario</label>
+						</div>	
+
+						<!--hr class="featurette-divider"-->
+						<div class="col-md-7">
+							{{ form.username }}
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-5">
+							<!--hr class="featurette-divider"-->
+							<label class = 'h4 pt-20 title_message' for="password">Contraseña</label>
+						</div>	
+
+						<!--hr class="featurette-divider"-->
+						<div class="col-md-7">
+							{{ form.password }}
+						</div>
+					</div>
+
+
+					<hr class="featurette-divider">
+					<div class="box-footer">
+						<button type="submit" class="pt-20">Entrar!</button>
+					</div>
+					<hr class="featurette-divider">
+					</form>
+			</div>
+		</div>
+	</div>
+
+	
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/login.js' %}"></script>
+    <!script src="{% static 'js/client/recover.js' %}"></script>
+
+{% endblock %}

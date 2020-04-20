@@ -1,0 +1,86 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Manejador de desastres naturales">
+    <meta name="author" content="Fabricio Layedra">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cairo">
+    <link rel="icon" href="https://www.tchd.org/ImageRepository/Document?documentId=6966">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.15/datatables.min.css"/>
+
+
+    
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'dist/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    {% block css %}{% endblock %}
+
+    <link href="{% static 'css/hdft.css' %}" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Custom styles for this template -->
+  </head>
+<!-- NAVBAR
+================================================== -->
+  <body>
+
+  
+    <!-- Bootstrap core CSS -->
+
+ 
+    <nav class="navbar  navbar-inverse navbar-fixed-top">
+      <div class="container-fluid paleta1">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+             
+            </div>
+            
+            <div id="navbar" class="navbar-collapse collapse" >
+              <img src="{% static 'img/logo_v1.png' %}" class="header-icon" alt="helpMapp-logo">
+              <ul class="nav navbar-nav navbar-right ">
+                {% block menu %}{% endblock %}
+                
+               
+              </ul>
+              
+            </div>
+          </div>
+        </nav>
+ 
+    {% block body %}{% endblock %}
+      <!-- FOOTER -->
+      <footer class="panel-footer fixed-bottom paleta1" >
+        <p class="h4 labels">FIEC 2020 &middot;  Todos los derechos reservados  &middot;</p>
+      </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../js/tests/vendor/jquery.min.js"><\/script>')</script>
+    <script src="{% static 'js/tests/vendor/jquery.min.js' %}"></script>
+    <script src="{% static 'js/filtrar.js' %}"></script>
+    <script src="{% static 'dist/js/bootstrap.min.js' %}"></script>
+    
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.15/datatables.min.js"></script>
+
+
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

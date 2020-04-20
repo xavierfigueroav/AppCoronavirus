@@ -17,10 +17,14 @@ from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def login_laboratorista(request):
-	datos = json.loads(str(request.body)[2:-1])
-	print(datos)
-	usuario = datos.get("username")
-	password = datos.get("password")
+	print(str(request.body))
+
+	usuario = str(request.body).split("&")[1].split("=")[1]
+	password = str(request.body).split("&")[2].split("=")[1][:-1]
+
+	print(usuario)
+	print(password)
+
 	parametros = {"tabla" : "integracion_claves_labolatorista",
 	"operador": "and",
 	"columnas" : ["nombre"],
@@ -41,11 +45,14 @@ def login_laboratorista(request):
 	print(datos)
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
+
+	
 	if len(respuesta.get("data")) == 0:
-		return HttpResponse(json.dumps({"mensaje": "usuario o contraeña Incorrectos", "respuesta":False}, ensure_ascii=False).encode("utf-8")\
-        , content_type='application/json')		
-	return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
-        , content_type='application/json')
+		print("error")
+		print(request.method)
+		#return HttpResponse(json.dumps({"mensaje": "usuario o contraeña Incorrectos", "respuesta":False}, ensure_ascii=False).encode("utf-8")\ , content_type='application/json')		
+		return render(request, 'PureVID/login.html',{'data':"usuario o contraseña Incorrectos"})
+	return render(request,'PureVID/tests.html',{})
 
 
 @csrf_exempt
@@ -397,15 +404,66 @@ def get_muestra(request):
 
 def result_muestra(request):
 
+	codigo_muestra = str(request.body).split("&")[1].split("=")[1]
+	recomendacion = str(request.body).split("&")[2].split("=")[1].replace("+"," ")
+	print(codigo_muestra)
+	print(recomendacion)
+
+	if 'positivo' in request.POST:
+		# do subscribe
+		estado = 1
+		resultado = 1
+		mensaje = "POSITIVO a COVID-19"
+		print("positivo")
+
+	elif 'negativo' in request.POST:
+		estado = 1
+		resultado = 0
+		mensaje = "NEGATIVO a COVID-19"
+		print("negativo")
+
+
+	parametros = {"tabla" : "integracion_pruebas",
+	"operador": "and",
+	"valores": {
+		"estado":estado,
+		"resultado":resultado,
+		"recomendacion":recomendacion
+	},
+	"condiciones" : [
+		{
+			"columna" : "muestra_id",
+			"comparador" : "==",
+			"valor" : codigo_muestra
+		}
+		]
+	}
+	datos = json.dumps(parametros)
+	print(datos)
+	response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
+	respuesta = json.loads(response.text)
+	print(respuesta)
 	
-	return render(request, 'PureVID/resultado.html', {})
+	return render(request, 'PureVID/resultado.html', {'mensaje':mensaje})
 
 
 def get_result(request):
 
 	if request.method == "POST":
-		form = ConsultaMuestraForm(request.POST)
+		form = EnvioMuestraForm(request.POST)
 		print(request.body)
 	else:
-		form = ConsultaMuestraForm()
+		form = EnvioMuestraForm()
 	return render(request, 'PureVID/ingresarResultado.html', {'form': form})
+
+
+def index(request):
+    return render(request,'PureVID/index.html')
+
+def show_login(request):
+
+	if request.method == "POST":
+		form = LoginForm(request.POST)
+	else:
+		form = LoginForm()
+	return render(request, 'PureVID/login.html', {'form': form})

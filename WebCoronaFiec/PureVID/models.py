@@ -35,3 +35,23 @@ class ConsultaMuestra(models.Model):
 
     def __str__(self):
         return self.codigo_muestra
+
+class EnvioMuestra(models.Model):
+    codigo_muestra = models.CharField(max_length=10,default="000000000")
+    recomendacion =  models.TextField(max_length=100)
+    created_date = models.DateTimeField(
+            default=timezone.now)
+    published_date = models.DateTimeField(
+            blank=True, null=True)
+
+    def publish(self):
+        self.published_date = timezone.now()
+        self.save()
+
+    def __str__(self):
+        return self.codigo_muestra
+
+
+class User(models.Model):
+    username = models.CharField(max_length=16)
+    password = models.CharField(max_length=16)

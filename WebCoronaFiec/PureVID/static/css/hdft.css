@@ -1,0 +1,72 @@
+*{
+	font-family: Cairo;
+}
+.reserver{
+	height: 50px;
+}
+/* Background Color paleta Helpmapp*/
+body {
+	background-color: #EBF2FF;
+}
+.fixed-bottom{
+
+	width: 100%;
+	position: fixed;
+	bottom: 0;
+}
+
+.fixed-bottom > p{
+	margin:0;
+	color: #ece242;
+	text-align: right;
+}
+
+
+
+.paleta1{
+	background-color: #212a85;
+}
+
+.labels{
+  margin: 0;
+}
+
+/*text color header and footer*/
+.navbar-inverse .navbar-nav>li>a {
+    color: #ece242;
+}
+
+.navbar-inverse .navbar-toggle:hover {
+	background-color: #212a85;
+}
+
+.header-icon {
+	max-height: 50px;
+
+}
+
+.form-control {
+	margin-right: 10px;
+}
+
+.dropdown-toogle{
+	background-color: #212a85; 
+}
+
+.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:focus, .navbar-inverse .navbar-nav>.open>a:hover {
+	background-color: #212a85;
+	opacity: 0.8;
+}
+
+.dropdown-menu>li>a{
+    color: #ece242;
+}
+
+.dropdown-menu>li>a:hover{
+   background-color: transparent;
+   color: white;
+}
+
+.dropdown-menu{
+	background-color: #212a85;
+}
