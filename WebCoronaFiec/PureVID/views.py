@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
+from django.core.mail import send_mail
 from .models import *
 from .forms import *
-
+from datetime import datetime,date
 # Create your views here.
 import sys
 from django.contrib.auth import authenticate, login, logout
@@ -14,6 +15,7 @@ from django.http import (
 import json
 import requests
 from django.views.decorators.csrf import csrf_exempt
+from WebCoronaFiec.settings import EMAIL_HOST_USER
 
 @csrf_exempt
 def login_laboratorista(request):
@@ -179,7 +181,8 @@ def registro_muestra(request):
 	#print(str(request.body))
 	datos = str(request.body).split("&")
 
-	codigo_muestra = datos[3].split("=")[1][:-1]
+	codigo_muestra = datos[3].split("=")[1]
+	correo = datos[4].split("=")[1][:-1]
 	cedula = datos[1].split("=")[1]
 	codigo_lab = datos[2].split("=")[1]
 	parametros = {"tabla" : "integracion_usuario",
@@ -250,7 +253,8 @@ def registro_muestra(request):
 		codigo = respuesta.get("data")[0].get("telefono_id")
 
 
-
+	fecha_actual = date.today()
+	fecha_actual_str = datetime.strftime(fecha_actual, '%Y%m%d')
 	parametros = {"tabla" : "integracion_pruebas",
 	"datos":[ {
 		"muestra_id":codigo_muestra,
@@ -260,7 +264,8 @@ def registro_muestra(request):
 		"recolector_id": "REC0001", #por ahora va quemado
 		"app_id": codigo,
 		"estado" : 0, #por ahora quemado
-		"resultado": 0 #por ahora quemado
+		"resultado": 0, #por ahora quemado
+		"fecha_recoleccion": fecha_actual_str
 	}],
 	
 	}
@@ -272,6 +277,12 @@ def registro_muestra(request):
 
 	#return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
     #    , content_type='application/json')
+	codigo = respuesta.get("data")[0].get("telefono_id")
+	text = " Te informamos que tu clave de app es: \n "
+    
+	text += codigo+ "\n" + "Gracias por usar la app!"
+	send_mail("AppPrueba: AppKey", text, EMAIL_HOST_USER, [correo],fail_silently=False)
+	
 	return render(request, 'PureVID/resultadoMuestra.html',{'data':respuesta} )
 
 
@@ -447,6 +458,50 @@ def result_muestra(request):
 	return render(request, 'PureVID/resultado.html', {'mensaje':mensaje})
 
 
+@csrf_exempt
+def enviar_correo(request):
+	if request.method == "POST":
+		datos = json.loads(request.body.decode('utf8'))
+		cedula = datos.get("cedula")
+		correo = datos.get("correo")
+		parametros = {"tabla" : "integracion_usuario",
+		"operador": "and",
+		"columnas" : ["telefono_id"],
+		"condiciones" : [
+			{
+				"columna" : "cedula",
+				"comparador" : "==",
+				"valor" : cedula
+			},
+			{
+				"columna" : "correo",
+				"comparador" : "==",
+				"valor" : correo
+			}
+			]
+		}
+		datos = json.dumps(parametros)
+		print(datos)
+		response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+		respuesta = json.loads(response.text)
+		print("respuesta")
+		print(response.text)
+		if len(respuesta.get("data")) == 0:
+			datos_retornar = {"mensaje": "Cedula o Correo no existen"}
+			return HttpResponse(json.dumps(datos_retornar, ensure_ascii=False).encode("utf-8")\
+	                , content_type='application/json',status = 404)
+		else:
+			codigo = respuesta.get("data")[0].get("telefono_id")
+			text = " Te informamos que tu clave de app es: \n "
+		    
+			text += codigo+ "\n" + "Gracias por usar la app!"
+			send_mail("AppPrueba: AppKey", text, EMAIL_HOST_USER, [correo],fail_silently=False)
+			datos_retornar = {"mensaje": "Correo enviado"}
+			return HttpResponse(json.dumps(datos_retornar, ensure_ascii=False).encode("utf-8")\
+	                , content_type='application/json')
+
+
+
 def get_result(request):
 
 	if request.method == "POST":
@@ -467,3 +522,4 @@ def show_login(request):
 	else:
 		form = LoginForm()
 	return render(request, 'PureVID/login.html', {'form': form})
+

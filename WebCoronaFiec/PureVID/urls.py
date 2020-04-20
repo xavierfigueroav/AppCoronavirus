@@ -16,6 +16,7 @@ urlpatterns = [
     #url(r'^muestras_lab', views.muestras_lab),
     url(r'^estado_muestra', views.estado_muestra),
     url(r'^home', views.index),
+    url(r'^enviar_correo', views.enviar_correo),
     #url(r'^muestras_lab', views.muestras_lab),
     #url(r'^actualizar_estado_muestra', views.actualizar_estado_muestra),
     path('result_muestra', views.result_muestra, name='show_result'),
