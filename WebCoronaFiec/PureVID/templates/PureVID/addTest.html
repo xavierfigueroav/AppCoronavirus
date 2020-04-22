@@ -8,6 +8,9 @@
   <li ><a class="labels h4 " href="{% url 'home' %}">Inicio</a> </li>
   <li ><a class="labels h4 " href="#">Bienvenido, Recolector 001</a> </li>
 {% endblock %}
+
+
+
 {% block body %}
 
 
@@ -15,16 +18,14 @@
 			<div class="reserver"></div>
 				<h2 class="center featurette-heading">Registro de<span class="center text-muted"> Pacientes y Muestras</span></h2>
 
-				{{form.cedula}}
-				{{form.email}}
-				{{form.codigo_lab}}
-
 			<hr class="featurette-divider"> 
-			<form id = "quiero-ser-voluntario" method="Post" action="/purevid/registro_muestra">
 				<div class="form-group">
 					<input class = "entrada" type="text" name="nombre" id="cedula" autocomplete="off" placeholder = "cédula"/>
 					<input class = "entrada" type="text" name="apellido" id="email" autocomplete="off" placeholder="email"/>
 					
+				</div>
+				<div class="form-group">
+					<input id="buscar_cedula" type="submit" name="submit" value="Buscar" class="btn btn-default sender">
 				</div>
 				<div class="form-group">
 					<input type="submit" name="submit" value="Registrar" class="btn btn-default sender">
@@ -75,7 +76,6 @@
 					<label class="radio-inline"><input type="radio" name="optradio">Si</label>
 					<label class="radio-inline"><input type="radio" name="optradio">No</label>
 				</div>-->
-			</form>
 
 		</div>
 		</div>
@@ -84,4 +84,54 @@
 
 	
 {% endblock %}
+
+{% block scripts %}
+  <script>
+  	console.log("JS RUNNIGNG..")
+    $("#buscar_cedula").click(function () {
+      var cedula = $("#cedula").val();
+      console.log(cedula);
+
+
+      $.ajax({
+        url: 'ajax/lookup_cedula/',
+        data: {
+          'cedula': cedula
+        },
+        dataType: 'json',
+        success: function (data) {
+          if (data.respuesta) {
+            alert("Usted ya tiene cuenta!");
+          }else{
+          	alert("Usted no tiene cuenta! Por favor, regístrese.");
+          }
+        }
+      });
+
+      $("#registrarse").click(function () {
+      var cedula = $("#cedula").val();
+      console.log(cedula);
+
+
+      $.ajax({
+        url: 'ajax/lookup_cedula/',
+        data: {
+          'cedula': cedula
+        },
+        dataType: 'json',
+        success: function (data) {
+          if (data.respuesta) {
+            alert("Usted ya tiene cuenta!");
+          }else{
+          	alert("Usted no tiene cuenta! Por favor, regístrese.");
+          }
+        }
+      });
+
+    });
+  </script>
+{% endblock %}
+
+
+
 

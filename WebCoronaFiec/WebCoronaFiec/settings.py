@@ -90,7 +90,7 @@ DATABASES = {
             "ENGINE": "django.db.backends.postgresql_psycopg2",
             "NAME": "purevid_db",
             "USER": "postgres",
-            "PASSWORD": "fabgreat",
+            "PASSWORD": "1234",
             "HOST": os.environ.get("DB_HOSTNAME", "localhost"),
             "PORT": os.environ.get("DB_PORT", "5432"),
         }

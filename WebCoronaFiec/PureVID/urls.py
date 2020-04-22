@@ -8,6 +8,8 @@ urlpatterns = [
     url(r'^login_laboratoristas', views.login_laboratorista, name="login_laboratorista"),
     url(r'^loginLab', views.show_login,name="login"),
     url(r'^loginPicker', views.show_login_recolector,name="loginPicker"),
+    url(r'^ajax/lookup_cedula/$', views.buscar_por_cedula, name='validate_username'),
+
 
     url(r'^addTest', views.login_recolector,name="login_recolector" ),
     url(r'^claves_app', views.clave_app),
