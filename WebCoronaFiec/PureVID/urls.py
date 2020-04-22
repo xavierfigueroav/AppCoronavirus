@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^loginLab', views.show_login,name="login"),
     url(r'^loginPicker', views.show_login_recolector,name="loginPicker"),
     url(r'^ajax/lookup_cedula/$', views.buscar_por_cedula, name='validate_username'),
+    url(r'^ajax/aad_user/$', views.buscar_por_cedula, name='validate_username'),
 
 
     url(r'^addTest', views.login_recolector,name="login_recolector" ),
@@ -21,7 +22,6 @@ urlpatterns = [
     url(r'^estado_muestra', views.estado_muestra),
     url(r'^home', views.index, name="home"),
     url(r'^enviar_correo', views.enviar_correo),
-    url(r'^busquedaCedula', views.buscar_por_cedula),
     #url(r'^muestras_lab', views.muestras_lab),
     #url(r'^actualizar_estado_muestra', views.actualizar_estado_muestra),
     path('result_muestra', views.result_muestra, name='show_result'),

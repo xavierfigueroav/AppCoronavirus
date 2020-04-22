@@ -582,3 +582,22 @@ def buscar_por_cedula(request):
 		
 	return JsonResponse({"mensaje": "Cedula registrada", "respuesta":True})
 
+@csrf_exempt
+def registrar_usuario(request):
+	datos = json.loads(request.body.decode('utf8'))
+	cedula = datos.get("cedula")
+	correo = datos.get("correo")
+	parametros=	{"tabla" : "integracion_usuario",
+			"datos":[ {
+				"cedula":cedula,
+				"correo": correo
+			}],
+			
+		}
+	datos = json.dumps(parametros)
+	print(datos)
+	response = requests.post('http://3.17.143.36:5000/api/integracion/table/insert', data = datos)
+	respuesta = json.loads(response.text)
+	return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
+        , content_type='application/json')
+
