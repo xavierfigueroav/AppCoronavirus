@@ -7,6 +7,7 @@ class Muestra(models.Model):
     cedula = models.CharField(max_length=10,default="9999999999")
     codigo_lab = models.CharField(max_length=3,default="000")
     codigo_muestra = models.CharField(max_length=10,default="000000000")
+    email = models.TextField(max_length=20,null=True)
 
     created_date = models.DateTimeField(
             default=timezone.now)

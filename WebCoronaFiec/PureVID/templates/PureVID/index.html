@@ -11,7 +11,9 @@
 {% endblock %}
 
 {% block menu %}
-  <li ><a class="labels h4 " href="{% url 'login' %}">Ingresar</a> </li>
+  <li ><a class="labels h4 " href="{% url 'home' %}">Inicio</a> </li>
+  <li ><a class="labels h4 " href="{% url 'loginPicker' %}">Recolector</a> </li>
+  <li ><a class="labels h4 " href="{% url 'login' %}">Laboratorista</a> </li>
 {% endblock %}
 {% block body %}
 

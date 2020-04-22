@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}AutoSalud - Ingreso de Muestra{% endblock %}
+
+{% block menu %}
+  <li ><a class="labels h4 " href="{% url 'home' %}">Inicio</a> </li>
+  <li ><a class="labels h4 " href="#">Bienvenido, Recolector 001</a> </li>
+{% endblock %}
+{% block body %}
+
+
+<div class="right-col col-md-12">
+			<div class="reserver"></div>
+				<h2 class="center featurette-heading">Registro de<span class="center text-muted"> Pacientes y Muestras</span></h2>
+
+				{{form.cedula}}
+				{{form.email}}
+				{{form.codigo_lab}}
+
+			<hr class="featurette-divider"> 
+			<form id = "quiero-ser-voluntario" method="Post" action="/purevid/registro_muestra">
+				<div class="form-group">
+					<input class = "entrada" type="text" name="nombre" id="cedula" autocomplete="off" placeholder = "cédula"/>
+					<input class = "entrada" type="text" name="apellido" id="email" autocomplete="off" placeholder="email"/>
+					
+				</div>
+				<div class="form-group">
+					<input type="submit" name="submit" value="Registrar" class="btn btn-default sender">
+				</div>
+
+				<div class="form-group">
+					<input class = "entrada" type="text" name="cedula" id="cedulaAdicional" autocomplete="off" placeholder = "cédula"/>
+					<input class = "entrada" type="text" name="muestra" id="muestra_ID" autocomplete="off" placeholder="código"/>
+					<input class = "entrada" type="text" name="referencia" id="referencia" autocomplete="off" placeholder="referencia"/>
+					
+				</div>
+				<div class="form-group">
+					<input type="submit" name="submit" value="Agregar" class="btn btn-default sender">
+				</div>
+
+				<div class="form-group">
+							<div class="row">
+						<div class="col-md-9">
+							<table id="tests" class="table">
+								<thead>
+									<tr>
+										<th>Cédula</th>
+										<th>Código</th>
+										<th>Referencia</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+				
+				<!--div class="form-group row">
+					<label  for="tipo_sangre" class="control-label col-sm-4">Tipo de Sangre:</label>
+					<select name="tipo_sangre"  id="tipo_sangre">
+						<option value="A+">A+</option>
+						<option value="A-">A-</option>
+						<option value="B+">B+</option>
+						<option value="B-">B-</option>
+						<option value="AB+">AB+</option>
+						<option value="AB-">AB-</option>
+						<option value="O+">O+</option>
+						<option value="O-">O-</option>
+					</select>
+				</div-->
+				<!--
+				<div>
+					<label  class="labels">Tiene experiencia en primeros auxilios:</label>
+					<label class="radio-inline"><input type="radio" name="optradio">Si</label>
+					<label class="radio-inline"><input type="radio" name="optradio">No</label>
+				</div>-->
+			</form>
+
+		</div>
+		</div>
+	</div>
+</div>
+
+	
+{% endblock %}
+
