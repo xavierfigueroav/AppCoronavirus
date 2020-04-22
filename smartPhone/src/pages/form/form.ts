@@ -306,7 +306,7 @@ export class FormPage extends PopoverPage {
             //}
         } else {
             let alert = this.alertCtrl.create({
-                subTitle: "No hay nuevos datos. No se ha enviado ningún formulario",
+                subTitle: "No se encontraron cambios a registrar.",
                 buttons: ["cerrar"]
             });
             alert.present();
