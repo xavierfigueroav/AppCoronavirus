@@ -2,7 +2,7 @@
         "uuid": "39f736d2-7fc4-49f3-ab0e-feefe1405d62",
         "type": "COMPUESTA",
         "name": "APP CORONAVIRUS",
-        "gps": "required",
+        "gps": "no",
         "notifications": [
             {
                 "type":"PERIÓDICA",
@@ -31,15 +31,6 @@
                         "type":"collapseList",
                         "initialShow":false,
                         "children":[
-                            {
-                                "label":"CÉDULA DE IDENTIDAD",
-                                "type":"input_number",
-                                "show":true,
-                                "id":"cedula_identidad",
-                                "blurFunction":"{\"validateIntegerPositiveNumber\":[\"cedula_identidad\"], \"validateEmptyShowedInput\":[\"cedula_identidad\"]}",
-                                "error":"",
-                                "value":""
-                            },
                             {
                                 "label":"DIRECCIÓN DE RESIDENCIA HABITUAL",
                                 "type":"input_text",

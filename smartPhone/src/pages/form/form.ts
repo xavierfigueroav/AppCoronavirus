@@ -56,8 +56,7 @@ export class FormPage extends PopoverPage {
         public viewCtrl: ViewController,
         public appCtrl: App,
         private file: File,
-        public loadingCtrl: LoadingController,
-        public api: APIProvider) {
+        public loadingCtrl: LoadingController) {
         super(viewCtrl);
 
         try {
@@ -303,15 +302,6 @@ export class FormPage extends PopoverPage {
             console.log("HAY PENDING FORMS");
                 var pendingForm = pendingForms[0];
                 console.log("PENDING FORM: ", pendingForm);
-                if(pendingForm.formData.type == 'initial') {
-                    var cedula = pendingForm.formData.data.children[0].children[0].value;
-                    console.log("CEDULA: ", cedula);
-                    var app_code = this.linkedUser.codigo_app;
-                    console.log("CODIGO APP: ", app_code);
-                    this.api.updateUser(app_code, "cedula", cedula);
-                    // Connection errors are not validated here, but later in this.subirArchivo()
-                }
-
                 var id_dataset = pendingForm.id_dataset;
                 var string_cuerpo = '{"id_dataset":"'+id_dataset+'","form":"'+pendingForm+'"}';
                 var objeto = JSON.parse(string_cuerpo);

@@ -157,32 +157,6 @@ export class APIProvider {
         });
     }
 
-    updateUser(app_code: string, campo: string, valor: string | number) {
-        return new Promise<any>((resolve, reject) => {
-            const httpOptions = {
-                headers: new HttpHeaders({ 'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'  })
-            };
-            const data = this.generateUpdateUSerBody(app_code, campo, valor);
-            console.log("ENTRO A MODIFICAR USUARIO");
-            this.httpClient.post(Constants.UPDATE_REGISTRY_URL, data, httpOptions)
-            .toPromise().then(response => {
-                if(response['success']) {
-                    if(response['data'].rows_updated > 0) {
-                        console.log('SE MODIFICÓ EL USUARIO CORRECTAMENTE EN LA TABLA');
-                        resolve(1);
-                    } else {
-                        console.log('NO SE MODIFICÓ EL USUARIO CORRECTAMENTE EN LA TABLA');
-                        resolve(0);
-                    }
-                } else {
-                    resolve(-1);
-                }
-            }).catch(error => reject(
-                resolve(-1)
-            ));
-        });
-    }
-
     createFormsDataSet(datasetId: string | number) {
         return new Promise<any>((resolve, reject) => {
 
@@ -235,24 +209,6 @@ export class APIProvider {
             "condiciones": [
                 {
                     "columna": "app_id",
-                    "comparador": "==",
-                    "valor": app_code
-                }
-            ]
-        }
-        return JSON.stringify(data);
-    }
-
-    generateUpdateUSerBody(app_code: string, campo: string, valor: string | number) {
-        const data = {
-            "tabla": "integracion_usuario",
-            "operador": "and",
-            "valores": {
-                "cedula": valor
-            },
-            "condiciones": [
-                {
-                    "columna": "telefono_id",
                     "comparador": "==",
                     "valor": app_code
                 }
