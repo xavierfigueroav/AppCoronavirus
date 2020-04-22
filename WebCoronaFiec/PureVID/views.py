@@ -528,7 +528,9 @@ def buscar_por_cedula(request):
 	print(str(request.body))
 
 	
-	cedula = str(request.body).split("&")[2].split("=")[1][:-1]
+	#cedula = str(request.body).split("&")[2].split("=")[1][:-1]
+	datos = json.loads(request.body.decode('utf8'))
+	cedula = datos.get("cedula")
 
 	parametros = {"tabla" : "integracion_usuario",
 	"operador": "and",
