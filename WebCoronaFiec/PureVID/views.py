@@ -16,6 +16,8 @@ import json
 import requests
 from django.views.decorators.csrf import csrf_exempt
 from WebCoronaFiec.settings import EMAIL_HOST_USER
+from django.http import JsonResponse
+
 
 @csrf_exempt
 def login_laboratorista(request):
@@ -59,10 +61,14 @@ def login_laboratorista(request):
 
 @csrf_exempt
 def login_recolector(request):
-	datos = json.loads(str(request.body)[2:-1])
-	print(datos)
-	usuario = datos.get("username")
-	password = datos.get("password")
+	print("entroooo")
+	print(str(request.body))
+
+	usuario = str(request.body).split("&")[1].split("=")[1]
+	password = str(request.body).split("&")[2].split("=")[1][:-1]
+
+	print(usuario)
+	print(password)
 	parametros = {"tabla" : "integracion_claves_recolectores",
 	"operador": "and",
 	"columnas" : ["nombre"],
@@ -84,10 +90,16 @@ def login_recolector(request):
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
 	if len(respuesta.get("data")) == 0:
-		return HttpResponse(json.dumps({"mensaje": "usuario o contraeña Incorrectos", "respuesta":False}, ensure_ascii=False).encode("utf-8")\
-        , content_type='application/json')		
-	return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
-        , content_type='application/json')
+		print("error")
+		print(request.method)
+		#return HttpResponse(json.dumps({"mensaje": "usuario o contraeña Incorrectos", "respuesta":False}, ensure_ascii=False).encode("utf-8")\ , content_type='application/json')		
+		return render(request, 'PureVID/login.html',{'data':"usuario o contraseña Incorrectos"})
+
+	request.method = "GET"
+
+	form = MuestraForm()
+
+	return render(request,'PureVID/addTest.html',{'form': form})
 
 
 @csrf_exempt
@@ -345,11 +357,11 @@ def estado_muestra(request):
 
 @csrf_exempt
 def muestras_lab(request):
-	datos = json.loads(str(request.body)[2:-1])
-	codigo_lab = datos.get("codigo_lab")
+	#datos = json.loads(str(request.body)[2:-1])
+	codigo_lab = request
 	parametros = {"tabla" : "integracion_pruebas",
 	"operador": "and",
-	"columnas" : ["muestra_id"],
+	"columnas" : ["muestra_id","cedula","estado","resultado","referencia"],
 	"condiciones" : [
 		{
 			"columna" : "lab_id",
@@ -513,7 +525,8 @@ def get_result(request):
 
 
 def index(request):
-    return render(request,'PureVID/index.html')
+	muestras_lab("001")
+	return render(request,'PureVID/index.html')
 
 def show_login(request):
 
@@ -523,15 +536,26 @@ def show_login(request):
 		form = LoginForm()
 	return render(request, 'PureVID/login.html', {'form': form})
 
+
+def show_login_recolector(request):
+
+	if request.method == "POST":
+		form = LoginForm(request.POST)
+	else:
+		form = LoginForm()
+	return render(request, 'PureVID/loginRecolector.html', {'form': form})
+
 @csrf_exempt
 def buscar_por_cedula(request):
-	print(str(request.body))
+	print("body" + str(request.body))
 
 	
 	#cedula = str(request.body).split("&")[2].split("=")[1][:-1]
 	datos = json.loads(request.body.decode('utf8'))
 	cedula = datos.get("cedula")
 
+	cedula = request.GET.get('cedula', None)
+	print(cedula)
 	parametros = {"tabla" : "integracion_usuario",
 	"operador": "and",
 	"columnas" : ["telefono_id"],
@@ -546,14 +570,15 @@ def buscar_por_cedula(request):
 	datos = json.dumps(parametros)
 	print(datos)
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+
+
 	respuesta = json.loads(response.text)
 
+	print("respuesta" + str(respuesta))
 	
 	if len(respuesta.get("data")) == 0:
-		return HttpResponse(json.dumps({"mensaje": "Cedula no registrada", "respuesta":False}, ensure_ascii=False).encode("utf-8")\
-		 , content_type='application/json')
+		print("CEDULA EQUIVOCADA")
+		return  JsonResponse({"mensaje": "Cedula no registrada", "respuesta":False})
 		
-	return HttpResponse(json.dumps({"mensaje": "Cedula registrada", "respuesta":True}, ensure_ascii=False).encode("utf-8")\
-		 , content_type='application/json')
-
+	return JsonResponse({"mensaje": "Cedula registrada", "respuesta":True})
 
