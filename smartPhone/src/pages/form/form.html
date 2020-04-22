@@ -55,19 +55,19 @@
         </ion-list>
 
         <ion-item *ngIf="item.type=='input_text'" id={{item.id}} [class.hide_question]="!item.show" [class.show_question]="item.show">
-            <ion-label stacked [class.invalid_label]="item.error" class="pregunta">{{item.label}}</ion-label>
-            <ion-input type="text" [(ngModel)]="item.value" id={{item.id}} [class.invalid_input]="item.error" (ionChange)="blurFunction($event,item.blurFunction)"></ion-input>
+            <ion-label stacked [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" class="pregunta">{{item.label}}</ion-label>
+            <ion-input type="text" [placeholder]="item.placeholder || 'Ingresa tu'" [(ngModel)]="item.value" id={{item.id}} [class.invalid_input]="item.errors !== undefined && item.errors.length > 0" (ionChange)="blurFunction($event,item.blurFunction)"></ion-input>
         </ion-item>
-        <div text-left *ngIf="item.type=='input_text'" class="div-error" [class.error_message]="item.error">
-            {{item.error}}
+        <div text-left *ngIf="item.type=='input_text'" class="div-error" [class.error_message]="item.errors !== undefined && item.errors.length > 0">
+            {{item.errors !== undefined ? item.errors[item.errors.length - 1] : ''}}
         </div>
 
         <ion-item *ngIf="item.type=='input_number'" id={{item.id}} [class.hide_question]="!item.show" [class.show_question]="item.show">
-            <ion-label stacked [class.invalid_label]="item.error" class="pregunta">{{item.label}}</ion-label>
-            <ion-input type="number" [(ngModel)]="item.value" id={{item.id}} [class.invalid_input]="item.error" (ionChange)="blurFunction($event,item.blurFunction)"></ion-input>
+            <ion-label stacked [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" class="pregunta">{{item.label}}</ion-label>
+            <ion-input type="number" [placeholder]="item.placeholder || 'Ingresa tu'" [(ngModel)]="item.value" id={{item.id}} [class.invalid_input]="item.errors !== undefined && item.errors.length > 0" (ionChange)="blurFunction($event,item.blurFunction)"></ion-input>
         </ion-item>
-        <div text-left *ngIf="item.type=='input_number'" class="div-error" [class.error_message]="item.error">
-            {{item.error}}
+        <div text-left *ngIf="item.type=='input_number'" class="div-error" [class.error_message]="item.errors !== undefined && item.errors.length > 0">
+            {{item.errors !== undefined ? item.errors[item.errors.length - 1] : ''}}
         </div>
 
         <ion-list *ngIf="item.type=='checkbox_group'" id={{item.id}} [class.hide_question]="!item.show" [class.show_question]="item.show">
@@ -83,13 +83,13 @@
         </ion-list>
 
         <ion-item *ngIf="item.type=='select'" id={{item.id}} [class.hide_question]="!item.show" [class.show_question]="item.show">
-            <ion-label [class.invalid_label]="item.error" stacked class="pregunta">{{item.placeholder}}</ion-label>
-            <ion-select okText="SELECCIONAR" cancelText="CANCELAR" [(ngModel)]="item.value" placeholder="SELECCIONE UNA OPCIÓN" (ionChange)="blurFunction($event,item.blurFunction)">
+            <ion-label [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" stacked class="pregunta">{{item.placeholder}}</ion-label>
+            <ion-select okText="Seleccionar" cancelText="Cancelar" [(ngModel)]="item.value" placeholder="Seleccione una opción" (ionChange)="blurFunction($event,item.blurFunction)">
                 <ion-option *ngFor="let op of item.options;" value={{op.label}}>{{op.label}}</ion-option>
             </ion-select>
         </ion-item>
-        <div text-left *ngIf="item.type=='select'" class="div-error" [class.error_message]="item.error">
-            {{item.error}}
+        <div text-left *ngIf="item.type=='select'" class="div-error" [class.error_message]="item.errors !== undefined && item.errors.length > 0">
+            {{item.errors !== undefined ? item.errors[item.errors.length - 1] : ''}}
         </div>
 
         <ion-list no-lines *ngIf="item.type=='button'">
@@ -100,34 +100,34 @@
 
         <ion-list radio-group *ngIf="item.type=='radio'" id={{item.id}} [(ngModel)]="item.value" [class.hide_question]="!item.show" [class.show_question]="item.show" (blur)="item.show && blurFunction($event,item.blurFunction)" (ionBlur)="saveForm()">
             <ion-list-header>
-                <ion-label [class.invalid_label]="item.error" class="pregunta">{{item.label}}</ion-label>
+                <ion-label [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" class="pregunta">{{item.label}}</ion-label>
             </ion-list-header>
             <ion-item *ngFor="let opt of item.children;">
                 <ion-label>{{opt.label}}</ion-label>
                 <ion-radio value={{opt.label}} checked=false (ionSelect)="blurFunction($event,item.blurFunction)"></ion-radio>
             </ion-item>
         </ion-list>
-        <div text-left *ngIf="item.type=='radio'" class="div-error" [class.error_message]="item.error && item.show">
-            {{item.error}}
+        <div text-left *ngIf="item.type=='radio'" class="div-error" [class.error_message]="item.errors && item.show">
+            {{item.errors !== undefined ? item.errors[item.errors.length - 1] : ''}}
         </div>
 
         <ion-item *ngIf="item.type=='date'">
-            <ion-label [class.invalid_label]="item.error" class="pregunta">{{item.label}}</ion-label>
-            <ion-datetime cancelText="CANCELAR" doneText="SELECCIONAR" mode="md" displayFormat="DD/MM/YYYY" id={{item.id}} [(ngModel)]="item.value" (ionCancel)="blurFunction($event,item.blurFunction)"
+            <ion-label [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" class="pregunta">{{item.label}}</ion-label>
+            <ion-datetime cancelText="Cancelar" doneText="Seleccionar" mode="md" displayFormat="DD/MM/YYYY" id={{item.id}} [(ngModel)]="item.value" (ionCancel)="blurFunction($event,item.blurFunction)"
               (ionChange)="blurFunction($event,item.blurFunction)" (ionBlur)="saveForm()" [disabled]="readOnly()"></ion-datetime>
-            <ion-icon item-end name="calendar" [class.invalid_datepicker]="item.error"></ion-icon>
+            <ion-icon item-end name="calendar" [class.invalid_datepicker]="item.errors !== undefined && item.errors.length > 0"></ion-icon>
         </ion-item>
-        <div text-left *ngIf="item.type=='date'" class="div-error" [class.error_message]="item.error">
-            {{item.error}}
+        <div text-left *ngIf="item.type=='date'" class="div-error" [class.error_message]="item.errors !== undefined && item.errors.length > 0">
+            {{item.errors !== undefined ? item.errors[item.errors.length - 1] : ''}}
         </div>
 
         <ion-item *ngIf="item.type=='time'">
-            <ion-label [class.invalid_label]="item.error" class="pregunta">{{item.label}}</ion-label>
-            <ion-datetime cancelText="CANCELAR" doneText="SELECCIONAR" mode="md" displayFormat="HH:mm" id={{item.id}} [(ngModel)]="item.value" (ionCancel)="blurFunction($event,item.blurFunction)" (ionChange)="blurFunction($event,item.blurFunction)" (ionBlur)="saveForm()" [disabled]="readOnly()"></ion-datetime>
-            <ion-icon item-end name="calendar" [class.invalid_datepicker]="item.error"></ion-icon>
+            <ion-label [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" class="pregunta">{{item.label}}</ion-label>
+            <ion-datetime cancelText="Cancelar" doneText="Seleccionar" mode="md" displayFormat="HH:mm" id={{item.id}} [(ngModel)]="item.value" (ionCancel)="blurFunction($event,item.blurFunction)" (ionChange)="blurFunction($event,item.blurFunction)" (ionBlur)="saveForm()" [disabled]="readOnly()"></ion-datetime>
+            <ion-icon item-end name="calendar" [class.invalid_datepicker]="item.errors !== undefined && item.errors.length > 0"></ion-icon>
         </ion-item>
-        <div text-left *ngIf="item.type=='time'" class="div-error" [class.error_message]="item.error">
-            {{item.error}}
+        <div text-left *ngIf="item.type=='time'" class="div-error" [class.error_message]="item.errors !== undefined && item.errors.length > 0">
+            {{item.errors !== undefined ? item.errors[item.errors.length - 1] : ''}}
         </div>
 
         <div text-left *ngIf="item.type=='resultado'" class="div-error pregunta" style="font-size:18px;margin-top:5px;" [class.error_message]="item.value">

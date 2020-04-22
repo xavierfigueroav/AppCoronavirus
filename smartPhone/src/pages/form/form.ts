@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, MenuController, ViewController, NavParams, Events, AlertController, Platform, App, LoadingController, Navbar, PopoverController } from 'ionic-angular';
+import { NavController, MenuController, ViewController, NavParams, AlertController, Platform, App, LoadingController, Navbar, PopoverController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
@@ -9,7 +9,6 @@ import { HttpClient } from '@angular/common/http';
 import { File } from '@ionic-native/file';
 import { TabsPage } from '../tabs/tabs';
 import { PopoverPage } from './popover';
-import { APIProvider } from '../../providers/api/api';
 
 import * as calculos from '../../assets/calculos/calculo.json';
 
@@ -96,7 +95,6 @@ export class FormPage extends PopoverPage {
         this.formData = formulario_uso.formData;
         console.log('[FORM/cargarDatos] this.formData', this.formsData);
         this.selectedTemplate = formulario_uso.selectedTemplate;
-        console.log(formulario_uso, this.selectedTemplate);
         this.currentForm = formulario_uso.currentForm;
         this.templateUuid = this.template.uuid;
         this.infoTemplateIndex = formulario_uso.infoTemplateIndex;
@@ -104,7 +102,6 @@ export class FormPage extends PopoverPage {
         this.geolocationAuth = formulario_uso.geolocationAuth;
         this.pendingForms = formulario_uso.pendingForms;
         this.infoTemplates = formulario_uso.infoTemplates;
-        console.log("INGO TEMPLATES FORM.TS", this.infoTemplates);
         this.indice_seccion = formulario_uso.indice_seccion;
         console.log("INDICE ACTUAL: ", this.indice_seccion);
         if(formulario_uso.formsData != null) {
