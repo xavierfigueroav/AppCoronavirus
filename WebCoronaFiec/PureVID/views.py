@@ -181,8 +181,8 @@ def registro_muestra(request):
 	#print(str(request.body))
 	datos = str(request.body).split("&")
 
-	codigo_muestra = datos[3].split("=")[1]
-	correo = datos[4].split("=")[1][:-1]
+	codigo_muestra = datos[3].split("=")[1][:-1]
+	#correo = datos[4].split("=")[1][:-1]
 	cedula = datos[1].split("=")[1]
 	codigo_lab = datos[2].split("=")[1]
 	parametros = {"tabla" : "integracion_usuario",
@@ -522,4 +522,36 @@ def show_login(request):
 	else:
 		form = LoginForm()
 	return render(request, 'PureVID/login.html', {'form': form})
+
+@csrf_exempt
+def buscar_por_cedula(request):
+	print(str(request.body))
+
+	
+	cedula = str(request.body).split("&")[2].split("=")[1][:-1]
+
+	parametros = {"tabla" : "integracion_usuario",
+	"operador": "and",
+	"columnas" : ["telefono_id"],
+	"condiciones" : [
+		{
+			"columna" : "cedula",
+			"comparador" : "==",
+			"valor" : cedula
+		}
+		]
+	}
+	datos = json.dumps(parametros)
+	print(datos)
+	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	respuesta = json.loads(response.text)
+
+	
+	if len(respuesta.get("data")) == 0:
+		return HttpResponse(json.dumps({"mensaje": "Cedula no registrada", "respuesta":False}, ensure_ascii=False).encode("utf-8")\
+		 , content_type='application/json')
+		
+	return HttpResponse(json.dumps({"mensaje": "Cedula registrada", "respuesta":True}, ensure_ascii=False).encode("utf-8")\
+		 , content_type='application/json')
+
 
