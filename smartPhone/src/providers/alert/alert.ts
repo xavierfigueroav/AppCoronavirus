@@ -46,4 +46,12 @@ export class AlertProvider {
         this.showOkButtonAlert('El correo proporcionado es inválido.')
     }
 
+    showLocationErrorAlert() {
+        this.showOkButtonAlert('No pudimos acceder a tu ubicación.');
+    }
+
+    showLocationNoPermissionAlert() {
+        this.showOkButtonAlert('Por favor, danos acceso a tu ubicación para una mejor experiencia.')
+    }
+
 }

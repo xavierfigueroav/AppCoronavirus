@@ -12,10 +12,10 @@
         <p style="font-size:40px">AutoSalud</p>
         <ion-item style="margin-top:90px;" class="input-username" margin-top color="light">
             <ion-icon color="navbar" name="person"></ion-icon>
-            <ion-input type="text" class="ion-text-center" placeholder="Ingrese el código de la app" [(ngModel)]="codigo_app" name="codigo_app"></ion-input>
+            <ion-input type="text" class="ion-text-center" placeholder="Ingrese el código de la app" [(ngModel)]="appPIN" name="codigo_app"></ion-input>
         </ion-item>
 
-        <button class="btn-login" color="primary" [disabled]="!codigo_app" ion-button block (click)="attemptAuth()">
+        <button class="btn-login" color="primary" [disabled]="!appPIN" ion-button block (click)="attemptAuth()">
             <p id="ingresarButtonText">Ingresar</p>
         </button>
         <p class="contrasena" (click)="passwordRecover()">
