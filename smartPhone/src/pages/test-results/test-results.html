@@ -25,32 +25,32 @@
 
     <div *ngFor="let userInfo of usersInfo">
         <div *ngIf=" userInfo[0] != 'string'">
-            <h6 id="usersIdsText">Cedula: <b>{{userInfo[0]}}</b></h6>
+            <h6 id="usersIdsText">Cedula: <strong>{{userInfo[0]}}</strong></h6>
             <div *ngIf="userInfo[1] != null">
-                <h6 id="usersIdsText">Referencia: <b>{{userInfo[1]}}</b></h6>
+                <h6 id="usersIdsText">Referencia: <strong>{{userInfo[1]}}</strong></h6>
             </div>
             <div *ngFor="let result of testsResultsMap[userInfo[0]]">
                 <ion-card *ngIf="result.muestra_id == userInfo[2]">
                     <ion-card-header style="text-align: center;">
                         Prueba {{userInfo[2]}}
                     </ion-card-header>
-    
+
                     <ion-card-content style="padding-top:10px;">
-                        <div class="result-container" *ngIf="testStatuses[result.resultado].toLowerCase() == 'procesada'; else enProceso">
+                        <div class="result-container" *ngIf="testStatuses[result.estado].toLowerCase() === 'procesada'">
                             <span class="result1-label result-text">Estado: </span><span class="result-value value-1 result-text">{{ testStatuses[result.estado] }}</span>
                             <span class="result2-label result-text">Resultado: </span><span class="result-value value-2 result-text">{{ testResults[result.resultado] }}</span>
-                            <div class="advice" *ngIf="result['recomendacion'] !== undefined">
+                            <div class="advice" *ngIf="result['recomendacion']">
                                 <p class="advice-title">Recomendación</p>
                                 <p class="advice-content">{{ result['recomendacion'] }}</p>
                             </div>
                         </div>
-                        <ng-template #enProceso>
+                        <div class="result-container" *ngIf="testStatuses[result.estado].toLowerCase() !== 'procesada'">
                             <span class="result1-label result-text">Estado: </span><span class="result-value value-1 result-text">{{ testStatuses[result.estado] }}</span>
-                        </ng-template>
+                        </div>
                     </ion-card-content>
                 </ion-card>
             </div>
-            
+
         </div>
     </div>
 
