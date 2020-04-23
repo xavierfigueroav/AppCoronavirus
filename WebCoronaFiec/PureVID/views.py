@@ -17,6 +17,8 @@ import requests
 from django.views.decorators.csrf import csrf_exempt
 from WebCoronaFiec.settings import EMAIL_HOST_USER
 from django.http import JsonResponse
+from datetime import datetime
+
 
 
 @csrf_exempt
@@ -186,17 +188,15 @@ def clave_app(request):
 def registro_muestra(request):
 	#print(request.body)
 	#datos = json.loads(str(request.body)[2:-1])
-	
-	#codigo_muestra = datos.get("codigo_muestra")
-	#cedula = datos.get("cedula")
+	datos = request.GET
+	codigo_muestra = datos.get("codigo_muestra")
+	cedula = datos.get("cedula")
+	referencia = datos.get("referencia")
 	#codigo_lab = datos.get("codigo_lab")
-	#print(str(request.body))
-	datos = str(request.body).split("&")
 
-	codigo_muestra = datos[3].split("=")[1][:-1]
-	#correo = datos[4].split("=")[1][:-1]
-	cedula = datos[1].split("=")[1]
-	codigo_lab = datos[2].split("=")[1]
+
+	##LUEGO VALIDAR QUE USUARIO SI EXISTA AQUI ASUME QUE SI 
+
 	parametros = {"tabla" : "integracion_usuario",
 	"operador": "and",
 	"columnas" : ["telefono_id"],
@@ -208,76 +208,36 @@ def registro_muestra(request):
 		}
 		]
 	}
+
 	datos = json.dumps(parametros)
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+
+	print("AQUI IRA ID")
 	respuesta = json.loads(response.text)
 
-	if len(respuesta.get("data")) == 0:
-		parametros = {"tabla" : "integracion_claves_app",
-		"operador": "and",
-		"columnas" : ["app_id"],
-		"condiciones" : [
-			{
-				"columna" : "en_uso",
-				"comparador" : "==",
-				"valor" : 0
-			}
-			]
-		}
-		datos = json.dumps(parametros)
-		response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
-		respuesta = json.loads(response.text)
-		codigo = respuesta.get("data")[0].get("app_id")
-		parametros=	{"tabla" : "integracion_usuario",
-			"datos":[ {
-				"cedula":cedula,
-				"telefono_id": codigo
-			}],
-			
-		}
-		datos = json.dumps(parametros)
-		response = requests.post('http://3.17.143.36:5000/api/integracion/table/insert', data = datos)
-		respuesta = json.loads(response.text)
-		parametros={"tabla": "integracion_claves_app",
-			"operador": "and",
-			"valores": {
-				"en_uso":1
-			},
-			"condiciones": [
-				{
-					"columna": "app_id",
-					"comparador": "==",
-					"valor": codigo
-				}
-			]
-		}
-		datos = json.dumps(parametros)
-		response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
-		respuesta = {"data": [
-		        {
-		            "telefono_id": codigo
-		        }
-		    ],
-		    "mensaje": "",
-		    "success": False
-		}
-	else:
-		codigo = respuesta.get("data")[0].get("telefono_id")
+	codigo = respuesta.get("data")[0].get("telefono_id")
+	
+	print("codigo: %s"%codigo)
+ 
+	print("REGISTRANDO MUESTRA...")
+	print(datos)
+	
 
-
+	print()
 	fecha_actual = date.today()
 	fecha_actual_str = datetime.strftime(fecha_actual, '%Y%m%d')
 	parametros = {"tabla" : "integracion_pruebas",
 	"datos":[ {
 		"muestra_id":codigo_muestra,
-		"lab_id": codigo_lab,
+		"lab_id": "001",
 		"cedula" : cedula,
-		"user_lab": "USERLAB0001", #por ahora va quemado
-		"recolector_id": "REC0001", #por ahora va quemado
+		"user_lab": "laboCOVID1", #por ahora va quemado
+		"recolector_id": "recoCOVID1", #por ahora va quemado
 		"app_id": codigo,
 		"estado" : 0, #por ahora quemado
 		"resultado": 0, #por ahora quemado
-		"fecha_recoleccion": fecha_actual_str
+		"fecha_recoleccion": fecha_actual_str,
+		"referencia":referencia
 	}],
 	
 	}
@@ -287,21 +247,16 @@ def registro_muestra(request):
 	print(response.text)
 	respuesta = json.loads(response.text)
 
-	#return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
-    #    , content_type='application/json')
-	codigo = respuesta.get("data")[0].get("telefono_id")
-	text = " Te informamos que tu clave de app es: \n "
-    
-	text += codigo+ "\n" + "Gracias por usar la app!"
-	send_mail("AppPrueba: AppKey", text, EMAIL_HOST_USER, [correo],fail_silently=False)
+	if len(respuesta.get("data")) == 0:
+		return JsonResponse({"mensaje": "Error en registro.", "respuesta":False})
+	#return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8"
 	
-	return render(request, 'PureVID/resultadoMuestra.html',{'data':respuesta} )
+	return JsonResponse({"mensaje": "Muestra registrada!", "respuesta":True})
 
 
 @csrf_exempt
 def muestras_lab(request):
-	datos = json.loads(str(request.body)[2:-1])
-	codigo_lab = datos.get("codigo_lab")
+	codigo_lab = request.GET.get("lab_id")
 	parametros = {"tabla" : "integracion_pruebas",
 	"operador": "and",
 	"columnas" : ["muestra_id"],
@@ -317,8 +272,7 @@ def muestras_lab(request):
 	print(datos)
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
-	return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
-        , content_type='application/json')
+	return repuesta.get("data")
 
 @csrf_exempt
 def estado_muestra(request):
@@ -354,14 +308,12 @@ def estado_muestra(request):
 	return render(request, 'PureVID/diagnostico.html',{"resultado":resultado, "estado":estado})
 
 
-
-@csrf_exempt
 def muestras_lab(request):
 	#datos = json.loads(str(request.body)[2:-1])
-	codigo_lab = request
+	codigo_lab = request.GET.get("lab_id")
 	parametros = {"tabla" : "integracion_pruebas",
 	"operador": "and",
-	"columnas" : ["muestra_id","cedula","estado","resultado","referencia"],
+	"columnas" : ["muestra_id","cedula","estado","resultado","referencia","recomendacion"],
 	"condiciones" : [
 		{
 			"columna" : "lab_id",
@@ -425,49 +377,7 @@ def get_muestra(request):
 	return render(request, 'PureVID/consultaMuestra.html', {'form': form})
 
 
-def result_muestra(request):
 
-	codigo_muestra = str(request.body).split("&")[1].split("=")[1]
-	recomendacion = str(request.body).split("&")[2].split("=")[1].replace("+"," ")
-	print(codigo_muestra)
-	print(recomendacion)
-
-	if 'positivo' in request.POST:
-		# do subscribe
-		estado = 1
-		resultado = 1
-		mensaje = "POSITIVO a COVID-19"
-		print("positivo")
-
-	elif 'negativo' in request.POST:
-		estado = 1
-		resultado = 0
-		mensaje = "NEGATIVO a COVID-19"
-		print("negativo")
-
-
-	parametros = {"tabla" : "integracion_pruebas",
-	"operador": "and",
-	"valores": {
-		"estado":estado,
-		"resultado":resultado,
-		"recomendacion":recomendacion
-	},
-	"condiciones" : [
-		{
-			"columna" : "muestra_id",
-			"comparador" : "==",
-			"valor" : codigo_muestra
-		}
-		]
-	}
-	datos = json.dumps(parametros)
-	print(datos)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
-	respuesta = json.loads(response.text)
-	print(respuesta)
-	
-	return render(request, 'PureVID/resultado.html', {'mensaje':mensaje})
 
 
 @csrf_exempt
@@ -512,7 +422,50 @@ def enviar_correo(request):
 			return HttpResponse(json.dumps(datos_retornar, ensure_ascii=False).encode("utf-8")\
 	                , content_type='application/json')
 
+def send_email_asf(datos):
+	cedula = datos.get("cedula")
+	correo = datos.get("correo")
+	parametros = {"tabla" : "integracion_usuario",
+		"operador": "and",
+		"columnas" : ["telefono_id"],
+		"condiciones" : [
+			{
+				"columna" : "cedula",
+				"comparador" : "==",
+				"valor" : cedula
+			},
+			{
+				"columna" : "correo",
+				"comparador" : "==",
+				"valor" : correo
+			}
+			]
+		}
+	datos = json.dumps(parametros)
+	print(datos)
+	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	respuesta = json.loads(response.text)
+	print("respuesta")
+	print(response.text)
+	if len(respuesta.get("data")) == 0:
+		datos_retornar = {"mensaje": "Cedula o Correo no existen","sent":False}
+		
+	else:
+		codigo = respuesta.get("data")[0].get("telefono_id")
+		text = " Te informamos que tu clave de app es: \n "
+	    
+		text += codigo+ "\n" + "Gracias por usar la app!"
+		print(text)
 
+		now = datetime.now()
+
+		current_time = now.strftime("%H:%M:%S")
+		print("Current Time =", current_time)
+		send_mail("AppPrueba: AppKey", text, EMAIL_HOST_USER, [correo],fail_silently=False)
+		print("Current Time 2 =", current_time)
+		datos_retornar = {"mensaje": "Correo enviado","clave":codigo,"sent":True}
+
+	return datos_retornar
 
 def get_result(request):
 
@@ -525,7 +478,6 @@ def get_result(request):
 
 
 def index(request):
-	muestras_lab("001")
 	return render(request,'PureVID/index.html')
 
 def show_login(request):
@@ -546,13 +498,46 @@ def show_login_recolector(request):
 	return render(request, 'PureVID/loginRecolector.html', {'form': form})
 
 @csrf_exempt
+def update_test(request):
+
+
+	codigo_muestra = request.GET.get("codigo")
+	recomendacion = request.GET.get("recomendacion")
+	estado = request.GET.get("estado")
+	resultado = request.GET.get("resultado")
+
+	parametros = {"tabla" : "integracion_pruebas",
+	"operador": "and",
+	"valores": {
+		"estado":estado,
+		"resultado":resultado,
+		"recomendacion":recomendacion
+	},
+	"condiciones" : [
+		{
+			"columna" : "muestra_id",
+			"comparador" : "==",
+			"valor" : codigo_muestra
+		}
+		]
+	}
+	datos = json.dumps(parametros)
+	print(datos)
+	response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
+	respuesta = json.loads(response.text)
+	print(respuesta)
+
+	return JsonResponse({"respuesta":True})
+
+
+@csrf_exempt
 def buscar_por_cedula(request):
 	print("body" + str(request.body))
 
 	
 	#cedula = str(request.body).split("&")[2].split("=")[1][:-1]
-	datos = json.loads(request.body.decode('utf8'))
-	cedula = datos.get("cedula")
+	#datos = json.loads(request.body.decode('utf8'))
+	#cedula = datos.get("cedula")
 
 	cedula = request.GET.get('cedula', None)
 	print(cedula)
@@ -577,27 +562,78 @@ def buscar_por_cedula(request):
 	print("respuesta" + str(respuesta))
 	
 	if len(respuesta.get("data")) == 0:
-		print("CEDULA EQUIVOCADA")
 		return  JsonResponse({"mensaje": "Cedula no registrada", "respuesta":False})
 		
 	return JsonResponse({"mensaje": "Cedula registrada", "respuesta":True})
 
 @csrf_exempt
 def registrar_usuario(request):
-	datos = json.loads(request.body.decode('utf8'))
-	cedula = datos.get("cedula")
-	correo = datos.get("correo")
-	parametros=	{"tabla" : "integracion_usuario",
-			"datos":[ {
-				"cedula":cedula,
-				"correo": correo
-			}],
-			
+	
+	cedula = request.GET.get("cedula")
+	correo = request.GET.get("correo")
+
+	print(cedula,correo)
+
+
+	parametros = {"tabla" : "integracion_claves_app",
+	"operador": "and",
+	"columnas" : ["app_id"],
+	"condiciones" : [
+		{
+			"columna" : "en_uso",
+			"comparador" : "==",
+			"valor" : 0
 		}
+		]
+	}
 	datos = json.dumps(parametros)
-	print(datos)
+	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	respuesta = json.loads(response.text)
+	codigo = respuesta.get("data")[0].get("app_id")
+	parametros=	{"tabla" : "integracion_usuario",
+		"datos":[ {
+			"cedula":cedula,
+			"telefono_id": codigo,
+			"correo": correo
+		}],
+		
+	}
+	datos = json.dumps(parametros)
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/insert', data = datos)
 	respuesta = json.loads(response.text)
-	return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
-        , content_type='application/json')
+	print("Registrando usuario...")
+	print(respuesta)
+	parametros={"tabla": "integracion_claves_app",
+		"operador": "and",
+		"valores": {
+			"en_uso":1
+		},
+		"condiciones": [
+			{
+				"columna": "app_id",
+				"comparador": "==",
+				"valor": codigo
+			}
+		]
+	}
+	datos = json.dumps(parametros)
+	response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
+
+
+
+	datos_retornar = send_email_asf({
+				"cedula":cedula,
+				"correo": correo
+			})
+
+
+
+
+	if datos_retornar.get("sent"):
+
+		return JsonResponse({"mensaje": "Usuario registrado!", "respuesta":True, "pin":datos_retornar.get("clave")})
+	else:
+
+		return JsonResponse({"mensaje": "Usuario no registrado!", "respuesta":False})
+		
 

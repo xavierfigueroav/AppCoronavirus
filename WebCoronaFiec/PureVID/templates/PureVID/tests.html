@@ -9,27 +9,157 @@
   <li ><a class="labels h4 " href="#">Bienvenido, Laboratorista 001</a> </li>
 {% endblock %}
 {% block body %}
-<div class="reserver"></div>
-	<div class="container">
-		
-		<div class="row">
-			<div class="col-md-9">
-				<table id="tests" class="table">
-					<thead>
-						<tr>
-							<th>ID</th>
-							<th>Cédula</th>
-							<th>Referencia</th>
-							<th>Fecha de Recolección</th>
-							<th>Estado</th>
-						</tr>
-					</thead>
-				</table>
-			</div>
+<div class="right-col col-md-12">
+			<div class="reserver"></div>
+				<h2 class="center featurette-heading">Registro de<span class="center text-muted"> Resultados</span></h2>
+
+			<hr class="featurette-divider"> 
+				<div class="form-group">
+					<input class = "entrada" type="text" name="nombre" id="cedula" autocomplete="off" placeholder = "cédula"/>
+					<input class = "entrada" type="text" name="apellido" id="test_id" autocomplete="off" placeholder="cod. prueba"/>
+					<input id="buscar_prueba" type="submit" name="submit" value="Buscar" class="btn btn-default sender">
+				</div>
+
+				<hr class="featurette-divider"></hr>
+
+				<div class="form-group">
+							<div class="row">
+						<div class="col-md-9">
+								<table id="tests" class="table">
+									<thead>
+										<tr>
+											<th>Cédula</th>
+											<th>Código</th>
+											<th>Estado</th>
+											<th>Resultado</th>
+											<th>Recomendación</th>
+											<th>Confirmar?</th>
+										</tr>
+									</thead>
+									<tbody id="tests-drawer">
+										
+									</tbody>
+								</table>
+						</div>
+					</div>
+				</div>
+				
+				<!--div class="form-group row">
+					<select name="estado"  id="result">
+						<option value="0">EN PROCESO</option>
+						<option value="1">PROCESADA</option>
+					</select>
+					<select name="resultado"  id="result">
+						<option value="1">POSITIVO</option>
+						<option value="0">NEGATIVO</option>
+						<option value="2">INCONCLUSO</option>
+					</select>
+				</div-->
+				<!--
+				<div>
+					<label  class="labels">Tiene experiencia en primeros auxilios:</label>
+					<label class="radio-inline"><input type="radio" name="optradio">Si</label>
+					<label class="radio-inline"><input type="radio" name="optradio">No</label>
+				</div>-->
+
+		</div>
 		</div>
 	</div>
 </div>
-
 	
 {% endblock %}
 
+
+{% block scripts %}
+  <script>
+  	var APP_ID = null;
+  	console.log("JS RUNNING..");
+
+
+    $(document).ready(function(){
+    	$.ajax({
+        url: 'ajax/fill_tests/',
+        data: {
+          'lab_id': "001"
+        },
+        dataType: 'json',
+        success: function (data) {
+        	var data =data.data
+        	var html_to_add = "";
+			for (var i = 0, limit = data.length; i < limit; i++) {
+			    let result = data[i].resultado
+			    let code = data[i].muestra_id
+			    let id  = data[i].cedula
+			    let state = data[i].estado
+			    let recomendacion = data[i].recomendacion
+
+			    html_to_add  += "<tr>"
+
+			    html_to_add += '<th>'+id+'</th>'
+
+			    html_to_add += '<th>'+code+'</th>'
+											
+				if (state=="1"){
+					console.log("showing processed test");
+					html_to_add += '<th><select name="estado"  id="state'+code+'"><option value="0">EN PROCESO</option><option selected = "selected" value="1">PROCESADA</option></select></th><th>	'
+
+					html_to_add += '<select name="resultado"  id="result'+code+'">'
+
+					if (result=="2"){
+						html_to_add += '<option value="1">POSITIVO</option><option value="0">NEGATIVO</option><option selected = "selected" value="2">INCONCLUSO</option><option  value="3">PENDIENTE</option></select></th>'
+
+					}else if (result=="1"){
+						html_to_add += '<option selected = "selected" value="1">POSITIVO</option><option value="0">NEGATIVO</option><option value="2">INCONCLUSO</option><option  value="3">PENDIENTE</option></select></th>'
+					}else if (result=="0"){
+						html_to_add += '<option  value="1">POSITIVO</option><option  selected = "selected" value="0">NEGATIVO</option><option value="2">INCONCLUSO</option><option  value="3">PENDIENTE</option></select></th>'
+					}
+				
+					html_to_add += '<th><input class = "entrada" type="text" name="nombre" id="recomendacion'+code+'" value="'+recomendacion+'"/></th><th><input id= '+code+'class="enviar_prueba" type="submit" name="submit" value="Confirmar" class="btn btn-default sender"></th></tr>'
+				}
+				else{
+					html_to_add += '<th><select name="estado"  id="state'+code+'"><option selected = "selected" value="0">EN PROCESO</option><option value="1">PROCESADA</option></select></th><th>	'
+					html_to_add += '<select name="resultado"  id="result'+code+'"><option value="1">POSITIVO</option><option value="0">NEGATIVO</option><option value="2">INCONCLUSO</option><option selected = "selected" value="3">PENDIENTE</option></select></th><th><input class = "entrada" type="text" name="nombre" id="recomendacion'+code+'" autocomplete="off" placeholder = "Ingrese recomendaciones"/></th><th><input id= '+code+' class="enviar_prueba" type="submit" name="submit" value="Confirmar" class="btn btn-default sender"></th></tr>'
+				}	
+			}
+
+
+
+
+			$("#tests-drawer").append(html_to_add);
+
+			$(".enviar_prueba").click(function(){
+
+				var codigo = $(this).attr("id");
+				var recomendacion = $("#recomendacion"+codigo).val();
+				var estado = $("#state"+codigo).children("option:selected").attr("value");
+				var resultado = $("#result"+codigo).children("option:selected").attr("value");
+
+				console.log(codigo,recomendacion,estado,resultado);
+
+				$.ajax({
+			        url: 'ajax/send_result/',
+			        data: {
+			        	'codigo':codigo,
+						'recomendacion':recomendacion,
+						'estado':estado,
+						'resultado':resultado
+			        },
+			        dataType: 'json',
+			        success: function (data) {
+			        	console.log($(this).attr("id"));
+			        }
+			      });
+			    });
+        	}
+      	});
+
+    	
+
+    
+    });
+
+
+
+  </script>
+
+{% endblock %}

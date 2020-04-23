@@ -26,9 +26,7 @@
 				</div>
 				<div class="form-group">
 					<input id="buscar_cedula" type="submit" name="submit" value="Buscar" class="btn btn-default sender">
-				</div>
-				<div class="form-group">
-					<input type="submit" name="submit" value="Registrar" class="btn btn-default sender">
+					<input id="agregar_user" type="submit" name="submit" value="Registrar" class="btn btn-default sender">
 				</div>
 
 				<div class="form-group">
@@ -38,7 +36,7 @@
 					
 				</div>
 				<div class="form-group">
-					<input type="submit" name="submit" value="Agregar" class="btn btn-default sender">
+					<input id ="add_test" type="submit" name="submit" value="Agregar" class="btn btn-default sender">
 				</div>
 
 				<div class="form-group">
@@ -52,6 +50,9 @@
 										<th>Referencia</th>
 									</tr>
 								</thead>
+								<tbody id="tests-table">
+									
+								</tbody>
 							</table>
 						</div>
 					</div>
@@ -87,6 +88,7 @@
 
 {% block scripts %}
   <script>
+  	var APP_ID = null;
   	console.log("JS RUNNIGNG..")
     $("#buscar_cedula").click(function () {
       var cedula = $("#cedula").val();
@@ -102,28 +104,64 @@
         success: function (data) {
           if (data.respuesta) {
             alert("Usted ya tiene cuenta!");
+            $("#cedula").val(cedula);
           }else{
           	alert("Usted no tiene cuenta! Por favor, regístrese.");
           }
         }
       });
 
-      $("#registrarse").click(function () {
-      var cedula = $("#cedula").val();
-      console.log(cedula);
+    });
 
+    $("#agregar_user").click(function () {
+      var cedula = $("#cedula").val();
+      var email = $("#email").val();
+      console.log(cedula);
+      console.log(email);
 
       $.ajax({
-        url: 'ajax/lookup_cedula/',
+        url: 'ajax/add_user/',
         data: {
-          'cedula': cedula
+          'cedula':cedula,
+          'correo':email
         },
         dataType: 'json',
         success: function (data) {
           if (data.respuesta) {
-            alert("Usted ya tiene cuenta!");
+            alert("Usted ha sido registrado.\nSu PIN de acceso es:" + data.pin);
           }else{
-          	alert("Usted no tiene cuenta! Por favor, regístrese.");
+          	alert("Error en registro. Revisar ingreso de correo válido.");
+          }
+        }
+      });
+
+    });
+
+    $("#add_test").click(function () {
+      var cedula = $("#cedulaAdicional").val();
+      var muestra = $("#muestra_ID").val();
+      var referencia = $("#referencia").val();
+      var add_to_html = "<tr>" + "<th>" + cedula + "</th>" + "<th>" + muestra + "</th>" + "<th>" + referencia + "</th> </tr>" 
+
+      $.ajax({
+        url: 'ajax/add_test/',
+        data: {
+          'cedula':cedula,
+          'codigo_muestra':muestra,
+          'referencia':referencia
+        },
+        dataType: 'json',
+        success: function (data) {
+          if (data.respuesta) {
+
+            alert("Muestra ingresada!");
+            $("#tests-table").append(add_to_html);
+            $("#cedulaAdicional").val("");
+			$("#muestra_ID").val("");
+			$("#referencia").val("");
+
+          }else{
+          	alert("Error en registro. Revisar datos de ingreso.");
           }
         }
       });

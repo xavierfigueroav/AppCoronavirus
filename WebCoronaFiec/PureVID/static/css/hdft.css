@@ -24,7 +24,7 @@ body {
 
 
 .paleta1{
-	background-color: #212a85;
+	background-color: #23427C;
 }
 
 .labels{
@@ -37,7 +37,7 @@ body {
 }
 
 .navbar-inverse .navbar-toggle:hover {
-	background-color: #212a85;
+	background-color: #23427C;
 }
 
 .header-icon {
@@ -50,11 +50,11 @@ body {
 }
 
 .dropdown-toogle{
-	background-color: #212a85; 
+	background-color: #23427C; 
 }
 
 .navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:focus, .navbar-inverse .navbar-nav>.open>a:hover {
-	background-color: #212a85;
+	background-color: #23427C;
 	opacity: 0.8;
 }
 
@@ -68,5 +68,5 @@ body {
 }
 
 .dropdown-menu{
-	background-color: #212a85;
+	background-color: #23427C;
 }
