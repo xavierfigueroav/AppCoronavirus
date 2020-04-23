@@ -37,6 +37,7 @@ import { MedicalPage } from '../pages/medical/medical';
 import { TestResultsPage } from '../pages/test-results/test-results';
 import { ScoreProvider } from '../providers/score/score';
 import { APIProvider } from '../providers/api/api';
+import { ValidationsProvider } from '../providers/validations/validations';
 import { AlertProvider } from '../providers/alert/alert';
 import { DatabaseProvider } from '../providers/database/database';
 
@@ -100,10 +101,11 @@ import { DatabaseProvider } from '../providers/database/database';
     BackgroundGeolocation,
     SQLite,
     ScoreProvider,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
     APIProvider,
     AlertProvider,
-    DatabaseProvider
+    DatabaseProvider,
+    ValidationsProvider,
+    {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
 

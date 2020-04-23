@@ -7,6 +7,7 @@ import { File } from '@ionic-native/file';
 import { APIProvider } from '../../providers/api/api';
 import { AlertProvider } from '../../providers/alert/alert';
 import { DatabaseProvider } from '../../providers/database/database';
+import { ValidationsProvider } from '../../providers/validations/validations';
 
 @Component({
     selector: 'page-auth',
@@ -25,7 +26,8 @@ export class AuthPage {
         private alertCtrl: AlertController,
         private database: DatabaseProvider,
         private api: APIProvider,
-        private alerts: AlertProvider) {
+        private alerts: AlertProvider,
+        private validations: ValidationsProvider) {
 
         this.menuCtrl.enable(false);
         this.storage.set('notifications', null);
@@ -111,18 +113,13 @@ export class AuthPage {
         }
     }
 
-    validateEmail(email) {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
-    }
-
     passwordRecover(){
         const prompt = this.alertCtrl.create({
             title: '<p align="center">Recuperación de contraseña</p>',
             message: "Escriba una dirección de correo electrónico válida a la que podamos enviar su contraseña.",
             inputs: [
               {
-                name: 'cedula',
+                name: 'id',
                 type: "text",
                 placeholder: 'Ingresa tu cédula'
               },
@@ -140,12 +137,12 @@ export class AuthPage {
               {
                 text: 'Enviar',
                 handler: data => {
-                    if (this.validateEmail(data.email)) {
+                    if (this.validations.validateEmail(data.email) && this.validations.validateIdentificationCard(data.id)) {
                         console.log('Enviar correo.');
                         this.confirmacionEnvioCorreo(data.cedula, data.email);
                     }else{
-                        console.log((this.validateEmail(data.email)));
-                        this.alerts.showEmailErrorAlert();
+                        console.log((this.validations.validateEmail(data.email)));
+                        this.alerts.showPairEmailIdentifierErrorAlert();
                     }
                 }
               }

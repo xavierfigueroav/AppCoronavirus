@@ -58,10 +58,10 @@
                         <ion-icon id="locationIconRed" name="pin" *ngIf="homeLocationDate == undefined"></ion-icon>
                     </ion-col>
                     <ion-col id="radiusColumn">
-                        <ion-input id="inputRadioCasa" type="number" min="2" [(ngModel)]="homeRadius" placeholder="RADIO DE CASA"></ion-input>
+                        <ion-input id="inputRadioCasa" type="number" min="2" max="30" [(ngModel)]="homeRadius" placeholder="RADIO DE CASA"></ion-input>
                     </ion-col>
                     <ion-col id="saveColumn">
-                        <button id="enviarUbicacionButton" ion-button (click)="registerHomeHandler()">
+                        <button id="enviarUbicacionButton" ion-button (click)="registerHomeHandler(homeRadius)">
                             <p id="enviarRadioText">Guardar</p>
                         </button>
                     </ion-col>

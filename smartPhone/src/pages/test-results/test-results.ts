@@ -20,10 +20,10 @@ export class TestResultsPage implements OnInit {
 
     result: any;
     testsResultsMap: {};
-    usersIds: any[];
+    usersInfo: any[] = [];
     testFound: boolean;
-    testStatuses = { 0: 'EN PROCESO', 1: 'TERMINADA' };
-    testResults = { 0: 'NEGATIVO', 1: 'POSITIVO' };
+    testStatuses = { 0: 'EN PROCESO', 1: 'PROCESADA' };
+    testResults = { 0: 'NEGATIVO', 1: 'POSITIVO', 2: 'INCONCLUSO', 3: 'PENDIENTE' };
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public appCtrl: App,
     private storage: Storage, private api: APIProvider, private alertCtrl: AlertController) {
@@ -49,24 +49,17 @@ export class TestResultsPage implements OnInit {
     searchTestResults(){
         this.storage.get("linkedUser").then(user=>{
             this.api.getTestResultsByAppId(user.codigo_app).then(results => {
-                console.log(user.codigo_app);
-                console.log(results);
+                console.log("Results",results);
+                this.usersInfo = [];
                 if(results) {
                     var resultsMap = {string:[]};
-                    results.forEach(function(result){
-                        if(result.cedula){
-                            if(result.cedula in resultsMap){
-                                resultsMap[result.cedula].push(result);
-                            }else{
-                                resultsMap[result.cedula] = [result];
-                            }
+                    results.forEach((result)=>{
+                        if(result.cedula in resultsMap){
+                            resultsMap[result.cedula].push(result);
                         }else{
-                            if(result.referencia in resultsMap){
-                                resultsMap[result.referencia].push(result);
-                            }else{
-                                resultsMap[result.referencia] = [result];
-                            }
+                            resultsMap[result.cedula] = [result];
                         }
+                        this.usersInfo.push([result.cedula,result.referencia,result.muestra_id]);
                         
                     });
                     //sort by date
@@ -75,8 +68,8 @@ export class TestResultsPage implements OnInit {
                                                       : (a.fecha_recoleccion === b.fecha_recoleccion) ? ((a.muestra_id > b.muestra_id) ? 1 : -1) : -1 );
                     }
                     this.testsResultsMap = resultsMap;
-                    console.log(this.testsResultsMap);
-                    this.usersIds =  Object.keys(this.testsResultsMap);
+                    console.log("Tests Result Map",this.testsResultsMap);
+                    console.log("lista de usersIds",this.usersInfo);
                 } else {
                     this.testFound = false;
                 }
@@ -85,5 +78,4 @@ export class TestResultsPage implements OnInit {
             });
         });
     }
-
 }
