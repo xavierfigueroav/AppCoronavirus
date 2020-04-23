@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, LoadingController, App, Loading } from 'ionic-angular';
+import { LoadingController, App, Loading } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Diagnostic } from '@ionic-native/diagnostic';
@@ -52,17 +52,25 @@ export class SurveyPage {
         this.storage.get('sentForms').then((sentForms) => {
             if(sentForms != null && sentForms.length > 0) {
                 const initialForms = sentForms.filter((sentForm: any) => sentForm.formData.type === 'initial');
-                const pendingForm = initialForms[initialForms.length - 1];
-                this.clickEditForm(sentForms, pendingForm);
-            } else {
-                const info_template = this.infoTemplates[0];
-                if (info_template.gps === 'required') {
-                    this.requestLocationAuthorization(info_template);
+                if(initialForms.length > 0) {
+                    const pendingForm = initialForms[initialForms.length - 1];
+                    this.clickEditForm(sentForms, pendingForm);
                 } else {
-                    this.startInitialForm(info_template, info_template.data.initial);
+                    this.startForm();
                 }
+            } else {
+                this.startForm();
             }
         });
+    }
+
+    startForm() {
+        const info_template = this.infoTemplates[0];
+        if (info_template.gps === 'required') {
+            this.requestLocationAuthorization(info_template);
+        } else {
+            this.startInitialForm(info_template, info_template.data.initial);
+        }
     }
 
     async clickEditForm(sentForms: any[], pendingForm: any) {
