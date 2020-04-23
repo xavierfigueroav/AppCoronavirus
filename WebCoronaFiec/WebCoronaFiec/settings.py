@@ -90,7 +90,7 @@ DATABASES = {
             "ENGINE": "django.db.backends.postgresql_psycopg2",
             "NAME": "purevid_db",
             "USER": "postgres",
-            "PASSWORD": "1234",
+            "PASSWORD": "fabgreat",
             "HOST": os.environ.get("DB_HOSTNAME", "localhost"),
             "PORT": os.environ.get("DB_PORT", "5432"),
         }
@@ -144,6 +144,6 @@ STATICFILES_DIRS = [
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'autosaludespol@gmail.com'
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = 'autosalud2020'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

@@ -589,6 +589,12 @@ def registrar_usuario(request):
 	datos = json.dumps(parametros)
 	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
+	
+	print("fallando!!")
+
+	print(respuesta)
+
+
 	codigo = respuesta.get("data")[0].get("app_id")
 	parametros=	{"tabla" : "integracion_usuario",
 		"datos":[ {
