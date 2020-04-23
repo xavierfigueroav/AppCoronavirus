@@ -42,8 +42,12 @@ export class AlertProvider {
         this.showOkButtonAlert('La combinación cédula/correo que ha proporcionado no existe.')
     }
 
+    showPairEmailIdentifierErrorAlert(){
+        this.showOkButtonAlert('La cédula o correo proporcionado es inválido.');
+    }
+
     showEmailErrorAlert() {
-        this.showOkButtonAlert('El correo proporcionado es inválido.')
+        this.showOkButtonAlert('El correo proporcionado es inválido.');
     }
 
     showLocationErrorAlert() {

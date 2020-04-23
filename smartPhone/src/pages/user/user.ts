@@ -6,6 +6,7 @@ import { AlertController } from 'ionic-angular';
 import { LocationProvider } from '../../providers/location/location';
 import { DatabaseService } from '../../service/database-service';
 import { ScoreProvider } from '../../providers/score/score';
+import { ValidationsProvider } from '../../providers/validations/validations';
 import { APIProvider } from '../../providers/api/api';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
@@ -41,7 +42,8 @@ export class UserPage implements OnInit{
         private api: APIProvider,
         private events: Events,
         private ngZone: NgZone,
-        public localNotifications: LocalNotifications
+        public localNotifications: LocalNotifications,
+        private validations: ValidationsProvider
         ) {
             this.events.subscribe('scoreChanges', (score: number) => {
                 this.updateCurrentScore(score);
@@ -246,8 +248,8 @@ export class UserPage implements OnInit{
         });
     }
 
-    async registerHomeHandler() {
-        if(this.homeRadius !== undefined) {
+    async registerHomeHandler(radius) {
+        if(this.homeRadius !== undefined && this.validations.validateHomeRadius(radius)) {
 
             this.scoreService.startScan().then(numberOfWifiNetworks => {
                 console.log('homeWifiNetworks set');

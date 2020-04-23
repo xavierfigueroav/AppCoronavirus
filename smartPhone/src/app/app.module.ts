@@ -38,6 +38,7 @@ import { MedicalPage } from '../pages/medical/medical';
 import { TestResultsPage } from '../pages/test-results/test-results';
 import { ScoreProvider } from '../providers/score/score';
 import { APIProvider } from '../providers/api/api';
+import { ValidationsProvider } from '../providers/validations/validations';
 import { AlertProvider } from '../providers/alert/alert';
 
 @NgModule({
@@ -103,7 +104,8 @@ import { AlertProvider } from '../providers/alert/alert';
     ScoreProvider,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     APIProvider,
-    AlertProvider
+    AlertProvider,
+    ValidationsProvider
   ]
 })
 
