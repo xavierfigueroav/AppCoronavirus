@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { DatabaseService } from '../../service/database-service';
 import { Storage } from '@ionic/storage';
 import { WifiScore } from '../../utils_score/wifi_score';
 import { DistanceScore } from '../../utils_score/distance_score';
@@ -12,6 +11,7 @@ import {
 } from '@ionic-native/background-geolocation';
 import { Events } from 'ionic-angular';
 import { Encoding, LatLng, ILatLng } from "@ionic-native/google-maps";
+import { DatabaseProvider } from '../database/database';
 
 declare var WifiWizard2: any;
 
@@ -29,7 +29,7 @@ export class ScoreProvider {
     constructor(
         private storage: Storage,
         public backgroundGeolocation: BackgroundGeolocation,
-        public database:DatabaseService,
+        public database: DatabaseProvider,
         public api: APIProvider,
         private events: Events
         ) {

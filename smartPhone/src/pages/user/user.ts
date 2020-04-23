@@ -4,12 +4,12 @@ import { Storage } from '@ionic/storage';
 import { AuthPage } from '../auth/auth';
 import { AlertController } from 'ionic-angular';
 import { LocationProvider } from '../../providers/location/location';
-import { DatabaseService } from '../../service/database-service';
 import { ScoreProvider } from '../../providers/score/score';
 import { APIProvider } from '../../providers/api/api';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
 import * as plantilla from '../../assets/plantilla/plantilla.json';
+import { DatabaseProvider } from '../../providers/database/database';
 
 @Component({
 	selector: 'page-user',
@@ -36,7 +36,7 @@ export class UserPage implements OnInit{
         private storage: Storage,
         public alertCtrl: AlertController,
         private location: LocationProvider,
-        private database: DatabaseService,
+        private database: DatabaseProvider,
         private scoreService: ScoreProvider,
         private api: APIProvider,
         private events: Events,

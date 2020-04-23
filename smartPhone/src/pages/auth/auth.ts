@@ -4,9 +4,9 @@ import { TabsPage } from '../tabs/tabs';
 import { Storage } from '@ionic/storage';
 import { SurveyPage } from '../survey/survey';
 import { File } from '@ionic-native/file';
-import { DatabaseService } from '../../service/database-service';
 import { APIProvider } from '../../providers/api/api';
 import { AlertProvider } from '../../providers/alert/alert';
+import { DatabaseProvider } from '../../providers/database/database';
 
 @Component({
     selector: 'page-auth',
@@ -23,7 +23,7 @@ export class AuthPage {
         private file: File,
         private loadingCtrl: LoadingController,
         private alertCtrl: AlertController,
-        private database:DatabaseService,
+        private database: DatabaseProvider,
         private api: APIProvider,
         private alerts: AlertProvider) {
 

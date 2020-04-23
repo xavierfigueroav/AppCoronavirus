@@ -33,12 +33,12 @@ import { Clipboard } from '@ionic-native/clipboard';
 import { LocationProvider } from '../providers/location/location';
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { SQLite } from '@ionic-native/sqlite'
-import { DatabaseService } from '../service/database-service';
 import { MedicalPage } from '../pages/medical/medical';
 import { TestResultsPage } from '../pages/test-results/test-results';
 import { ScoreProvider } from '../providers/score/score';
 import { APIProvider } from '../providers/api/api';
 import { AlertProvider } from '../providers/alert/alert';
+import { DatabaseProvider } from '../providers/database/database';
 
 @NgModule({
   declarations: [
@@ -99,11 +99,11 @@ import { AlertProvider } from '../providers/alert/alert';
     LocationProvider,
     BackgroundGeolocation,
     SQLite,
-    DatabaseService,
     ScoreProvider,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     APIProvider,
-    AlertProvider
+    AlertProvider,
+    DatabaseProvider
   ]
 })
 

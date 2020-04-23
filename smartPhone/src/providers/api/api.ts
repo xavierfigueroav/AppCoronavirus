@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import * as Constants from '../../data/constants';
 import { Storage } from '@ionic/storage';
-import { DatabaseService } from '../../service/database-service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Encoding } from "@ionic-native/google-maps";
 
 import * as moment from 'moment';
+import { DatabaseProvider } from '../database/database';
 
 
 /*
@@ -18,7 +18,7 @@ import * as moment from 'moment';
 export class APIProvider {
 
     constructor(
-        private database:DatabaseService,
+        private database: DatabaseProvider,
         private storage: Storage,
         private httpClient: HttpClient
     ) {
