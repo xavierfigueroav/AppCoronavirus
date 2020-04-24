@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, App } from 'ionic-angular';
 import { AuthPage } from '../auth/auth';
-
-import { Storage } from '@ionic/storage';
+import { StorageProvider } from '../../providers/storage/storage';
 import { TestResultsPage } from '../test-results/test-results';
 import { FormPage } from '../form/form';
 
@@ -21,19 +20,17 @@ export class MedicalPage {
 
     status: string;
 
-    constructor(private navCtrl: NavController, private app: App, private storage: Storage) {
-    }
+  constructor(private navCtrl: NavController, private app: App, private storage: StorageProvider) {
+  }
 
     ionViewDidLoad() {
         console.log('ionViewDidLoad MedicalPage');
     }
 
     cerrarSesion() {
-        this.storage.get('linkedUser').then((val) => {
-                this.storage.set('linkedUser', null).then(data => {
-                    this.app.getRootNav().setRoot(AuthPage);
-                });
-            });
+        this.storage.setUser(null).then(() => {
+            this.app.getRootNav().setRoot(AuthPage);
+        });
     }
 
     goToDiagnostic() {

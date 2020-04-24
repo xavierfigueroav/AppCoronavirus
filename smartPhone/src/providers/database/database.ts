@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Storage } from '@ionic/storage';
+import { StorageProvider } from '../../providers/storage/storage';
 
 /*
   Generated class for the DatabaseProvider provider.
@@ -16,7 +16,7 @@ export class DatabaseProvider {
     private database: SQLiteObject;
     private dbReady = new BehaviorSubject<boolean>(false);
 
-    constructor(private platform: Platform, private sqlite: SQLite, private storage: Storage) {
+    constructor(private platform: Platform, private sqlite: SQLite, private storage: StorageProvider) {
         this.platform.ready().then(() => {
             this.sqlite.create({
                 name: 'qvid.db',
@@ -74,7 +74,7 @@ export class DatabaseProvider {
     }
 
     async getScores(){
-        const appId = await this.storage.get('linkedUser')['codigo_app'];
+        const appId = await this.storage.getUser();
         return this.isReady().then(async () => {
             return this.database.executeSql(`SELECT * from score WHERE app_id = '${appId}';`, []).then(data => {
                 let lists = [];
@@ -93,7 +93,7 @@ export class DatabaseProvider {
         maxTimeAway: number,
         encodedRoute: string
     ){
-        const appId = await this.storage.get('linkedUser')['codigo_app'];
+        const appId = await this.storage.getUser();
         return this.isReady().then(async () => {
             return this.database.executeSql(`INSERT INTO score(app_id,score,hour,max_distance_home,max_time_away,encoded_route)
             VALUES ('${appId}','${score}','${hour}','${maxDistanceHome}','${maxTimeAway}','${encodedRoute}');`, {}).then(result => {
@@ -105,7 +105,7 @@ export class DatabaseProvider {
     }
 
     async getScore(id: number){
-        const appId = await this.storage.get('linkedUser')['codigo_app'];
+        const appId = await this.storage.getUser();
         return this.isReady().then(async () => {
             return this.database.executeSql(`SELECT * FROM score WHERE id = ${id} AND app_id = '${appId}';`, []).then(data => {
                 if(data.rows.length){
@@ -117,21 +117,21 @@ export class DatabaseProvider {
     }
 
     async updateScoreStatus(id: number, status: string){
-        const appId = await this.storage.get('linkedUser')['codigo_app'];
+        const appId = await this.storage.getUser();
         return this.isReady().then(() => {
             return this.database.executeSql(`UPDATE score SET status = "${status}" WHERE id = ${id} AND app_id = '${appId}';`, []);
         });
     }
 
     async deleteScores(){
-        const appId = await this.storage.get('linkedUser')['codigo_app'];
+        const appId = await this.storage.getUser();
         return this.isReady().then(() => {
             return this.database.executeSql(`DELETE FROM score WHERE app_id = '${appId}';`, []);
         });
     }
 
     async getLocations(){
-        const appId = await this.storage.get('linkedUser')['codigo_app'];
+        const appId = await this.storage.getUser();
         return this.isReady().then(async () => {
             return this.database.executeSql(`SELECT * from location WHERE app_id = '${appId}';`, []).then(data => {
                 let lists = [];
@@ -146,7 +146,7 @@ export class DatabaseProvider {
     async addLocation(latitude: number, longitude: number, time: number, distanceScore: number, distanceHome: number, timeAway: number, timeScore: number, wifiScore: number, populationDensity: number){
         const date = new Date(time);
         const hour = date.getHours();
-        const appId = await this.storage.get('linkedUser')['codigo_app'];
+        const appId = await this.storage.getUser();
         return this.isReady().then(async () => {
             return this.database.executeSql(`INSERT INTO location(app_id,latitude,longitude,time,distance_score,wifi_score,distance_home,time_away,time_score,population_density)
             VALUES ('${appId}','${latitude}','${longitude}','${hour}','${distanceScore}','${wifiScore}','${distanceHome}','${timeScore}','${timeAway}','${populationDensity}');`, {}).then(result => {
@@ -158,7 +158,7 @@ export class DatabaseProvider {
     }
 
     async getLocation(id: number){
-        const appId = await this.storage.get('linkedUser')['codigo_app'];
+        const appId = await this.storage.getUser();
         return this.isReady().then(async () => {
             return this.database.executeSql(`SELECT * FROM location WHERE id = ${id} AND app_id ='${appId}';`, []).then(data => {
                 if(data.rows.length){
@@ -170,7 +170,7 @@ export class DatabaseProvider {
     }
 
     async deleteLocations(){
-        const appId = await this.storage.get('linkedUser')['codigo_app'];
+        const appId = await this.storage.getUser();
         return this.isReady().then(() => {
             return this.database.executeSql(`DELETE FROM location WHERE app_id = '${appId}';`, []);
         });
@@ -179,14 +179,14 @@ export class DatabaseProvider {
     async deleteLocationsByHour(time: number){
         const date = new Date(time);
         const hour = date.getHours();
-        const appId = await this.storage.get('linkedUser')['codigo_app'];
+        const appId = await this.storage.getUser();
         return this.isReady().then(() => {
             return this.database.executeSql(`DELETE FROM location WHERE time = ${hour} AND app_id = '${appId}';`, []);
         });
     }
 
     async getHome(){
-        const appId = await this.storage.get('linkedUser')['codigo_app'];
+        const appId = await this.storage.getUser();
         return this.isReady().then(async () => {
             return this.database.executeSql(`SELECT home_latude, home_longitude, home_radius FROM location WHERE app_id = '${appId}';`, []).then(data => {
                 if(data.rows.length){
@@ -198,7 +198,7 @@ export class DatabaseProvider {
     }
 
     async getLocationByHour(hour: number){
-        const appId = await this.storage.get('linkedUser')['codigo_app'];
+        const appId = await this.storage.getUser();
         return this.isReady().then(async () => {
             return this.database.executeSql(`SELECT * FROM location WHERE time = '${hour-1}' AND app_id = '${appId}';` , []).then(data => {
                 const locations = [];

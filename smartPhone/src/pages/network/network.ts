@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { App } from 'ionic-angular';
-import { Storage } from '@ionic/storage';
+import { StorageProvider } from '../../providers/storage/storage';
 import { AuthPage } from '../auth/auth';
 
 
@@ -13,7 +13,7 @@ export class NetworkPage implements OnInit{
 
     people: any[];
 
-	constructor(private app: App, private storage: Storage) {
+	constructor(private app: App, private storage: StorageProvider) {
     }
 
     ngOnInit() {
@@ -25,10 +25,8 @@ export class NetworkPage implements OnInit{
 	}
 
 	cerrarSesion() {
-        this.storage.get('linkedUser').then((val) => {
-            this.storage.set('linkedUser', null).then(data => {
-                this.app.getRootNav().setRoot(AuthPage);
-            });
+        this.storage.setUser(null).then(() => {
+            this.app.getRootNav().setRoot(AuthPage);
         });
     }
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as Constants from '../../data/constants';
-import { Storage } from '@ionic/storage';
+import { StorageProvider } from '../../providers/storage/storage';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Encoding } from "@ionic-native/google-maps";
 
@@ -19,7 +19,7 @@ export class APIProvider {
 
     constructor(
         private database: DatabaseProvider,
-        private storage: Storage,
+        private storage: StorageProvider,
         private httpClient: HttpClient
     ) {
         console.log('Hello ScoreSenderProvider Provider');
@@ -36,11 +36,10 @@ export class APIProvider {
         });
 
         if(pendingScores.length > 0) {
-            const user = await this.storage.get('linkedUser');
-            const phone_id = user ? user.codigo_app : user;
+            const user = await this.storage.getUser();
             // FIXME: Get date from scores table in database
             const date = this.getCurrentStringDate();
-            await this.sendPostRequest(pendingScores, phone_id, date);
+            await this.sendPostRequest(pendingScores, user, date);
         }
     }
 
@@ -95,7 +94,7 @@ export class APIProvider {
     }
 
     async postHomeInformation() {
-        const user = await this.storage.get('linkedUser');
+        const user = await this.storage.getUser();
         const homeLocation = await this.storage.get('homeLocation');
         const homeRadius = await this.storage.get('homeRadius');
         const scores = await this.database.getScores();
@@ -104,7 +103,7 @@ export class APIProvider {
         const maxTimeAway = this.getMaxTimeAway(scores);
 
         const data = this.generateUpdateHomeBody(
-            user.codigo_app,
+            user,
             homeLocation,
             homeRadius,
             maxDistanceAway,
@@ -120,7 +119,7 @@ export class APIProvider {
             const updated = response.data.rows_updated;
             if(!updated) {
                 const data = this.generateInsertHomeBody(
-                    user.codigo_app,
+                    user,
                     homeLocation,
                     homeRadius,
                     maxDistanceAway,

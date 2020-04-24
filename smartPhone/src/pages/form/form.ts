@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { NavController, NavParams, AlertController, App, LoadingController, Navbar, Loading } from 'ionic-angular';
-import { Storage } from '@ionic/storage';
+import { StorageProvider } from '../../providers/storage/storage';
 import { Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Diagnostic } from '@ionic-native/diagnostic';
@@ -45,7 +45,7 @@ export class FormPage {
         private diagnostic: Diagnostic,
         private alertCtrl: AlertController,
         private navParams: NavParams,
-        private storage: Storage,
+        private storage: StorageProvider,
         private geoLocation: Geolocation,
         private locationAccuracy: LocationAccuracy,
         private loadingController: LoadingController,
@@ -60,7 +60,7 @@ export class FormPage {
         });
         this.loader.present();
 
-        this.storage.get('id_dataset').then(id_dataset => {
+        this.storage.getDatasetId().then(id_dataset => {
             this.id_dataset = id_dataset;
         });
 
@@ -74,8 +74,6 @@ export class FormPage {
             const formType = this.navParams.get('formType');
 
             this.storage.get('savedForms').then(savedForms => {
-                savedForms = this.copyDeeply(savedForms);
-
                 if(savedForms != null && savedForms[formType] != undefined) {
                     this.isSavedForm = true;
                     const pendingForm = savedForms[formType];
@@ -83,8 +81,6 @@ export class FormPage {
                 } else {
                     if(formType === 'initial') {
                         this.storage.get('sentForms').then((sentForms) => {
-                            sentForms = this.copyDeeply(sentForms);
-
                             if(sentForms != null && sentForms.length > 0) {
                                 const initialForms = sentForms.filter(
                                     (sentForm: any) => sentForm.formData.type === 'initial'
@@ -133,7 +129,6 @@ export class FormPage {
             const templateUuid = pendingForm.template;
 
             let formsData = this.navParams.get('formsData') || await this.storage.get('formsData') || {};
-            formsData = this.copyDeeply(formsData);
             if(formsData[templateUuid] === undefined) {
                 formsData[templateUuid] = [currentForm];
             }
@@ -160,7 +155,6 @@ export class FormPage {
             const selectedTemplate = JSON.parse(JSON.stringify(currentForm.data));
 
             let pendingForms = this.navParams.get('pendingForms') || await this.storage.get('pendingForms');
-            pendingForms = this.copyDeeply(pendingForms);
 
             if (pendingForms != null) {
                 pendingForms.push(pendingForm);
@@ -191,7 +185,6 @@ export class FormPage {
 
     async startInitialForm(template: any, selectedTemplate: any, formType: string) {
         let formsData = this.navParams.get('formsData') || await this.storage.get('formsData');
-        formsData = this.copyDeeply(formsData);
 
         let forms: any[];
         if (formsData != null && Object.keys(formsData).length > 0 && formsData.hasOwnProperty(template.uuid)) {
@@ -218,7 +211,6 @@ export class FormPage {
         }
 
         let pendingForms = this.navParams.get('pendingForms') || await this.storage.get('pendingForms');
-        pendingForms = this.copyDeeply(pendingForms);
 
         const newPendingForm = {
             template: template.uuid,
@@ -322,8 +314,6 @@ export class FormPage {
             this.formsData = this.formulario_uso.formsData;
         } else {
             let formsData = await this.storage.get('formsData');
-            formsData = this.copyDeeply(formsData);
-
             if (formsData != null) {
                 this.formsData = formsData;
             }
@@ -341,7 +331,7 @@ export class FormPage {
                     savedForms = savedForms || {};
                     savedForms[this.currentForm.type] = this.pendingForms[this.pendingForms.length - 1];
                     this.storage.set('savedForms', savedForms);
-                    this.storage.set('formsData', this.copyDeeply(this.formsData));
+                    this.storage.set('formsData', this.formsData);
                 });
             }
         });
@@ -516,8 +506,7 @@ export class FormPage {
 
                 this.http.uploadFile(url, {package_id: id_dataset, name: nombre_archivo}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
                     this.file.removeFile(carpeta, nombre_archivo).then(() => {
-                        this.storage.get('sentForms').then((response) => {
-                            let sentForms = this.copyDeeply(response);
+                        this.storage.get('sentForms').then(sentForms => {
                             if (sentForms != null && sentForms.length > 0) {
                                 sentForms.push(pendingForm);
                             } else {
@@ -525,7 +514,7 @@ export class FormPage {
                             }
                             this.storage.set('pendingForms', []);
                             this.storage.set('formsData', this.formsData);
-                            this.storage.set('sentForms', this.copyDeeply(sentForms));
+                            this.storage.set('sentForms', sentForms);
                             this.storage.get('savedForms').then(savedForms => {
                                 if(this.isSavedForm) {
                                     savedForms[this.currentForm.type] = undefined;
@@ -547,8 +536,7 @@ export class FormPage {
                         });
                     }).catch(error => {
                         console.log(error);
-                        this.storage.get('sentForms').then((response) => {
-                            let sentForms = this.copyDeeply(response);
+                        this.storage.get('sentForms').then(sentForms => {
                             if (sentForms != null && sentForms.length > 0) {
                                 sentForms.push(pendingForm);
                             } else {
@@ -556,7 +544,7 @@ export class FormPage {
                             }
                             this.storage.set('pendingForms', []);
                             this.storage.set('formsData', this.formsData);
-                            this.storage.set('sentForms', this.copyDeeply(sentForms));
+                            this.storage.set('sentForms', sentForms);
                             this.storage.get('savedForms').then(savedForms => {
                                 if(this.isSavedForm) {
                                     savedForms[this.currentForm.type] = undefined;
