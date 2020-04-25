@@ -7,6 +7,7 @@ import { LocationProvider } from '../../providers/location/location';
 import { ScoreProvider } from '../../providers/score/score';
 import { ValidationsProvider } from '../../providers/validations/validations';
 import { APIProvider } from '../../providers/api/api';
+import { AlertProvider } from '../../providers/alert/alert';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
 import * as plantilla from '../../assets/plantilla/plantilla.json';
@@ -43,7 +44,8 @@ export class UserPage implements OnInit{
         private events: Events,
         private ngZone: NgZone,
         public localNotifications: LocalNotifications,
-        private validations: ValidationsProvider
+        private validations: ValidationsProvider,
+        private alert: AlertProvider
         ) {
             this.events.subscribe('scoreChanges', (score: number) => {
                 this.updateCurrentScore(score);
@@ -271,31 +273,18 @@ export class UserPage implements OnInit{
                     date: location.timestamp
                 });
             }).then(() => {
-                this.alertCtrl.create({
-                    title: 'La ubicación de tu casa fue almacenada exitósamente',
-                    subTitle: 'Esto nos permitirá brindarte información actualizada sobre tu nivel de exposición.',
-                    buttons: ['OK']
-                }).present();
+                this.alert.saveHomeInfoSuccess();
 
                 this.showingForm = false;
                 this.api.postHomeInformation();
                 this.scoreService.startBackgroundGeolocation();
                 this.scoreService.calculateAndStoreExpositionScores();
             }).catch(() => {
-                this.alertCtrl.create({
-                    title: 'Ocurrió un problema al almacenar lar ubicación de tu casa',
-                    subTitle: 'Inténtalo de nuevo. Sin ella no prodremos brindarte información actualizada sobre tu nivel de exposición.',
-                    buttons: ['OK']
-                }).present();
+                this.alert.saveHomeInfoError();
             });
 
         } else {
-
-            this.alertCtrl.create({
-                title: 'El radio de tu casa es incorrecto',
-                subTitle: 'Ingresa un número entero positivo.',
-                buttons: ['OK']
-            }).present();
+            this.alert.radiusError();
         }
     }
 
@@ -305,25 +294,17 @@ export class UserPage implements OnInit{
     }
 
     scoreInformation(){
-        const alert = this.alertCtrl.create({
-            title: '<p align="center">Nivel de exposición</p>',
-            subTitle: "<br/><li>Bajo: verde</li>"+
-                      "<li>Medio: naranja</li>"+
-                      "<li>Alto: rojo</li>",
-            buttons: ['OK']
-          });
-          alert.present();
+        this.alert.scoreInformation();
     }
 
-    infoUbicacionCasa() {
-        const alert = this.alertCtrl.create({
-          title: '<p align="center">Registra la ubicación de tu casa</p>',
-          subTitle: '<br/><li>Si el globo está de color ROJO significa que no has registrado tu domicilio.</li><br/>'+
-                    '<li>Para empezar a calcular tu nivel de exposición ingresa el radio de tu casa y toca <b>GUARDAR</b>.</li><br/>'+
-                    '<li>Puedes actualizar tu domocilio en cualquier momento.</li>',
-          buttons: ['OK']
-        });
-        alert.present();
+    infoHomeLocation() {
+        this.alert.infoHomeLocation();
     }
 
+    onEnterKey(e) {
+        if (e.keyCode == 13) {
+            let activeElement = <HTMLElement>document.activeElement;
+            activeElement && activeElement.blur && activeElement.blur();
+        }
+      }
 }

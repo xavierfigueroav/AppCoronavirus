@@ -56,7 +56,10 @@
 
         <ion-item *ngIf="item.type=='input_text'" id={{item.id}} [class.hide_question]="!item.show" [class.show_question]="item.show">
             <ion-label stacked [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" class="pregunta">{{item.label}}</ion-label>
-            <ion-input type="text" [placeholder]="item.placeholder || 'Ingresa el valor'" [(ngModel)]="item.value" id={{item.id}} [class.invalid_input]="item.errors !== undefined && item.errors.length > 0" (ionChange)="blurFunction($event,item.blurFunction)"></ion-input>
+            <ion-input type="text" [placeholder]="item.placeholder || 'Ingresa el valor'" [(ngModel)]="item.value" id={{item.id}} 
+                       [class.invalid_input]="item.errors !== undefined && item.errors.length > 0" (ionChange)="blurFunction($event,item.blurFunction)"
+                       (keypress)="onEnterKey($event)">
+            </ion-input>
         </ion-item>
         <div text-left *ngIf="item.type=='input_text'" class="div-error" [class.error_message]="item.errors !== undefined && item.errors.length > 0">
             {{item.errors !== undefined ? item.errors[item.errors.length - 1] : ''}}
@@ -64,7 +67,10 @@
 
         <ion-item *ngIf="item.type=='input_number'" id={{item.id}} [class.hide_question]="!item.show" [class.show_question]="item.show">
             <ion-label stacked [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" class="pregunta">{{item.label}}</ion-label>
-            <ion-input type="number" [placeholder]="item.placeholder || 'Ingresa el valor'" [(ngModel)]="item.value" id={{item.id}} [class.invalid_input]="item.errors !== undefined && item.errors.length > 0" (ionChange)="blurFunction($event,item.blurFunction)"></ion-input>
+            <ion-input type="number" [placeholder]="item.placeholder || 'Ingresa el valor'" [(ngModel)]="item.value" id={{item.id}} 
+                       [class.invalid_input]="item.errors !== undefined && item.errors.length > 0" (ionChange)="blurFunction($event,item.blurFunction)"
+                       (keypress)="onEnterKey($event)">
+            </ion-input>
         </ion-item>
         <div text-left *ngIf="item.type=='input_number'" class="div-error" [class.error_message]="item.errors !== undefined && item.errors.length > 0">
             {{item.errors !== undefined ? item.errors[item.errors.length - 1] : ''}}
