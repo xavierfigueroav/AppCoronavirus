@@ -161,11 +161,18 @@ export class AuthPage {
             if(sent) {
                 this.alerts.showSentEmailSuccessAlert();
             } else {
-                this.alerts.showPairCedulaEmailErrorAlert();
+                this.alerts.showPairEmailIdentifierErrorAlert();
             }
         }).catch(() => {
             loader.dismiss();
             this.alerts.showConnectionErrorAlert();
         });
     }
+
+    onEnterKey(e) {
+        if (e.keyCode == 13) {
+            let activeElement = <HTMLElement>document.activeElement;
+            activeElement && activeElement.blur && activeElement.blur();
+        }
+      }
 }

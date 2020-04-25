@@ -45,7 +45,7 @@
     <h4 id="ubicacionCasaTitle" class="subTitulo">
         Ubicación de la casa
         <ion-icon id="infoUbicacion" name="ios-information-circle-outline"
-                  (click)="infoUbicacionCasa()">
+                  (click)="infoHomeLocation()">
         </ion-icon>
     </h4>
 
@@ -58,7 +58,9 @@
                         <ion-icon id="locationIconRed" name="pin" *ngIf="homeLocationDate == undefined"></ion-icon>
                     </ion-col>
                     <ion-col id="radiusColumn">
-                        <ion-input id="inputRadioCasa" type="number" min="2" max="30" [(ngModel)]="homeRadius" placeholder="RADIO DE CASA"></ion-input>
+                        <ion-input id="inputRadioCasa" type="number" min="2" max="30" [(ngModel)]="homeRadius" 
+                                   placeholder="RADIO DE CASA" (keypress)="onEnterKey($event)">
+                        </ion-input>
                     </ion-col>
                     <ion-col id="saveColumn">
                         <button id="enviarUbicacionButton" ion-button (click)="registerHomeHandler(homeRadius)">
