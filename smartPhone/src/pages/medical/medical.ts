@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
+import { NavController, App } from 'ionic-angular';
 import { AuthPage } from '../auth/auth';
 
 import { Storage } from '@ionic/storage';
-import { DiagnosticPage } from '../diagnostic/diagnostic';
 import { TestResultsPage } from '../test-results/test-results';
+import { FormPage } from '../form/form';
 
 /**
  * Generated class for the MedicalPage page.
@@ -21,28 +21,26 @@ export class MedicalPage {
 
     status: string;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public appCtrl: App,
-    private storage: Storage) {
-  }
+    constructor(private navCtrl: NavController, private app: App, private storage: Storage) {
+    }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad MedicalPage');
-  }
+    ionViewDidLoad() {
+        console.log('ionViewDidLoad MedicalPage');
+    }
 
-  cerrarSesion() {
-    this.storage.get('linkedUser').then((val) => {
-            this.storage.set('linkedUser', null).then(data => {
-                this.appCtrl.getRootNav().setRoot(AuthPage);
+    cerrarSesion() {
+        this.storage.get('linkedUser').then((val) => {
+                this.storage.set('linkedUser', null).then(data => {
+                    this.app.getRootNav().setRoot(AuthPage);
+                });
             });
-        });
     }
 
     goToDiagnostic() {
-        this.navCtrl.push(DiagnosticPage);
+        this.app.getRootNav().setRoot(FormPage, { 'formType': 'follow_up' });
     }
 
     goToTestResults() {
         this.navCtrl.push(TestResultsPage);
     }
-
 }

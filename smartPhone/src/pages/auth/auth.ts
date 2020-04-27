@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { LoadingController, AlertController, MenuController, App } from 'ionic-angular';
+import { LoadingController, AlertController, App } from 'ionic-angular';
 import { TabsPage } from '../tabs/tabs';
 import { Storage } from '@ionic/storage';
-import { SurveyPage } from '../survey/survey';
 import { File } from '@ionic-native/file';
 import { APIProvider } from '../../providers/api/api';
 import { AlertProvider } from '../../providers/alert/alert';
 import { DatabaseProvider } from '../../providers/database/database';
 import { ValidationsProvider } from '../../providers/validations/validations';
+import { FormPage } from '../form/form';
 
 @Component({
     selector: 'page-auth',
@@ -18,8 +18,7 @@ export class AuthPage {
     appPIN: string;
 
     constructor(
-        private appCtrl: App,
-        private menuCtrl: MenuController,
+        private app: App,
         private storage: Storage,
         private file: File,
         private loadingCtrl: LoadingController,
@@ -29,7 +28,6 @@ export class AuthPage {
         private alerts: AlertProvider,
         private validations: ValidationsProvider) {
 
-        this.menuCtrl.enable(false);
         this.storage.set('notifications', null);
         this.crearDirectorio();
     }
@@ -88,9 +86,14 @@ export class AuthPage {
         }
 
         if(datasetCreated === 0) { // Already created
-            this.appCtrl.getRootNav().setRoot(TabsPage);
+            this.app.getRootNav().setRoot(TabsPage);
+            this.storage.get('firstUseDate').then(firstUseDate => {
+                if(firstUseDate == null) {
+                    this.storage.set('firstUseDate', new Date()); // This may not be the real first use date
+                }
+            });
         } else {
-            this.appCtrl.getRootNav().setRoot(SurveyPage);
+            this.app.getRootNav().setRoot(FormPage, { 'formType': 'initial' });
         }
     }
 

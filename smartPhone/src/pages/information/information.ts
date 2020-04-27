@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
+import { App } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { AuthPage } from '../auth/auth';
 
@@ -13,7 +13,7 @@ export class InformationPage implements OnInit{
 
     segment: string;
 
-	constructor(public navCtrl: NavController, public navParams: NavParams, public appCtrl: App, private storage: Storage) {
+	constructor(private app: App, private storage: Storage) {
     }
 
     ngOnInit() {
@@ -27,7 +27,7 @@ export class InformationPage implements OnInit{
 	cerrarSesion() {
         this.storage.get('linkedUser').then((val) => {
             this.storage.set('linkedUser', null).then(data => {
-                this.appCtrl.getRootNav().setRoot(AuthPage);
+                this.app.getRootNav().setRoot(AuthPage);
             });
         });
     }

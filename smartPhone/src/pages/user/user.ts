@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { NavController, NavParams, App, Events } from 'ionic-angular';
+import { App, Events } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { AuthPage } from '../auth/auth';
 import { AlertController } from 'ionic-angular';
@@ -32,11 +32,9 @@ export class UserPage implements OnInit{
     id;
 
     constructor(
-        public navCtrl: NavController,
-        public navParams: NavParams,
-        public appCtrl: App,
+        private app: App,
         private storage: Storage,
-        public alertCtrl: AlertController,
+        private alertCtrl: AlertController,
         private location: LocationProvider,
         private database: DatabaseProvider,
         private scoreService: ScoreProvider,
@@ -245,7 +243,7 @@ export class UserPage implements OnInit{
 	cerrarSesion() {
         this.storage.get('linkedUser').then((val) => {
             this.storage.set('linkedUser', null).then(data => {
-                this.appCtrl.getRootNav().setRoot(AuthPage);
+                this.app.getRootNav().setRoot(AuthPage);
             });
         });
     }

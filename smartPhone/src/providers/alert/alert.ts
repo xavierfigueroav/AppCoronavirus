@@ -12,7 +12,7 @@ export class AlertProvider {
 
     constructor(private alertController: AlertController) {
         console.log('Hello AlertProvider Provider');
-        
+
     }
 
     private showOkButtonAlert(subTitle: string){

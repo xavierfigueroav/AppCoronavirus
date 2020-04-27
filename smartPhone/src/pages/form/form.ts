@@ -1,125 +1,356 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, MenuController, ViewController, NavParams, AlertController, Platform, App, LoadingController, Navbar, PopoverController } from 'ionic-angular';
+import { NavController, NavParams, AlertController, App, LoadingController, Navbar, Loading } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { HTTP } from '@ionic-native/http';
-import { HttpClient } from '@angular/common/http';
 import { File } from '@ionic-native/file';
 import { TabsPage } from '../tabs/tabs';
-import { PopoverPage } from './popover';
+import uuid from 'uuid/v4';
 
 import * as calculos from '../../assets/calculos/calculo.json';
+import * as plantilla from '../../assets/plantilla/plantilla.json';
+import { AlertProvider } from '../../providers/alert/alert';
 
 @Component({
     selector: 'page-form',
     templateUrl: 'form.html'
 })
-export class FormPage extends PopoverPage {
+export class FormPage {
     calculos = (<any>calculos);
-    template;
-    formData;
+    infoTemplates = JSON.parse(JSON.stringify(<any>plantilla));
+    template: any;
+    formData: any;
     formsData = {};
-    selectedTemplate;
-    currentForm;
-    forms;
-    pendingForms;
-    geolocationAuth;
-    coordinates;
-    templateUuid;
+    selectedTemplate: any;
+    currentForm: any;
+    forms: any[];
+    pendingForms: any[];
+    geoLocationAuth: string;
+    coordinates = null;
+    templateUuid: string;
     funciones = [];
-    infoTemplates = [];
-    loading;
-    infoTemplateIndex;
-    id_dataset;
-    indice_seccion;
-    linkedUser;
+    id_dataset: string;
+    indice_seccion: number;
+    locationLoader: Loading;
+    loader: Loading;
+    formulario_uso: any;
+    isSavedForm: boolean;
+    formChanged: boolean;
 
     @ViewChild(Navbar) navbarName: Navbar;
 
     constructor(
         private diagnostic: Diagnostic,
-        public alertCtrl: AlertController,
-        public navParams: NavParams,
-        public menuCtrl: MenuController,
+        private alertCtrl: AlertController,
+        private navParams: NavParams,
         private storage: Storage,
-        private geolocation: Geolocation,
+        private geoLocation: Geolocation,
         private locationAccuracy: LocationAccuracy,
-        public loadingController: LoadingController,
-        public navCtrl: NavController,
-        public platform: Platform,
-        public http: HTTP,
-        public httpClient: HttpClient,
-        public popoverCtrl: PopoverController,
-        public viewCtrl: ViewController,
-        public appCtrl: App,
+        private loadingController: LoadingController,
+        private navCtrl: NavController,
+        private http: HTTP,
+        private app: App,
         private file: File,
-        public loadingCtrl: LoadingController) {
-        super(viewCtrl);
+        private alerts: AlertProvider) {
 
+        this.loader = this.loadingController.create({
+            content: 'Espere...',
+        });
+        this.loader.present();
+
+        this.storage.get('id_dataset').then(id_dataset => {
+            this.id_dataset = id_dataset;
+        });
+
+        this.isSavedForm = this.navParams.get('isSavedForm');
+        this.formulario_uso = this.navParams.get('formulario_uso');
+        this.formChanged = this.navParams.get('formChanged');
+
+        if(this.formulario_uso) {
+            this.prepareDataForForms();
+        } else {
+            const formType = this.navParams.get('formType');
+
+            this.storage.get('savedForms').then(savedForms => {
+                savedForms = this.copyDeeply(savedForms);
+
+                if(savedForms != null && savedForms[formType] != undefined) {
+                    this.isSavedForm = true;
+                    const pendingForm = savedForms[formType];
+                    this.clickEditForm(pendingForm);
+                } else {
+                    if(formType === 'initial') {
+                        this.storage.get('sentForms').then((sentForms) => {
+                            sentForms = this.copyDeeply(sentForms);
+
+                            if(sentForms != null && sentForms.length > 0) {
+                                const initialForms = sentForms.filter(
+                                    (sentForm: any) => sentForm.formData.type === 'initial'
+                                );
+                                if(initialForms.length > 0) {
+                                    const pendingForm = initialForms[initialForms.length - 1];
+                                    this.clickEditForm(pendingForm);
+                                    return;
+                                }
+                            }
+                            this.startForm(formType);
+                        });
+                    } else {
+                        this.startForm(formType);
+                    }
+                }
+            });
+        }
+    }
+
+    async startForm(formType: string) {
+        const template = this.infoTemplates[0];
+        if (template.gps === 'required') {
+            await this.requestLocationAuthorization(template, formType);
+        } else {
+            await this.startInitialForm(template, template.data[formType], formType);
+        }
+        this.prepareDataForForms();
+    }
+
+    prepareDataForForms() {
         try {
-            this.menuCtrl.enable(true);
-
-            this.storage.get('id_dataset').then((id_dataset) => {
-                this.id_dataset = id_dataset;
-            }).catch(error => {
-                console.log(JSON.stringify(error, Object.getOwnPropertyNames(error)));
-            });
-
-            this.storage.get('linkedUser').then((linkedUser) => {
-                this.linkedUser = linkedUser;
-            }).catch(error => {
-                console.log(JSON.stringify(error, Object.getOwnPropertyNames(error)));
-            });
-
             for (let calc of this.calculos.calculos) {
                 this.funciones[calc.name] = eval('var a;a=' + calc.structure);
             }
-        } catch(e){
-            console.log("constructor");
+        } catch(error){
+            console.log('[ERROR] prepateDataFormForms', error);
+        } finally {
+            this.cargarDatos();
         }
-
     }
 
+    async clickEditForm(pendingForm: any) {
+        try{
+            const currentForm = pendingForm.formData;
+            const templateUuid = pendingForm.template;
 
-    ionViewDidEnter() {
-        this.cargarDatos();
+            let formsData = this.navParams.get('formsData') || await this.storage.get('formsData') || {};
+            formsData = this.copyDeeply(formsData);
+            if(formsData[templateUuid] === undefined) {
+                formsData[templateUuid] = [currentForm];
+            }
+
+            const forms = formsData[templateUuid];
+            const currentFormExists = forms.filter((form: any) => form.uuid === currentForm.uuid).length > 0;
+            if(!currentFormExists) {
+                forms.push(currentForm);
+            }
+
+            let template: any;
+            let infoTemplateIndex: number;
+            for (let i = 0; i < this.infoTemplates.length; i++) {
+                let temp = this.infoTemplates[i];
+                if (temp.uuid === templateUuid) {
+                    template = temp;
+                    infoTemplateIndex = i;
+                    break;
+                }
+            }
+
+            // FIXME: Deep copies are made in when storing. Analyse whether this is still needed
+            template.data = JSON.parse(JSON.stringify(currentForm.data));
+            const selectedTemplate = JSON.parse(JSON.stringify(currentForm.data));
+
+            let pendingForms = this.navParams.get('pendingForms') || await this.storage.get('pendingForms');
+            pendingForms = this.copyDeeply(pendingForms);
+
+            if (pendingForms != null) {
+                pendingForms.push(pendingForm);
+            } else {
+                pendingForms = [pendingForm];
+            }
+
+            this.formulario_uso = {
+                template: template,
+                selectedTemplate: selectedTemplate,
+                formData: selectedTemplate,
+                currentForm: currentForm,
+                forms: forms,
+                formsData: formsData,
+                pendingForms: pendingForms,
+                geolocationAuth: this.geoLocationAuth,
+                infoTemplates: this.infoTemplates,
+                infoTemplateIndex: infoTemplateIndex,
+                indice_seccion: 0
+            };
+
+            this.prepareDataForForms();
+
+        } catch(error) {
+            console.log('[ERROR] clickEditForm', error);
+        }
+    }
+
+    async startInitialForm(template: any, selectedTemplate: any, formType: string) {
+        let formsData = this.navParams.get('formsData') || await this.storage.get('formsData');
+        formsData = this.copyDeeply(formsData);
+
+        let forms: any[];
+        if (formsData != null && Object.keys(formsData).length > 0 && formsData.hasOwnProperty(template.uuid)) {
+            forms = formsData[template.uuid].slice(0);
+        }
+
+        const currentForm = {
+            uuid: uuid(),
+            version: 0,
+            type: formType,
+            name: template.name,
+            gps: template.gps,
+            data: {},
+            createdDate: new Date()
+        };
+        if (template.gps === 'required') {
+            currentForm['coordinates'] = this.coordinates;
+        }
+
+        if (forms != null && forms.length > 0) {
+            forms.push(currentForm);
+        } else {
+            forms = [currentForm];
+        }
+
+        let pendingForms = this.navParams.get('pendingForms') || await this.storage.get('pendingForms');
+        pendingForms = this.copyDeeply(pendingForms);
+
+        const newPendingForm = {
+            template: template.uuid,
+            formData: currentForm,
+            id_dataset: this.id_dataset,
+            index: 0
+        };
+
+        if (pendingForms != null && pendingForms.length > 0) {
+            if (formsData != null && formsData[template.uuid] != null) {
+                newPendingForm.index = formsData[template.uuid].length;
+            }
+            pendingForms.push(newPendingForm);
+        } else {
+            pendingForms = [newPendingForm];
+        }
+
+        this.formulario_uso = {
+            template: template,
+            selectedTemplate: selectedTemplate,
+            formData: selectedTemplate,
+            currentForm: currentForm,
+            forms: forms,
+            formsData: formsData,
+            pendingForms: pendingForms,
+            geolocationAuth: this.geoLocationAuth,
+            infoTemplates: this.infoTemplates,
+            infoTemplateIndex: 0,
+            indice_seccion: 0
+        };
+    }
+
+    // FIXME: On permissions denied this do not return to the main tab and this one keeps empty.
+    async requestLocationAuthorization(template: any, formType: string) {
+        console.log('START OF REQUEST LOCATION', new Date().getTime());
+        this.diagnostic.requestLocationAuthorization().then(res => {
+            this.geoLocationAuth = res;
+            this.locationAccuracy.canRequest().then((canRequest: boolean) => {
+                if (canRequest) {
+                    this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(() => {
+                        this.locationLoader = this.loadingController.create({
+                            content: 'Obteniendo ubicación...',
+                        });
+                        this.locationLoader.present();
+                        this.geoLocation.getCurrentPosition({
+                            enableHighAccuracy: true,
+                            timeout: 12000
+                        }).then(async (res) => {
+                            this.locationLoader.dismiss();
+                            this.coordinates = {
+                                latitude: res.coords.latitude,
+                                longitude: res.coords.longitude
+                            }
+                            await this.startInitialForm(template, template.data[formType], formType);
+                        }).catch(async () => {
+                            this.locationLoader.dismiss();
+                            this.alerts.showLocationErrorAlert();
+                            await  this.startInitialForm(template, template.data[formType], formType);
+                        });
+                    }).catch(() => {
+                        this.loader.dismiss();
+                        this.locationLoader.dismiss();
+                        this.geoLocationAuth = 'DENIED';
+                        this.alerts.showLocationNoPermissionAlert();
+                        this.app.getRootNav().setRoot(TabsPage);
+                        return 0;
+                    });
+                } else {
+                    this.loader.dismiss();
+                    this.alerts.showLocationNoPermissionAlert();
+                    return 0;
+                }
+            }).catch(error => {
+                this.loader.dismiss();
+                this.alerts.showLocationNoPermissionAlert();
+                console.log(JSON.stringify(error));
+                return 0;
+            });
+
+        }).catch(error => {
+            this.loader.dismiss();
+            this.startInitialForm(template, template.data[formType], formType);
+            console.log(JSON.stringify(error));
+        });
+        console.log('END OF REQUEST LOCATION', new Date().getTime());
     }
 
     async cargarDatos() {
-        console.log("EMPIEZA LA CARGA DE DATOS");
-        var formulario_uso = await this.storage.get('formulario_uso');
-        console.log('[FORM/cargarDatos] formulario_uso', formulario_uso);
-        this.template = formulario_uso.template;
-        this.formData = formulario_uso.formData;
-        console.log('[FORM/cargarDatos] this.formData', this.formsData);
-        this.selectedTemplate = formulario_uso.selectedTemplate;
-        this.currentForm = formulario_uso.currentForm;
+        this.template = this.formulario_uso.template;
+        this.formData = this.formulario_uso.formData;
+        this.selectedTemplate = this.formulario_uso.selectedTemplate;
+        this.currentForm = this.formulario_uso.currentForm;
+        this.currentForm.data = this.selectedTemplate;
         this.templateUuid = this.template.uuid;
-        this.infoTemplateIndex = formulario_uso.infoTemplateIndex;
-        this.forms = formulario_uso.forms;
-        this.geolocationAuth = formulario_uso.geolocationAuth;
-        this.pendingForms = formulario_uso.pendingForms;
-        this.infoTemplates = formulario_uso.infoTemplates;
-        this.indice_seccion = formulario_uso.indice_seccion;
-        console.log("INDICE ACTUAL: ", this.indice_seccion);
-        if(formulario_uso.formsData != null) {
-            this.formsData = formulario_uso.formsData;
+        this.forms = this.formulario_uso.forms;
+        this.geoLocationAuth = this.formulario_uso.geolocationAuth;
+        this.pendingForms = this.formulario_uso.pendingForms;
+        this.indice_seccion = this.formulario_uso.indice_seccion;
+
+        if(this.formulario_uso.formsData != null) {
+            this.formsData = this.formulario_uso.formsData;
         } else {
-            var formsData = await this.storage.get("formsData");
-            console.log('[FORM/cargarDatos] if formsData', formulario_uso);
+            let formsData = await this.storage.get('formsData');
+            formsData = this.copyDeeply(formsData);
+
             if (formsData != null) {
                 this.formsData = formsData;
             }
         }
+        this.loader.dismiss();
     }
 
-    siguienteSeccion(indice) {
-        console.log("SE DIO CLIC EN BOTÓN HACIA ADELANTE "+indice);
-        var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-item"));
-        var elementos = [];
-        var errores = 0;
+    ngOnDestroy() {
+        this.storage.get('formSent').then(formSent => {
+            if(formSent) {
+                this.storage.set('formSent', false);
+            } else if (this.indice_seccion === 0) {
+                // FIXME: do not save if it didn't change
+                this.storage.get('savedForms').then(savedForms => {
+                    savedForms = savedForms || {};
+                    savedForms[this.currentForm.type] = this.pendingForms[this.pendingForms.length - 1];
+                    this.storage.set('savedForms', savedForms);
+                    this.storage.set('formsData', this.copyDeeply(this.formsData));
+                });
+            }
+        });
+    }
+
+    siguienteSeccion(indice: number) {
+        const array = Array.from(document.querySelectorAll('ion-datetime, ion-input, ion-list, ion-item'));
+        const elementos = [];
+        let errores = 0;
 
         for (var el of array) {
             if (el.id) {
@@ -127,36 +358,35 @@ export class FormPage extends PopoverPage {
             }
         }
 
-        var params = this.mappingParametros(elementos);
+        let params = this.mappingParametros(elementos);
 
-        for (var pa of params) {
-            errores += this.validateBlurFunction("", pa.blurFunction);
+        // FIXME: Get array 'elementos' from template
+        params = params.filter(param => param !== undefined);
+        for (let pa of params) {
+            errores += this.validateBlurFunction('', pa.blurFunction);
         }
-        console.log("ERRORES: ", errores);
+
         if (errores == 0) {
-            this.storage.get("formulario_uso").then((form_temp) => {
-                console.log("FORM TEMP 1: ", form_temp);
-                var nuevo_indice = Number(indice) + 1;
-                console.log("NUEVO INDICE: ", nuevo_indice);
-                console.log("LONGITUD SELECTED TEMPLATE: ", form_temp.selectedTemplate.children.length);
-                if(form_temp.selectedTemplate.children.length>nuevo_indice) {
-                    form_temp.indice_seccion = nuevo_indice;
-                } else {
-                    form_temp.indice_seccion = null;
-                }
-                console.log("FORM TEMP 2: ", form_temp);
-                this.storage.set("formulario_uso", form_temp).then(() => {
-                    this.appCtrl.getRootNav().setRoot(FormPage);
-                });
+            const nuevo_indice = Number(indice) + 1;
+            if(this.formulario_uso.selectedTemplate.children.length > nuevo_indice) {
+                this.formulario_uso.indice_seccion = nuevo_indice;
+            } else {
+                this.formulario_uso.indice_seccion = null;
+            }
+            this.navCtrl.push(FormPage, {
+                'formulario_uso': this.formulario_uso,
+                'formsData': this.formsData,
+                'pendingForms': this.pendingForms,
+                'formChanged': this.formChanged,
+                'isSavedForm': this.isSavedForm
             });
         }
     }
 
-    anteriorSeccion(indice) {
-        console.log("SE DIO CLIC EN BOTÓN HACIA ATRÁS "+indice);
-        var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-item"));
-        var elementos = [];
-        var errores = 0;
+    async finalizarEncuesta() {
+        const array = Array.from(document.querySelectorAll('ion-datetime, ion-input, ion-list, ion-item'));
+        const elementos = [];
+        let errores = 0;
 
         for (var el of array) {
             if (el.id) {
@@ -164,94 +394,50 @@ export class FormPage extends PopoverPage {
             }
         }
 
-        var params = this.mappingParametros(elementos);
-
-        for (var pa of params) {
-            errores += this.validateBlurFunction("", pa.blurFunction);
+        let params = this.mappingParametros(elementos);
+        // FIXME: Get array 'elementos' from template
+        params = params.filter(param => param !== undefined);
+        for (let pa of params) {
+            errores += this.validateBlurFunction('', pa.blurFunction);
         }
-        console.log("ERRORES: ", errores);
+
         if (errores == 0) {
-            this.storage.get("formulario_uso").then((form_temp) => {
-                console.log("FORM TEMP 1: ", form_temp);
-                var nuevo_indice = Number(indice) - 1;
-                console.log("NUEVO INDICE: ", nuevo_indice);
-                console.log("LONGITUD SELECTED TEMPLATE: ", form_temp.selectedTemplate.children.length);
-                if(nuevo_indice>=0) {
-                    form_temp.indice_seccion = nuevo_indice;
-                } else {
-                    form_temp.indice_seccion = null;
-                }
-                console.log("FORM TEMP 2: ", form_temp);
-                this.storage.set("formulario_uso", form_temp).then(() => {
-                    this.appCtrl.getRootNav().setRoot(FormPage);
-                });
-            });
-        }
-    }
-
-    finalizarEncuesta() {
-        console.log("SE DIO CLIC EN FINALIZAR ENCUESTA");
-        var array = Array.from(document.querySelectorAll("ion-datetime, ion-input, ion-list, ion-item"));
-        var elementos = [];
-        var errores = 0;
-
-        for (var el of array) {
-            if (el.id) {
-                elementos.push(el.id);
-            }
-        }
-
-        var params = this.mappingParametros(elementos);
-
-        for (var pa of params) {
-            errores += this.validateBlurFunction("", pa.blurFunction);
-        }
-        console.log("ERRORES: ", errores);
-        console.log("ELEMENTOS: ", elementos);
-        if (errores == 0) {
-            //this.navCtrl.pop();
+            await this.storage.set('formSent', true);
             this.enviarFormulario();
-            //ENVIAR ENCUESTA Y MANDAR A TABS
         }
     }
 
-    save(index, pending_form_index) {
+    copyDeeply(object: any) {
+        return JSON.parse(JSON.stringify(object));
+    }
+
+    save(index: number, pending_form_index: number) {
+        this.formChanged = true;
         try {
             this.currentForm.saveDate = new Date();
             this.currentForm.data = this.selectedTemplate;
             this.forms[index] = this.currentForm;
             this.formsData[this.templateUuid] = this.forms;
-            this.storage.set("formsData", this.formsData);
-            console.log("SELECTED TEMPLATE SAVE", this.selectedTemplate);
-            console.log("FORM DATA SAVE", this.formData);
-            console.log("CURRENT FORM SAVE", this.currentForm);
-            console.log("PENDING FORM INDEX", pending_form_index);
             this.pendingForms[pending_form_index].formData = this.currentForm;
             this.pendingForms[pending_form_index].id_dataset = this.id_dataset;
-            this.storage.set("pendingForms", this.pendingForms);
-            console.log("PENDING FORMS SAVE", this.pendingForms);
-            this.storage.get("formulario_uso").then((form_temp) => {
-                form_temp.selectedTemplate = this.pendingForms[pending_form_index].formData.data;
-                form_temp.currentForm = this.currentForm;
-                form_temp.forms = this.forms;
-                form_temp.formsData = this.formsData;
-                form_temp.formData = this.pendingForms[pending_form_index].formData.data;
-                form_temp.pendingForms = this.pendingForms;
-                this.storage.set("formulario_uso", form_temp);
-                console.log("FORMULARIO USO GUARDADO: ", form_temp);
-            });
-        } catch(e){
-            console.log("save");
+
+            this.formulario_uso.selectedTemplate = this.pendingForms[pending_form_index].formData.data;
+            this.formulario_uso.currentForm = this.currentForm;
+            this.formulario_uso.forms = this.forms;
+            this.formulario_uso.formsData = this.formsData;
+            this.formulario_uso.formData = this.pendingForms[pending_form_index].formData.data;
+            this.formulario_uso.pendingForms = this.pendingForms;
+        } catch(error){
+            console.log('[ERROR] save', error);
         }
     }
 
     async saveForm() {
         try {
-            let formsDataIsNull = this.formsData == null;
-            let formDataExists = (this.formsData != null &&
+            const formsDataIsNull = this.formsData == null;
+            const formDataExists = (this.formsData != null &&
                 this.formsData.hasOwnProperty(this.templateUuid));
             let currentFormExists = false;
-            console.log("SAVE FORMSDATA: ", this.formsData);
             let pending_form_index = this.pendingForms.length - 1;
             if (formsDataIsNull || !formDataExists) {
                 this.save(this.forms.length - 1, pending_form_index);
@@ -268,7 +454,6 @@ export class FormPage extends PopoverPage {
                 }
                 pending_form_index = 0;
 
-                //COMENTAR ESTE BLOQUE
                 for (let pendingForm of this.pendingForms) {
                     if (pendingForm.formData.uuid == this.currentForm.uuid) {
                         break;
@@ -278,197 +463,205 @@ export class FormPage extends PopoverPage {
                 }
 
                 if (!currentFormExists) {
-                    //CREATE
-                    this.storage.set("pendingForms", this.pendingForms);
                     this.save(this.forms.length - 1, pending_form_index);
                 } else {
-                    //EDIT
                     this.save(index, pending_form_index);
                 }
             }
-        } catch(e){
-            console.log("saveForm");
+        } catch(error){
+            console.log('[ERROR] saveForm', error);
         }
     }
 
     async enviarFormulario() {
-        console.log("ENVIAR FORMULARIO");
-        var pendingForms = await this.storage.get('pendingForms');
-        console.log("TODOS PENDING FORMS: ", pendingForms);
-        if((pendingForms !== null) && (pendingForms.length > 0)) {
-            console.log("HAY PENDING FORMS");
-                var pendingForm = pendingForms[0];
-                console.log("PENDING FORM: ", pendingForm);
-                var id_dataset = pendingForm.id_dataset;
-                var string_cuerpo = '{"id_dataset":"'+id_dataset+'","form":"'+pendingForm+'"}';
-                var objeto = JSON.parse(string_cuerpo);
-                this.subirArchivo(pendingForm, id_dataset);
-            //}
+        const pendingForms = this.copyDeeply(this.pendingForms);
+        if(this.formChanged || this.isSavedForm) {
+            const pendingForm = pendingForms[0];
+            const id_dataset = pendingForm.id_dataset;
+            this.subirArchivo(pendingForm, id_dataset);
         } else {
-            let alert = this.alertCtrl.create({
-                subTitle: "No se encontraron cambios a registrar.",
-                buttons: ["cerrar"]
+            this.app.getRootNav().setRoot(TabsPage);
+            const alert = this.alertCtrl.create({
+                subTitle: 'No se encontraron cambios a registrar.',
+                buttons: ['cerrar']
             });
             alert.present();
-            this.appCtrl.getRootNav().setRoot(TabsPage);
         }
     }
 
-    subirArchivo(pendingForm, id_dataset) {
-        const loader = this.loadingCtrl.create({
-            content: "Espere ...",
+    subirArchivo(pendingForm: any, id_dataset: string) {
+        const loader = this.loadingController.create({
+            content: 'Espere...',
         });
         loader.present();
 
-        var tipo_form = pendingForm.formData.type;
+        const tipo_form = pendingForm.formData.type;
+        let nombre_archivo: string;
         if(tipo_form == 'initial') {
-            var nombre_archivo = 'DATOS-PERSONALES';
+            nombre_archivo = 'DATOS-PERSONALES';
         } else {
-            var nombre_archivo = 'AUTODIAGNÓSTICO';
+            nombre_archivo = 'AUTODIAGNÓSTICO';
         }
 
-        var fecha_formateada = this.obtenerFechaActual();
-        var nombre_archivo = nombre_archivo + "_" + fecha_formateada + ".json";
-        var string_form = JSON.stringify(pendingForm, null, 2);
+        const fecha_formateada = this.obtenerFechaActual();
+        nombre_archivo = nombre_archivo + '_' + fecha_formateada + '.json';
+        const string_form = JSON.stringify(pendingForm, null, 2);
 
-        this.file.createFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, true).then((response) => {
-            console.log('SE CREÓ EL ARCHIVO');
-            this.file.writeFile(this.file.externalApplicationStorageDirectory+"AppCoronavirus", nombre_archivo, string_form, {replace:true, append:false}).then((response) => {
-                console.log('SE ESCRIBIÓ EL ARCHIVO');
-                var url = "http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create";
-                console.log("ID DATASET: ", id_dataset);
-                var carpeta = this.file.externalApplicationStorageDirectory+"AppCoronavirus/";
-                var ruta_completa = carpeta + nombre_archivo;
-                console.log("RUTA ARCHIVO:", ruta_completa);
+        this.file.createFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', nombre_archivo, true).then(() => {
+            this.file.writeFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', nombre_archivo, string_form, {replace:true, append:false}).then((response) => {
+                const url = 'http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create';
+                const carpeta = this.file.externalApplicationStorageDirectory+'AppCoronavirus/';
+                const ruta_completa = carpeta + nombre_archivo;
+                console.log('RUTA ARCHIVO:', ruta_completa);
 
                 this.http.uploadFile(url, {package_id: id_dataset, name: nombre_archivo}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
-                    var respuesta = JSON.parse(response.data);
-                    console.log("ID RECURSO: ", respuesta.result.id);
-                    console.log('SE ENVIÓ EL ARCHIVO');
-                    this.file.removeFile(carpeta, nombre_archivo).then((response) => {
-                        console.log('SE ELIMINÓ EL ARCHIVO');
+                    this.file.removeFile(carpeta, nombre_archivo).then(() => {
                         this.storage.get('sentForms').then((response) => {
-                            let sentForms = response;
+                            let sentForms = this.copyDeeply(response);
                             if (sentForms != null && sentForms.length > 0) {
                                 sentForms.push(pendingForm);
                             } else {
                                 sentForms = [pendingForm];
                             }
-                            this.storage.set("pendingForms", []);
-                            this.storage.set("sentForms", sentForms);
-                            let alert = this.alertCtrl.create({
-                                subTitle: "Se ha enviado correctamente el formulario",
-                                buttons: ["cerrar"]
+                            this.storage.set('pendingForms', []);
+                            this.storage.set('formsData', this.formsData);
+                            this.storage.set('sentForms', this.copyDeeply(sentForms));
+                            this.storage.get('savedForms').then(savedForms => {
+                                if(this.isSavedForm) {
+                                    savedForms[this.currentForm.type] = undefined;
+                                    this.storage.set('savedForms', savedForms);
+                                }
                             });
+                            this.storage.get('firstUseDate').then(firstUseDate => {
+                                if(firstUseDate == null) {
+                                    this.storage.set('firstUseDate', new Date());
+                                }
+                            });
+                            this.app.getRootNav().setRoot(TabsPage);
                             loader.dismiss();
+                            let alert = this.alertCtrl.create({
+                                subTitle: 'Se ha enviado correctamente el formulario',
+                                buttons: ['cerrar']
+                            });
                             alert.present();
-                            this.appCtrl.getRootNav().setRoot(TabsPage);
                         });
-                    }).catch(err => {
-                        console.log(err);
-                        console.log('NO SE ELIMINÓ EL ARCHIVO');
+                    }).catch(error => {
+                        console.log(error);
                         this.storage.get('sentForms').then((response) => {
-                            let sentForms = response;
+                            let sentForms = this.copyDeeply(response);
                             if (sentForms != null && sentForms.length > 0) {
                                 sentForms.push(pendingForm);
                             } else {
                                 sentForms = [pendingForm];
                             }
-                            this.storage.set("pendingForms", []);
-                            this.storage.set("sentForms", sentForms);
-                            let alert = this.alertCtrl.create({
-                                subTitle: "Se ha enviado correctamente el formulario",
-                                buttons: ["cerrar"]
+                            this.storage.set('pendingForms', []);
+                            this.storage.set('formsData', this.formsData);
+                            this.storage.set('sentForms', this.copyDeeply(sentForms));
+                            this.storage.get('savedForms').then(savedForms => {
+                                if(this.isSavedForm) {
+                                    savedForms[this.currentForm.type] = undefined;
+                                    this.storage.set('savedForms', savedForms);
+                                }
                             });
+                            this.storage.get('firstUseDate').then(firstUseDate => {
+                                if(firstUseDate == null) {
+                                    this.storage.set('firstUseDate', new Date());
+                                }
+                            });
+                            this.app.getRootNav().setRoot(TabsPage);
                             loader.dismiss();
+                            let alert = this.alertCtrl.create({
+                                subTitle: 'Se ha enviado correctamente el formulario',
+                                buttons: ['cerrar']
+                            });
                             alert.present();
-                            this.appCtrl.getRootNav().setRoot(TabsPage);
                         });
                     });
-                }).catch(err => {
+                }).catch(error => {
+                    console.log(error);
+                    this.storage.get('firstUseDate').then(firstUseDate => {
+                        if(firstUseDate == null) {
+                            this.storage.set('firstUseDate', new Date());
+                        }
+                    });
+                    this.app.getRootNav().setRoot(TabsPage);
                     loader.dismiss()
                     let alert = this.alertCtrl.create({
-                        subTitle: "Hubo un problema al comunicarse con el servidor. Por favor verifique su conexión a internet o inténtelo más tarde.",
-                        buttons: ["cerrar"]
+                        subTitle: 'Hubo un problema al comunicarse con el servidor. Por favor verifique su conexión a internet o inténtelo más tarde.',
+                        buttons: ['cerrar']
                     });
                     alert.present();
-                    this.appCtrl.getRootNav().setRoot(TabsPage);
-                    console.log(err);
-                    console.log('NO SE LEYÓ EL ARCHIVO');
                 });
-            }).catch(err => {
-                console.log(err);
-                console.log('NO SE ESCRIBIÓ EL ARCHIVO');
+            }).catch(error => {
+                console.log(error);
             });
-        }).catch(err => {
-            console.log(err);
-            console.log('NO SE CREÓ EL ARCHIVO');
+        }).catch(error => {
+            console.log(error);
         });
     }
 
     obtenerFechaActual() {
-        var fecha_actual = new Date();
-        var dia = fecha_actual.getDate();
+        const fecha_actual = new Date();
+
+        const dia = fecha_actual.getDate();
+        let dia_actual = dia.toString();
         if(dia < 10) {
-            var dia_actual = "0" + dia.toString();
-        } else {
-            var dia_actual = dia.toString();
+            dia_actual = '0' + dia.toString();
         }
-        var mes = Number(fecha_actual.getMonth()) + 1;
+
+        const mes = Number(fecha_actual.getMonth()) + 1;
+        let mes_actual = mes.toString();
         if(mes < 10) {
-            var mes_actual = "0" + mes.toString();
-        } else {
-            var mes_actual = mes.toString();
+            mes_actual = '0' + mes.toString();
         }
-        var hora = fecha_actual.getHours();
+
+        const hora = fecha_actual.getHours();
+        let hora_actual = hora.toString();
         if(hora < 10) {
-            var hora_actual = "0" + hora.toString();
-        } else {
-            var hora_actual = hora.toString();
+            hora_actual = '0' + hora.toString();
         }
-        var minutos = fecha_actual.getMinutes();
+
+        const minutos = fecha_actual.getMinutes();
+        let minutos_actual = minutos.toString();
         if(minutos < 10) {
-            var minutos_actual = "0" + minutos.toString();
-        } else {
-            var minutos_actual = minutos.toString();
+            minutos_actual = '0' + minutos.toString();
         }
-        var segundos = fecha_actual.getSeconds();
+
+        const segundos = fecha_actual.getSeconds();
+        let segundos_actual = segundos.toString();
         if(segundos < 10) {
-            var segundos_actual = "0" + segundos.toString();
-        } else {
-            var segundos_actual = segundos.toString();
+            segundos_actual = '0' + segundos.toString();
         }
-        var fecha = dia_actual + "-" + mes_actual + "-" + fecha_actual.getFullYear() + "_" + hora_actual + "-"+ minutos_actual + "-" + segundos_actual;
+
+        const fecha = dia_actual + '-' + mes_actual + '-' + fecha_actual.getFullYear() + '_' + hora_actual + '-'+ minutos_actual + '-' + segundos_actual;
         return fecha;
     }
 
     saveCoordinates() {
         try {
             this.currentForm.coordinates = this.coordinates;
-            let index = this.forms.length - 1;
+            const index = this.forms.length - 1;
             this.forms[index] = this.currentForm;
             this.formsData[this.templateUuid] = this.forms;
-            this.storage.set("formsData", this.formsData);
             this.pendingForms[this.pendingForms.length - 1].formData = this.currentForm;
-            this.storage.set("pendingForms", this.pendingForms);
-        } catch(e){
-            console.log("saveCoordinates");
+        } catch(error){
+            console.log('[BUG] saveCoordinates', error);
         }
     }
 
-    mappingParametros(parameters) {
+    mappingParametros(parameters: any[]) {
         try {
-            let parametrosMapeados = [];
+            const parametrosMapeados = [];
             for (let i = 0; i < parameters.length; i++) {
                 parametrosMapeados.push(this.getObjects(this.selectedTemplate, 'id', parameters[i])[0]);
             }
             return parametrosMapeados;
-        } catch(e){
-            console.log("mappingParametros");
+        } catch(error){
+            console.log('[ERROR] mappingParametros', error);
         }
     }
 
-    construirFuncionDinamicaString(stringFuncion, stringParametros, lengthParametros) {
+    construirFuncionDinamicaString(stringFuncion: string, stringParametros: string, lengthParametros: number) {
         try {
             let funcionString = stringFuncion + '(';
             for (let i = 0; i < lengthParametros; i++) {
@@ -480,26 +673,25 @@ export class FormPage extends PopoverPage {
                 }
             }
             return funcionString;
-        } catch(e){
-            console.log("construirFuncionDinamicaString");
+        } catch(error){
+            console.log('[ERROR] construirFuncionDinamicaString', error);
         }
     }
 
-    triggerFunction(functionName) {
+    triggerFunction(functionName: string) {
         try {
-            let funcion = this.funciones[functionName];
-            let args = this.getArgs(funcion);
-            let parametrosMapeados = this.mappingParametros(args);
-            let stringFuncionMapeada = this.construirFuncionDinamicaString('funcion', 'parametrosMapeados', parametrosMapeados.length);
+            const funcion = this.funciones[functionName];
+            const args = this.getArgs(funcion);
+            const parametrosMapeados = this.mappingParametros(args);
+            const stringFuncionMapeada = this.construirFuncionDinamicaString('funcion', 'parametrosMapeados', parametrosMapeados.length);
             eval(stringFuncionMapeada);
         }
-        catch (err) {
-            console.log("triggerFunction");
-            console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
-            let alert = this.alertCtrl.create({
-                title: "Error",
-                subTitle: "La funcion de calculo tiene un error interno",
-                buttons: ["ok"]
+        catch (error) {
+            console.log('[ERROR] triggerFunction', error);
+            const alert = this.alertCtrl.create({
+                title: 'Error',
+                subTitle: 'La funcion de calculo tiene un error interno',
+                buttons: ['ok']
             });
             alert.present();
         }
@@ -507,8 +699,8 @@ export class FormPage extends PopoverPage {
 
     getObjects(obj, key, val) {
         try {
-            var objects = [];
-            for (var i in obj) {
+            let objects = [];
+            for (let i in obj) {
                 if (!obj.hasOwnProperty(i)) continue;
                 if (typeof obj[i] == 'object') {
                     objects = objects.concat(this.getObjects(obj[i], key, val));
@@ -526,35 +718,34 @@ export class FormPage extends PopoverPage {
                     }
             }
             return objects;
-        } catch(e){
-            console.log("getObjects");
+        } catch(error){
+            console.log('[ERROR] getObjects', error);
         }
     }
 
     triggerFunctionValidation(nombre_funcion, args) {
         try {
-            let funcion = this.funciones[nombre_funcion];
-            let parametrosMapeados = this.mappingParametros(args);
-            let stringFuncionMapeada = this.construirFuncionDinamicaString('funcion', 'parametrosMapeados', parametrosMapeados.length);
-            var valor = eval(stringFuncionMapeada);
+            // DO NOT DELETE THE NEXT LINE, ALTHOUGH IT SEEMS NOT TO BE USED
+            const funcion = this.funciones[nombre_funcion];
+            const parametrosMapeados = this.mappingParametros(args);
+            const stringFuncionMapeada = this.construirFuncionDinamicaString('funcion', 'parametrosMapeados', parametrosMapeados.length);
+            const valor = eval(stringFuncionMapeada);
             return valor;
         }
-        catch (err) {
-            console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
-            let alert = this.alertCtrl.create({
-                title: "Error",
-                subTitle: "La funcion de calculo tiene un error interno",
-                buttons: ["ok"]
+        catch (error) {
+            const alert = this.alertCtrl.create({
+                title: 'Error',
+                subTitle: 'La funcion de calculo tiene un error interno',
+                buttons: ['ok']
             });
             alert.present();
-            console.log("triggerFunctionValidation");
-            console.log(err.message);
+            console.log('[ERROR] triggerFunctionValidation', error);
         }
     }
 
     getArgs(func) {
         // First match everything inside the function argument parens.
-        var args = func.toString().match(/function\s.*?\(([^)]*)\)/)[1];
+        const args = func.toString().match(/function\s.*?\(([^)]*)\)/)[1];
         // Split the arguments string into an array comma delimited.
         return args.split(',').map(function(arg) {
             // Ensure no inline comments are parsed and trim the whitespace.
@@ -567,25 +758,25 @@ export class FormPage extends PopoverPage {
 
     clickCollapseButton(index, id, $event) {
         try {
-            let buttonElement = $event.currentTarget;
-            let collapse = document.getElementById(id);
-            if (collapse.getAttribute('class') == "collapse") {
+            const buttonElement = $event.currentTarget;
+            const collapse = document.getElementById(id);
+            if (collapse.getAttribute('class') == 'collapse') {
                 buttonElement.getElementsByTagName('ion-icon')[0].setAttribute('class', 'icon icon-md ion-md-arrow-dropdown item-icon');
-            } else if (collapse.getAttribute('class') == "collapse show") {
+            } else if (collapse.getAttribute('class') == 'collapse show') {
                 buttonElement.getElementsByTagName('ion-icon')[0].setAttribute('class', 'icon icon-md ion-md-arrow-dropright item-icon');
             }
-        } catch(e){
-            console.log("clickCollapseButton");
+        } catch(error) {
+            console.log('[ERROR] clickCollapseButton', error);
         }
     }
 
     clickNextPage(item2,indexCategoria,indexSubCategoria) {
         try {
-            let param = this.navParams.data;
+            const param = this.navParams.data;
             param.selectedTemplate = item2;
             this.navCtrl.push(FormPage, param);
-        } catch(e){
-            console.log("clickNextPage");
+        } catch(error){
+            console.log('[ERROR] clickNextPage', error);
         }
     }
 
@@ -619,53 +810,6 @@ export class FormPage extends PopoverPage {
             this.triggerFunction(functionName);
         }
         this.saveForm();
-    }
-
-    requestLocationAuthorization() {
-        this.diagnostic.requestLocationAuthorization().then(res => {
-            this.geolocationAuth = res;
-            this.locationAccuracy.canRequest().then((canRequest: boolean) => {
-                if (canRequest) {
-                    this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(
-                        () => {
-                            this.loading = this.loadingController.create({
-                                content: 'Obteniendo ubicación ...',
-                            });
-                            this.loading.present();
-                            this.geolocation.getCurrentPosition({
-                                enableHighAccuracy: true,
-                                timeout: 12000
-                            }).then((res) => {
-                                this.geolocationAuth = "GRANTED";
-                                this.loading.dismiss();
-                                this.coordinates = {
-                                    latitude: res.coords.latitude,
-                                    longitude: res.coords.longitude
-                                };
-                                this.saveCoordinates();
-
-                            }).catch((error) => {
-                                this.loading.dismiss();
-                                console.log(JSON.stringify(error, Object.getOwnPropertyNames(error)));
-                                let alert = this.alertCtrl.create({
-                                    title: "Error",
-                                    subTitle: "No pudimos acceder a tu ubicación.",
-                                    buttons: ["ok"]
-                                });
-                                alert.present();
-                            });
-                        }).catch(err => {
-                            this.geolocationAuth = "DENIED";
-                            console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
-                        }).catch(err => {
-                            console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
-                        });
-                }
-            }).catch(err => {
-                console.log(JSON.stringify(err, Object.getOwnPropertyNames(err)));
-            });
-        });
-
     }
 
     onEnterKey(e) {
