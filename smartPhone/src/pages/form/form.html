@@ -1,10 +1,5 @@
 <ion-header>
     <ion-navbar color="primary">
-        <ion-buttons left>
-            <button ion-button icon-only *ngIf="indice_seccion>0" (click)="anteriorSeccion(indice_seccion)">
-                <ion-icon style="margin-left: 10px;color: white !important;" name="arrow-back"></ion-icon>
-            </button>
-        </ion-buttons>
         <ion-title>{{ ((selectedTemplate?.children)[indice_seccion]).label }}</ion-title>
         <ion-buttons right>
             <button ion-button icon-only *ngIf="(selectedTemplate?.children.length-1)!=indice_seccion" (click)="siguienteSeccion(indice_seccion)">

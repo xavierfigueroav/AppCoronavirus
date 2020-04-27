@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { UserPage } from '../user/user';
-import { SurveyPage } from '../survey/survey';
 import { MedicalPage } from '../medical/medical';
+import { NavParams, NavController } from 'ionic-angular';
+import { FormPage } from '../form/form';
 
 @Component({
 	templateUrl: 'tabs.html'
@@ -9,7 +10,15 @@ import { MedicalPage } from '../medical/medical';
 
 export class TabsPage {
 	user = UserPage;
-	survey = SurveyPage;
     medical = MedicalPage;
-	constructor() {}
+    forms = FormPage;
+    selectedIndex: number;
+
+	constructor(private navCtrl: NavController, private navParams: NavParams) {
+        this.selectedIndex = this.navParams.get('tabIndex') || 0;
+    }
+
+    goToForm() {
+        this.navCtrl.setRoot(FormPage, { 'formType': 'initial' });
+    }
 }

@@ -21,12 +21,8 @@ import { DatePicker } from '@ionic-native/date-picker';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { UserPage } from '../pages/user/user';
 import { NetworkPage } from '../pages/network/network';
-import { SurveyPage } from '../pages/survey/survey';
-import { DiagnosticPage } from '../pages/diagnostic/diagnostic';
 import { InformationPage } from '../pages/information/information';
 import { TabsPage } from '../pages/tabs/tabs';
-import { PopoverPage } from '../pages/form/popover';
-import { PopoverPage2 } from '../pages/form/popover2';
 import { ComponentsModule } from '../components/components.module';
 import { ProfilePage } from '../pages/profile/profile';
 import { Clipboard } from '@ionic-native/clipboard';
@@ -48,12 +44,8 @@ import { DatabaseProvider } from '../providers/database/database';
     AuthPage,
     UserPage,
     NetworkPage,
-    SurveyPage,
     InformationPage,
     TabsPage,
-    DiagnosticPage,
-    PopoverPage,
-    PopoverPage2,
     ProfilePage,
     MedicalPage,
     TestResultsPage
@@ -72,12 +64,8 @@ import { DatabaseProvider } from '../providers/database/database';
     AuthPage,
     UserPage,
     NetworkPage,
-    SurveyPage,
-    DiagnosticPage,
     InformationPage,
     TabsPage,
-    PopoverPage,
-    PopoverPage2,
     ProfilePage,
     MedicalPage,
     TestResultsPage
