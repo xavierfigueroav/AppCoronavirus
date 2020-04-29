@@ -2,7 +2,6 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { App, Events } from 'ionic-angular';
 import { StorageProvider } from '../../providers/storage/storage';
 import { AuthPage } from '../auth/auth';
-import { AlertController } from 'ionic-angular';
 import { LocationProvider } from '../../providers/location/location';
 import { ScoreProvider } from '../../providers/score/score';
 import { ValidationsProvider } from '../../providers/validations/validations';
@@ -70,7 +69,6 @@ export class UserPage implements OnInit{
     }
 
     async setNotificaciones() {
-        console.log("ENTRO A NOTIFICACIONES");
         var notifications = await this.storage.getNotifications();
         if(notifications) {
             this.notifications = notifications;
@@ -79,10 +77,6 @@ export class UserPage implements OnInit{
         }
         this.id = 0;
 
-        console.log("NOTIFICACIONES", this.notifications);
-        console.log("ID NOTI", this.id);
-
-        console.log("TEMPLATES NOTIFICACIONES", this.templates);
         for (let template of this.templates) {
             if(this.notifications[template.name]) {
                 this.localNotifications.cancel(this.notifications[template.name]);

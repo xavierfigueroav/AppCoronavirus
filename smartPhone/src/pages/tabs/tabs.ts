@@ -21,7 +21,6 @@ export class TabsPage {
 
         this.selectedIndex = this.navParams.get('tabIndex') || 0;
         this.scoreService.backgroundGeolocation.checkStatus().then(status => {
-            console.log('BackgroundGeolocation status...', status.isRunning);
             if(!status.isRunning) {
                 this.scoreService.startBackgroundGeolocation();
             }

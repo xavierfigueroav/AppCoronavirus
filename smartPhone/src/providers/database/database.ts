@@ -36,6 +36,7 @@ export class DatabaseProvider {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             app_id TEXT,
             score FLOAT,
+            time INTEGER,
             hour NUMBER,
             max_distance_home FLOAT,
             max_time_away FLOAT,

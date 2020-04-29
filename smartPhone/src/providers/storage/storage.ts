@@ -14,18 +14,17 @@ export class StorageProvider {
         console.log('Hello StorageManagerProvider Provider');
     }
 
-    get(key: string) {
-        return new Promise<any>((resolve, reject) => {
-            let currentUser: string;
-            this.storage.get('user').then(user => {
-                currentUser = user;
-                return this.storage.get('users');
-            }).then(users => {
-                users = JSON.parse(users);
-                console.log(users, currentUser, key, users[currentUser][key]);
-                resolve(users[currentUser][key]);
-            }).catch(error => reject(error));
-        });
+    async get(key: string) {
+        try {
+            const user = await this.storage.get('user');
+            let users = await this.storage.get('users');
+            users = JSON.parse(users);
+            console.log('[GET]', key, users[user][key]);
+            return users[user][key];
+        } catch(error) {
+            console.log('[GET ERROR]', error);
+            throw error;
+        }
     }
 
     getUser() {
@@ -44,38 +43,42 @@ export class StorageProvider {
         return this.storage.get('currentScore');
     }
 
-    set(key: string, value: any) {
-        return new Promise<any>((resolve, reject) => {
-            let currentUser: string;
-            this.storage.get('user').then(user => {
-                currentUser = user;
-                return this.storage.get('users');
-            }).then(users => {
-                users = JSON.parse(users);
-                console.log('USERS', users);
-                users[currentUser][key] = value;
-                console.log('USERS 2', users, currentUser, key, value);
-                return this.storage.set('users', JSON.stringify(users));
-            }).then(result => resolve(result)).catch(error => reject(error));
-        });
+    async set(key: string, value: any) {
+        try {
+            const user = await this.storage.get('user');
+            let users = await this.storage.get('users');
+            users = JSON.parse(users);
+            users[user][key] = value;
+            const result = await this.storage.set('users', JSON.stringify(users));
+            console.log('[SET]', key, JSON.parse(result));
+            return result;
+        } catch(error) {
+            console.log('[SET ERROR]', error);
+            throw error;
+        }
     }
 
     setUser(user: string) {
         return this.storage.set('user', user);
     }
 
-    setUserData(user: string) {
-        return new Promise<any>((resolve, reject) => {
-            this.storage.get('users').then(users => {
-                if (users != null) {
-                    users[user] = users[user] || { 'user': user };
-                    return this.storage.set('users', JSON.stringify(users));
-                }
-                const newUsers = {};
-                newUsers[user] = { 'user': user };
-                return this.storage.set('users', JSON.stringify(newUsers));
-            }).then(result => resolve(result)).catch(error => reject(error));
-        });
+    async setUserData(user: string) {
+        try {
+            let users = await this.storage.get('users');
+            users = JSON.parse(users);
+            if (users != null) {
+                users[user] = users[user] || { 'user': user };
+                const result = await this.storage.set('users', JSON.stringify(users));
+                return result;
+            }
+            const newUsers = {};
+            newUsers[user] = { 'user': user };
+            const result = await this.storage.set('users', JSON.stringify(newUsers));
+            return result;
+        } catch(error) {
+            console.log('[setUserData ERROR]', error);
+            throw error;
+        }
     }
 
     setDatasetId(datasetId: string) {

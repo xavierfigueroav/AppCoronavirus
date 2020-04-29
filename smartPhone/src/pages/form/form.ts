@@ -322,16 +322,16 @@ export class FormPage {
     }
 
     ngOnDestroy() {
-        this.storage.get('formSent').then(formSent => {
+        this.storage.get('formSent').then(async formSent => {
             if(formSent) {
-                this.storage.set('formSent', false);
+                await this.storage.set('formSent', false);
             } else if (this.indice_seccion === 0) {
                 // FIXME: do not save if it didn't change
-                this.storage.get('savedForms').then(savedForms => {
+                this.storage.get('savedForms').then(async savedForms => {
                     savedForms = savedForms || {};
                     savedForms[this.currentForm.type] = this.pendingForms[this.pendingForms.length - 1];
-                    this.storage.set('savedForms', savedForms);
-                    this.storage.set('formsData', this.formsData);
+                    await this.storage.set('savedForms', savedForms);
+                    await this.storage.set('formsData', this.formsData);
                 });
             }
         });
@@ -480,105 +480,45 @@ export class FormPage {
     }
 
     subirArchivo(pendingForm: any, id_dataset: string) {
-        const loader = this.loadingController.create({
+        this.loader = this.loadingController.create({
             content: 'Espere...',
         });
-        loader.present();
+        this.loader.present();
 
-        const tipo_form = pendingForm.formData.type;
-        let nombre_archivo: string;
-        if(tipo_form == 'initial') {
-            nombre_archivo = 'DATOS-PERSONALES';
-        } else {
-            nombre_archivo = 'AUTODIAGNÓSTICO';
+        let fileName = 'AUTODIAGNÓSTICO';
+        if(pendingForm.formData.type === 'initial') {
+            fileName = 'DATOS-PERSONALES';
         }
 
-        const fecha_formateada = this.obtenerFechaActual();
-        nombre_archivo = nombre_archivo + '_' + fecha_formateada + '.json';
+        const formattedDate = this.obtenerFechaActual();
+        fileName = fileName + '_' + formattedDate + '.json';
         const string_form = JSON.stringify(pendingForm, null, 2);
 
-        this.file.createFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', nombre_archivo, true).then(() => {
-            this.file.writeFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', nombre_archivo, string_form, {replace:true, append:false}).then((response) => {
+        this.file.createFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', fileName, true).then(() => {
+            this.file.writeFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', fileName, string_form, {replace:true, append:false}).then((response) => {
                 const url = 'http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create';
                 const carpeta = this.file.externalApplicationStorageDirectory+'AppCoronavirus/';
-                const ruta_completa = carpeta + nombre_archivo;
+                const ruta_completa = carpeta + fileName;
                 console.log('RUTA ARCHIVO:', ruta_completa);
 
-                this.http.uploadFile(url, {package_id: id_dataset, name: nombre_archivo}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
-                    this.file.removeFile(carpeta, nombre_archivo).then(() => {
-                        this.storage.get('sentForms').then(sentForms => {
-                            if (sentForms != null && sentForms.length > 0) {
-                                sentForms.push(pendingForm);
-                            } else {
-                                sentForms = [pendingForm];
-                            }
-                            this.storage.set('pendingForms', []);
-                            this.storage.set('formsData', this.formsData);
-                            this.storage.set('sentForms', sentForms);
-                            this.storage.get('savedForms').then(savedForms => {
-                                if(this.isSavedForm) {
-                                    savedForms[this.currentForm.type] = undefined;
-                                    this.storage.set('savedForms', savedForms);
-                                }
-                            });
-                            this.storage.get('firstUseDate').then(firstUseDate => {
-                                if(firstUseDate == null) {
-                                    this.storage.set('firstUseDate', new Date());
-                                }
-                            });
-                            this.app.getRootNav().setRoot(TabsPage);
-                            loader.dismiss();
-                            let alert = this.alertCtrl.create({
-                                subTitle: 'Se ha enviado correctamente el formulario',
-                                buttons: ['cerrar']
-                            });
-                            alert.present();
-                        });
-                    }).catch(error => {
-                        console.log(error);
-                        this.storage.get('sentForms').then(sentForms => {
-                            if (sentForms != null && sentForms.length > 0) {
-                                sentForms.push(pendingForm);
-                            } else {
-                                sentForms = [pendingForm];
-                            }
-                            this.storage.set('pendingForms', []);
-                            this.storage.set('formsData', this.formsData);
-                            this.storage.set('sentForms', sentForms);
-                            this.storage.get('savedForms').then(savedForms => {
-                                if(this.isSavedForm) {
-                                    savedForms[this.currentForm.type] = undefined;
-                                    this.storage.set('savedForms', savedForms);
-                                }
-                            });
-                            this.storage.get('firstUseDate').then(firstUseDate => {
-                                if(firstUseDate == null) {
-                                    this.storage.set('firstUseDate', new Date());
-                                }
-                            });
-                            this.app.getRootNav().setRoot(TabsPage);
-                            loader.dismiss();
-                            let alert = this.alertCtrl.create({
-                                subTitle: 'Se ha enviado correctamente el formulario',
-                                buttons: ['cerrar']
-                            });
-                            alert.present();
-                        });
+                this.http.uploadFile(url, {package_id: id_dataset, name: fileName}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
+                    this.file.removeFile(carpeta, fileName).then(async () => {
+                        await this.storeDataAfterSend(pendingForm);
+                        this.app.getRootNav().setRoot(TabsPage);
+                        this.loader.dismiss();
+                        this.alerts.showFormSentAlert();
+                    }).catch(async () => {
+                        await this.storeDataAfterSend(pendingForm);
+                        this.app.getRootNav().setRoot(TabsPage);
+                        this.loader.dismiss();
+                        this.alerts.showFormSentAlert();
                     });
-                }).catch(error => {
+                }).catch(async error => {
                     console.log(error);
-                    this.storage.get('firstUseDate').then(firstUseDate => {
-                        if(firstUseDate == null) {
-                            this.storage.set('firstUseDate', new Date());
-                        }
-                    });
+                    await this.setFirstUseDateIfAbsent();
                     this.app.getRootNav().setRoot(TabsPage);
-                    loader.dismiss()
-                    let alert = this.alertCtrl.create({
-                        subTitle: 'Hubo un problema al comunicarse con el servidor. Por favor verifique su conexión a internet o inténtelo más tarde.',
-                        buttons: ['cerrar']
-                    });
-                    alert.present();
+                    this.loader.dismiss()
+                    this.alerts.showConnectionErrorAlert();
                 });
             }).catch(error => {
                 console.log(error);
@@ -586,6 +526,35 @@ export class FormPage {
         }).catch(error => {
             console.log(error);
         });
+    }
+
+    async storeDataAfterSend(pendingForm: any) {
+        let sentForms = await this.storage.get('sentForms');
+        if (sentForms != null && sentForms.length > 0) {
+            sentForms.push(pendingForm);
+        } else {
+            sentForms = [pendingForm];
+        }
+        await this.storage.set('pendingForms', []);
+        await this.storage.set('formsData', this.formsData);
+        await this.storage.set('sentForms', sentForms);
+        await this.clearSavedForms();
+        await this.setFirstUseDateIfAbsent();
+    }
+
+    async clearSavedForms() {
+        const savedForms = await this.storage.get('savedForms');
+        if(this.isSavedForm) {
+            savedForms[this.currentForm.type] = undefined;
+            await this.storage.set('savedForms', savedForms);
+        }
+    }
+
+    async setFirstUseDateIfAbsent() {
+        const firstUseDate = await this.storage.get('firstUseDate');
+        if(firstUseDate == null) {
+            await this.storage.set('firstUseDate', new Date());
+        }
     }
 
     obtenerFechaActual() {
