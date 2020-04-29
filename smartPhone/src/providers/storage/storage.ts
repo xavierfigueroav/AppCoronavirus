@@ -1,0 +1,99 @@
+import { Storage } from '@ionic/storage';
+import { Injectable } from '@angular/core';
+
+/*
+  Generated class for the StorageManagerProvider provider.
+
+  See https://angular.io/guide/dependency-injection for more info on providers
+  and Angular DI.
+*/
+@Injectable()
+export class StorageProvider {
+
+    constructor(private storage: Storage) {
+        console.log('Hello StorageManagerProvider Provider');
+    }
+
+    async get(key: string) {
+        try {
+            const user = await this.storage.get('user');
+            let users = await this.storage.get('users');
+            users = JSON.parse(users);
+            console.log('[GET]', key, users[user][key]);
+            return users[user][key];
+        } catch(error) {
+            console.log('[GET ERROR]', error);
+            throw error;
+        }
+    }
+
+    getUser() {
+        return this.storage.get('user');
+    }
+
+    getDatasetId() {
+        return this.storage.get('datasetId');
+    }
+
+    getNotifications() {
+        return this.storage.get('notifications');
+    }
+
+    getCurrentScore() {
+        return this.storage.get('currentScore');
+    }
+
+    async set(key: string, value: any) {
+        try {
+            const user = await this.storage.get('user');
+            let users = await this.storage.get('users');
+            users = JSON.parse(users);
+            users[user][key] = value;
+            const result = await this.storage.set('users', JSON.stringify(users));
+            console.log('[SET]', key, JSON.parse(result));
+            return result;
+        } catch(error) {
+            console.log('[SET ERROR]', error);
+            throw error;
+        }
+    }
+
+    setUser(user: string) {
+        return this.storage.set('user', user);
+    }
+
+    async setUserData(user: string) {
+        try {
+            let users = await this.storage.get('users');
+            users = JSON.parse(users);
+            if (users != null) {
+                users[user] = users[user] || { 'user': user };
+                const result = await this.storage.set('users', JSON.stringify(users));
+                return result;
+            }
+            const newUsers = {};
+            newUsers[user] = { 'user': user };
+            const result = await this.storage.set('users', JSON.stringify(newUsers));
+            return result;
+        } catch(error) {
+            console.log('[setUserData ERROR]', error);
+            throw error;
+        }
+    }
+
+    setDatasetId(datasetId: string) {
+        return this.storage.set('datasetId', datasetId);
+    }
+
+    setNotifications(notifications: any[]) {
+        return this.storage.set('notifications', notifications);
+    }
+
+    setCurrentScore(currentScore: number) {
+        return this.storage.set('currentScore', currentScore);
+    }
+
+    forEach(exec: any) {
+        this.storage.forEach(exec);
+    }
+}

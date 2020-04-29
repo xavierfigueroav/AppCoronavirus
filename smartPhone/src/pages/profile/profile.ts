@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { App } from 'ionic-angular';
 import { AuthPage } from '../auth/auth';
-import { Storage } from '@ionic/storage';
+import { StorageProvider } from '../../providers/storage/storage';
 
 import { Clipboard } from '@ionic-native/clipboard';
 
@@ -20,27 +20,24 @@ export class ProfilePage implements OnInit {
 
     hideCopyMessage: boolean;
 
-  constructor(private app: App, private storage: Storage, private clipboard: Clipboard) {
-  }
+    constructor(private app: App, private storage: StorageProvider, private clipboard: Clipboard) {
+    }
 
-  ngOnInit() {
-      this.hideCopyMessage = true;
-  }
+    ngOnInit() {
+        this.hideCopyMessage = true;
+    }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ProfilePage');
-  }
+    ionViewDidLoad() {
+        console.log('ionViewDidLoad ProfilePage');
+    }
 
-  cerrarSesion() {
-    this.storage.get('linkedUser').then((val) => {
-            this.storage.set('linkedUser', null).then(data => {
-                this.app.getRootNav().setRoot(AuthPage);
-            });
+    cerrarSesion() {
+        this.storage.setUser(null).then(() => {
+            this.app.getRootNav().setRoot(AuthPage);
         });
-}
+    }
 
     clickOnPinHandler(event: any) {
-
         const text = event.target.value;
         this.hideCopyMessage = false;
 
@@ -49,7 +46,5 @@ export class ProfilePage implements OnInit {
                 this.hideCopyMessage = true;
             }, 2000);
         });
-
     }
-
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage';
+import { StorageProvider } from '../../providers/storage/storage';
 import { WifiScore } from '../../utils_score/wifi_score';
 import { DistanceScore } from '../../utils_score/distance_score';
 import { APIProvider } from '../api/api';
@@ -27,7 +27,7 @@ export class ScoreProvider {
     backgroundGeolocationConfig: BackgroundGeolocationConfig;
 
     constructor(
-        private storage: Storage,
+        private storage: StorageProvider,
         public backgroundGeolocation: BackgroundGeolocation,
         public database: DatabaseProvider,
         public api: APIProvider,
@@ -131,7 +131,7 @@ export class ScoreProvider {
         this.checkForPendingScores(Number(currentHour));
         //calculate actual score
         this.calculateCompleteScore(Number(currentHour + 1), false).then(score => {
-            this.storage.set('partialScore', score.completeScore);
+            this.storage.setCurrentScore(score.completeScore);
             this.events.publish('scoreChanges', score.completeScore);
         });
         this.api.sendPendingScoresToServer();
@@ -243,7 +243,7 @@ export class ScoreProvider {
         var scores: number[] = [];
         var maxDistanceToHome = 0;
         var maxTimeAway = 0;
-        var completeScore = Number(await this.storage.get("partialScore")) || 1;
+        var completeScore = Number(await this.storage.getCurrentScore()) || 1;
 
         if(locations !== undefined && locations.length > 0){
             locations.forEach((location) =>{

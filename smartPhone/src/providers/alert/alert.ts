@@ -55,6 +55,10 @@ export class AlertProvider {
         this.showOkButtonAlert('Por favor, danos acceso a tu ubicación para una mejor experiencia.')
     }
 
+    showFormSentAlert() {
+        this.showOkButtonAlert('Se ha enviado correctamente el formulario.')
+    }
+
     scoreInformation(){
         const alert = this.alertController.create({
             title: '<p align="center">Nivel de exposición</p>',

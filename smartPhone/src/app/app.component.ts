@@ -2,10 +2,9 @@ import { Component } from '@angular/core';
 import { Platform, App, AlertController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { Storage } from '@ionic/storage';
+import { StorageProvider } from '../providers/storage/storage';
 import { AuthPage } from '../pages/auth/auth';
 import { TabsPage } from '../pages/tabs/tabs';
-import { ScoreProvider } from '../providers/score/score';
 import { FormPage } from '../pages/form/form';
 import { UserPage } from '../pages/user/user';
 
@@ -19,11 +18,10 @@ export class MyApp {
     activePage: any;
 
     constructor(
-        private storage: Storage,
+        private storage: StorageProvider,
         private platform: Platform,
         private statusBar: StatusBar,
         private splashScreen: SplashScreen,
-        private scoreService: ScoreProvider,
         private alertController: AlertController,
         private app: App) {
         this.platform.ready().then(() => {
@@ -33,10 +31,8 @@ export class MyApp {
             this.statusBar.styleDefault();
             this.splashScreen.hide();
 
-            this.scoreService.startBackgroundGeolocation();
-
-            this.storage.get('linkedUser').then((linkedUser) => {
-                if (linkedUser !== null) {
+            this.storage.getUser().then(user => {
+                if (user !== null) {
                     this.storage.get('firstUseDate').then(firstUseDate => {
                         if(firstUseDate == null) {
                             console.log('NO FIRST USE DATE');

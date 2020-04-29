@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { LoadingController, AlertController, App } from 'ionic-angular';
 import { TabsPage } from '../tabs/tabs';
-import { Storage } from '@ionic/storage';
+import { StorageProvider } from '../../providers/storage/storage';
 import { File } from '@ionic-native/file';
 import { APIProvider } from '../../providers/api/api';
 import { AlertProvider } from '../../providers/alert/alert';
 import { DatabaseProvider } from '../../providers/database/database';
 import { ValidationsProvider } from '../../providers/validations/validations';
 import { FormPage } from '../form/form';
+import { ScoreProvider } from '../../providers/score/score';
 
 @Component({
     selector: 'page-auth',
@@ -19,16 +20,17 @@ export class AuthPage {
 
     constructor(
         private app: App,
-        private storage: Storage,
+        private storage: StorageProvider,
         private file: File,
         private loadingCtrl: LoadingController,
         private alertCtrl: AlertController,
         private database: DatabaseProvider,
         private api: APIProvider,
         private alerts: AlertProvider,
-        private validations: ValidationsProvider) {
+        private validations: ValidationsProvider,
+        private scoreService: ScoreProvider) {
 
-        this.storage.set('notifications', null);
+        this.storage.setNotifications(null);
         this.crearDirectorio();
     }
 
@@ -36,11 +38,11 @@ export class AuthPage {
         this.file.checkDir(this.file.externalApplicationStorageDirectory, 'AppCoronavirus').then(response => {
             console.log('EL DIRECTORIO YA EXISTE');
             console.log(this.file.externalApplicationStorageDirectory + "/AppCoronavirus");
-        }).catch(err => {
+        }).catch(() => {
             console.log('EL DIRECTORIO NO EXISTE');
             this.file.createDir(this.file.externalApplicationStorageDirectory, 'AppCoronavirus', false).then(response => {
                 console.log('SE CREÓ EL DIRECTORIO');
-            }).catch(err => {
+            }).catch(() => {
                 console.log('ERROR AL CREAR EL DIRECTORIO');
             });
         });
@@ -85,6 +87,8 @@ export class AuthPage {
             return;
         }
 
+        this.scoreService.startBackgroundGeolocation();
+
         if(datasetCreated === 0) { // Already created
             this.app.getRootNav().setRoot(TabsPage);
             this.storage.get('firstUseDate').then(firstUseDate => {
@@ -98,11 +102,9 @@ export class AuthPage {
     }
 
     async storeUser() {
-        await this.storage.set('id_dataset', this.appPIN);
-        await this.storage.set('linkedUser', {
-            codigo_app: this.appPIN,
-            sesion: true
-        });
+        await this.storage.setDatasetId(this.appPIN);
+        await this.storage.setUser(this.appPIN);
+        await this.storage.setUserData(this.appPIN);
     }
 
     async checkforInestimableScores(){
@@ -135,7 +137,7 @@ export class AuthPage {
             buttons: [
               {
                 text: 'Cancelar',
-                handler: data => { console.log('Cancel envio de correo.');}
+                handler: () => { console.log('Cancel envio de correo.');}
               },
               {
                 text: 'Enviar',

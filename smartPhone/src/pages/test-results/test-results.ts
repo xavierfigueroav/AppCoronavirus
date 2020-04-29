@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { App } from 'ionic-angular';
 import { AuthPage } from '../auth/auth';
 
-import { Storage } from '@ionic/storage';
+import { StorageProvider } from '../../providers/storage/storage';
 import { APIProvider } from '../../providers/api/api';
 
 /**
@@ -25,29 +25,27 @@ export class TestResultsPage implements OnInit {
     testStatuses = { 0: 'EN PROCESO', 1: 'PROCESADA' };
     testResults = { 0: 'NEGATIVO', 1: 'POSITIVO', 2: 'INCONCLUSO', 3: 'PENDIENTE' };
 
-  constructor(private app: App, private storage: Storage, private api: APIProvider) {
-  }
+    constructor(private app: App, private storage: StorageProvider, private api: APIProvider) {
+    }
 
-  ngOnInit() {
-    this.testFound = true;
-    this.searchTestResults();
-  }
+    ngOnInit() {
+        this.testFound = true;
+        this.searchTestResults();
+    }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad TestResultsPage');
-  }
+    ionViewDidLoad() {
+        console.log('ionViewDidLoad TestResultsPage');
+    }
 
-  cerrarSesion() {
-    this.storage.get('linkedUser').then((val) => {
-            this.storage.set('linkedUser', null).then(data => {
-                this.app.getRootNav().setRoot(AuthPage);
-            });
+    cerrarSesion() {
+        this.storage.setUser(null).then(() => {
+            this.app.getRootNav().setRoot(AuthPage);
         });
     }
 
     searchTestResults(){
-        this.storage.get("linkedUser").then(user=>{
-            this.api.getTestResultsByAppId(user.codigo_app).then(results => {
+        this.storage.getUser().then(user => {
+            this.api.getTestResultsByAppId(user).then(results => {
                 console.log("Results",results);
                 this.usersInfo = [];
                 if(results) {

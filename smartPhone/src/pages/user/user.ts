@@ -1,8 +1,7 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { App, Events } from 'ionic-angular';
-import { Storage } from '@ionic/storage';
+import { StorageProvider } from '../../providers/storage/storage';
 import { AuthPage } from '../auth/auth';
-import { AlertController } from 'ionic-angular';
 import { LocationProvider } from '../../providers/location/location';
 import { ScoreProvider } from '../../providers/score/score';
 import { ValidationsProvider } from '../../providers/validations/validations';
@@ -33,15 +32,14 @@ export class UserPage implements OnInit{
 
     constructor(
         private app: App,
-        private storage: Storage,
-        private alertCtrl: AlertController,
+        private storage: StorageProvider,
         private location: LocationProvider,
         private database: DatabaseProvider,
         private scoreService: ScoreProvider,
         private api: APIProvider,
         private events: Events,
         private ngZone: NgZone,
-        public localNotifications: LocalNotifications,
+        private localNotifications: LocalNotifications,
         private validations: ValidationsProvider,
         private alert: AlertProvider
         ) {
@@ -71,8 +69,7 @@ export class UserPage implements OnInit{
     }
 
     async setNotificaciones() {
-        console.log("ENTRO A NOTIFICACIONES");
-        var notifications = await this.storage.get('notifications');
+        var notifications = await this.storage.getNotifications();
         if(notifications) {
             this.notifications = notifications;
         } else {
@@ -80,10 +77,6 @@ export class UserPage implements OnInit{
         }
         this.id = 0;
 
-        console.log("NOTIFICACIONES", this.notifications);
-        console.log("ID NOTI", this.id);
-
-        console.log("TEMPLATES NOTIFICACIONES", this.templates);
         for (let template of this.templates) {
             if(this.notifications[template.name]) {
                 this.localNotifications.cancel(this.notifications[template.name]);
@@ -196,7 +189,7 @@ export class UserPage implements OnInit{
         }
         this.notifications['totalQuantity'] = this.id;
         console.log("NOTIFICACIONES:", this.notifications);
-        this.storage.set('notifications', this.notifications);
+        this.storage.setNotifications(this.notifications);
 
     }
 
@@ -241,10 +234,8 @@ export class UserPage implements OnInit{
     }
 
 	cerrarSesion() {
-        this.storage.get('linkedUser').then((val) => {
-            this.storage.set('linkedUser', null).then(data => {
-                this.app.getRootNav().setRoot(AuthPage);
-            });
+        this.storage.setUser(null).then(() => {
+            this.app.getRootNav().setRoot(AuthPage);
         });
     }
 
