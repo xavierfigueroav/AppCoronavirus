@@ -85,7 +85,7 @@
 
         <ion-item *ngIf="item.type=='select'" id={{item.id}} [class.hide_question]="!item.show" [class.show_question]="item.show">
             <ion-label [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" stacked class="pregunta">{{item.placeholder}}</ion-label>
-            <ion-select okText="Seleccionar" cancelText="Cancelar" [(ngModel)]="item.value" placeholder="Seleccione una opción" (ionChange)="blurFunction($event,item.blurFunction)">
+            <ion-select okText="Seleccionar" interface="popover" cancelText="Cancelar" [(ngModel)]="item.value" placeholder="Seleccione una opción" (ionChange)="blurFunction($event,item.blurFunction)">
                 <ion-option *ngFor="let op of item.options;" value={{op.label}}>{{op.label}}</ion-option>
             </ion-select>
         </ion-item>
