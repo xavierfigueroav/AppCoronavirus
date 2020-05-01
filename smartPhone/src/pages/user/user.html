@@ -1,6 +1,6 @@
 <ion-header id="header">
 	<ion-navbar color="primary">
-		<ion-title id="miCuarentenaTitle">Mi cuarentena</ion-title>
+		<ion-title id="miCuarentenaTitle">Monitor de riesgo</ion-title>
 		<ion-buttons end>
 			<button ion-button icon-only (click)="cerrarSesion()">
 				<ion-icon id="logOutIcon" name="custom-logout"></ion-icon>
@@ -12,7 +12,7 @@
 <ion-content padding>
     <ion-card id="nivelExposicion">
         <ion-card-title>
-            Nivel de exposición
+            Exposición actual
             <ion-icon id="info" name="ios-information-circle-outline"
                       style="float: right;" (click)="scoreInformation()">
             </ion-icon>
@@ -25,7 +25,9 @@
                 'orange': currentScore > 1 && currentScore <= 2,
                 'red': currentScore > 2 && currentScore <= 3
             }">
-                <span class="circle-text">Actual</span>
+                <span class="circle-text" *ngIf="currentScore <= 1">Bajo</span>
+                <span class="circle-text" *ngIf="currentScore > 1 && currentScore <= 2">Medio</span>
+                <span class="circle-text" *ngIf="currentScore > 2 && currentScore <= 3">Alto</span>
             </div>
         </div>
     </ion-card-content>
