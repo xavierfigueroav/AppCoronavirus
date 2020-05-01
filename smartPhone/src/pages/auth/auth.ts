@@ -8,7 +8,6 @@ import { AlertProvider } from '../../providers/alert/alert';
 import { DatabaseProvider } from '../../providers/database/database';
 import { ValidationsProvider } from '../../providers/validations/validations';
 import { FormPage } from '../form/form';
-import { ScoreProvider } from '../../providers/score/score';
 
 @Component({
     selector: 'page-auth',
@@ -27,8 +26,7 @@ export class AuthPage {
         private database: DatabaseProvider,
         private api: APIProvider,
         private alerts: AlertProvider,
-        private validations: ValidationsProvider,
-        private scoreService: ScoreProvider) {
+        private validations: ValidationsProvider) {
 
         this.storage.setNotifications(null);
         this.crearDirectorio();
@@ -87,8 +85,6 @@ export class AuthPage {
             return;
         }
 
-        this.scoreService.startBackgroundGeolocation();
-
         if(datasetCreated === 0) { // Already created
             this.app.getRootNav().setRoot(TabsPage);
             this.storage.get('firstUseDate').then(firstUseDate => {
@@ -111,8 +107,9 @@ export class AuthPage {
         const scores = await this.database.getScores();
         if(scores.length === 0){
             const date = new Date();
-            const currentHour = date.getHours();
-            for (let hour = 1; hour <= currentHour -1; hour++) {
+            let currentHour = date.getHours();
+            currentHour = currentHour === 0 ? 24 : currentHour;
+            for (let hour = 1; hour < currentHour; hour++) {
                 this.database.saveScore(-1, hour, 0, 0, '');
             }
         }
