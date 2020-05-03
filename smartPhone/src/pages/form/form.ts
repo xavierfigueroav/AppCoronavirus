@@ -374,6 +374,11 @@ export class FormPage {
     }
 
     async finalizarEncuesta() {
+        this.loader = this.loadingController.create({
+            content: 'Espere...',
+        });
+        this.loader.present();
+
         const array = Array.from(document.querySelectorAll('ion-datetime, ion-input, ion-list, ion-item'));
         const elementos = [];
         let errores = 0;
@@ -394,6 +399,8 @@ export class FormPage {
         if (errores == 0) {
             await this.storage.set('formSent', true);
             this.enviarFormulario();
+        } else {
+            this.loader.dismiss();
         }
     }
 
@@ -471,6 +478,7 @@ export class FormPage {
             this.subirArchivo(pendingForm, id_dataset);
         } else {
             this.app.getRootNav().setRoot(TabsPage);
+            this.loader.dismiss();
             const alert = this.alertCtrl.create({
                 subTitle: 'No se encontraron cambios a registrar.',
                 buttons: ['cerrar']
@@ -480,11 +488,6 @@ export class FormPage {
     }
 
     subirArchivo(pendingForm: any, id_dataset: string) {
-        this.loader = this.loadingController.create({
-            content: 'Espere...',
-        });
-        this.loader.present();
-
         let fileName = 'AUTODIAGNÓSTICO';
         if(pendingForm.formData.type === 'initial') {
             fileName = 'DATOS-PERSONALES';
