@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Platform, App, AlertController } from 'ionic-angular';
+import { Platform, App, AlertController, LoadingController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StorageProvider } from '../providers/storage/storage';
@@ -24,8 +24,13 @@ export class MyApp {
         private statusBar: StatusBar,
         private splashScreen: SplashScreen,
         private alertController: AlertController,
-        private app: App) {
+        private app: App,
+        private loadingCtrl: LoadingController) {
         this.platform.ready().then(() => {
+            const loader = this.loadingCtrl.create({
+                content: "Espere...",
+            });
+            loader.present();
 
             this.platform.registerBackButtonAction(() => { this.handleBackButtonAction(); }, 1);
 
@@ -49,6 +54,7 @@ export class MyApp {
                     this.app.getRootNav().setRoot(AuthPage);
                 }
             });
+            loader.dismiss();
         });
     }
 

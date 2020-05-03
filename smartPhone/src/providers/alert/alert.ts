@@ -56,15 +56,15 @@ export class AlertProvider {
     }
 
     showFormSentAlert() {
-        this.showOkButtonAlert('Se ha enviado correctamente el formulario.')
+        this.showOkButtonAlert('Datos actualizados.')
     }
 
     scoreInformation(){
         const alert = this.alertController.create({
             title: '<p align="center">Nivel de exposición</p>',
-            subTitle: "<br/><li>Bajo: verde</li>"+
-                      "<li>Medio: naranja</li>"+
-                      "<li>Alto: rojo</li>",
+            message: "<br>Los valores de exposición son calculados en base a información geoespacial disponible en un momento dado.</br>"+
+                      "No deben considerarse de ninguna manera información medica u oficial, solo una referencia del comportamiento "+
+                      "de movilidad propio.",
             buttons: ['OK']
           });
           alert.present();
@@ -75,7 +75,7 @@ export class AlertProvider {
           title: '<p align="center">Registra la ubicación de tu casa</p>',
           subTitle: '<br/><li>Si el globo está de color ROJO significa que no has registrado tu domicilio.</li><br/>'+
                     '<li>Para empezar a calcular tu nivel de exposición ingresa el radio de tu casa y toca <b>GUARDAR</b>.</li><br/>'+
-                    '<li>Puedes actualizar tu domocilio en cualquier momento.</li>',
+                    '<li>Puedes actualizar tu domicilio en cualquier momento.</li>',
           buttons: ['OK']
         });
         alert.present();
@@ -99,7 +99,7 @@ export class AlertProvider {
 
     saveHomeInfoSuccess(){
         this.alertController.create({
-            title: 'La ubicación de tu casa fue almacenada exitósamente',
+            title: 'La ubicación de tu casa fue almacenada exitosamente',
             subTitle: 'Esto nos permitirá brindarte información actualizada sobre tu nivel de exposición.',
             buttons: ['OK']
         }).present();

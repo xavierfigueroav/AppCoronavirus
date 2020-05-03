@@ -37,7 +37,7 @@
                                 "type": "input_text",
                                 "show": true,
                                 "id": "direccion_residencia",
-                                "blurFunction": "{}",
+                                "blurFunction": "{\"validateTextLength\":[\"direccion_residencia\"]}",
                                 "errors": [],
                                 "value": "",
                                 "placeholder": "Ingresa tu dirección"
@@ -150,7 +150,7 @@
                                 "type": "input_text",
                                 "id": "edad",
                                 "show": true,
-                                "blurFunction": "{\"validateIntegerPositiveNumber\":[\"edad\"]}",
+                                "blurFunction": "{\"validateIntegerPositiveNumber\":[\"edad\"],\"validateMinMaxLimitsEdad\":[\"edad\"]}",
                                 "errors": [],
                                 "value": "",
                                 "placeholder": "Ingresa tu edad"
@@ -550,7 +550,7 @@
                                 "type": "input_text",
                                 "id": "dias_aislamiento",
                                 "show": false,
-                                "blurFunction": "{\"validateEmptyShowedInput\":[\"dias_aislamiento\"], \"validateIntegerPositiveNumber\":[\"dias_aislamiento\"]}",
+                                "blurFunction": "{\"validateEmptyShowedInput\":[\"dias_aislamiento\"], \"validateIntegerPositiveNumber\":[\"dias_aislamiento\"], \"validateMinMaxLimitsAislamiento\":[\"dias_aislamiento\"]}",
                                 "errors": [],
                                 "value": "",
                                 "placeholder": "Ingresa la cantidad de días"
