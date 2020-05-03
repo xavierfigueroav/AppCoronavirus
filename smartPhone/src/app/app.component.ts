@@ -16,6 +16,7 @@ export class MyApp {
 
     activeNav: any;
     activePage: any;
+    backButtonAlertPresent: boolean;
 
     constructor(
         private storage: StorageProvider,
@@ -52,6 +53,8 @@ export class MyApp {
     }
 
     handleBackButtonAction() {
+        if(this.backButtonAlertPresent) return;
+
         this.activeNav = this.app.getActiveNav();
 
         if(this.activeNav.canGoBack()) {
@@ -65,6 +68,7 @@ export class MyApp {
                     if(firstUseDate == null) {
                         this.platform.exitApp();
                     } else {
+                        this.backButtonAlertPresent = true;
                         this.confirmBackButtonAction();
                     }
                 });
@@ -81,7 +85,7 @@ export class MyApp {
             message: 'Si continúas, el formulario no se enviará, pero se guardará para que lo edites más tarde.',
             buttons: [
                 {
-                    text: 'Salir',
+                    text: 'Sí',
                     handler: () => {
                         const tabIndex = this.activePage.data.formType === 'initial' ? 0 : 1;
                         this.app.getRootNav().setRoot(
@@ -92,11 +96,13 @@ export class MyApp {
                     }
                 },
                 {
-                    text: 'Cancelar',
+                    text: 'No',
                     role: 'cancel'
                 }
             ]
         });
+
         alert.present();
+        alert.onDidDismiss(() => { this.backButtonAlertPresent = false; });
     }
 }
