@@ -10,15 +10,15 @@
         },
         {
             "name":"validateMinMaxLimitsAislamiento",
-            "structure":"function validateMinMaxLimits(item1){const newError='El valor debe se un numero entero y estar entre 0 - 365.';item1.errors=item1.errors.filter(error=>error!==newError);if(item1.value>=0 && item1.value<=365){return 0;} item1.errors.push(newError);return 1;}"
+            "structure":"function validateMinMaxLimits(item1){const newError='El valor debe se un número entero y estar entre 0 - 365.';item1.errors=item1.errors.filter(error=>error!==newError);if(item1.value>=0 && item1.value<=365){return 0;} item1.errors.push(newError);return 1;}"
         },
         {
             "name":"validateMinMaxLimitsEdad",
-            "structure":"function validateMinMaxLimits(item1){const newError='El valor debe se un numero entero y estar entre 0 - 120.';item1.errors=item1.errors.filter(error=>error!==newError);if(item1.value>=0 && item1.value<=120){return 0;} item1.errors.push(newError);return 1;}"
+            "structure":"function validateMinMaxLimits(item1){const newError='El valor debe se un número entero y estar entre 0 - 120.';item1.errors=item1.errors.filter(error=>error!==newError);if(item1.value>=0 && item1.value<=120){return 0;} item1.errors.push(newError);return 1;}"
         },
         {
             "name":"validateTextLength",
-            "structure":"function validateTextLength(item1){const newError='La direccion no debe ser demasiado extensa.';item1.errors=item1.errors.filter(error=>error!==newError);if(item1.value.length>100){item1.errors.push(newError);return 1;} return 0;}"
+            "structure":"function validateTextLength(item1){const newError='La dirección no debe exceder los 100 caracteres.';item1.errors=item1.errors.filter(error=>error!==newError);if(item1.value.length>100){item1.errors.push(newError);return 1;} return 0;}"
         },
         {
             "name":"mostrarPregunta",
