@@ -26,7 +26,6 @@ export class UserPage implements OnInit{
     scores: any;
     colors: any;
     homeRadius: number;
-    showingForm: boolean;
     notifications;
     id;
 
@@ -54,18 +53,23 @@ export class UserPage implements OnInit{
 
     ngOnInit() {
         console.log('ngOnInit UserPage');
-
         this.colors = {'1': '#49BEAA', '2': '#EEB868', '3': '#EF767A', '-1': '#999999'};
-        this.showingForm = true;
+    }
 
-        this.storage.get('homeLocation').then(location => {
-            if(location) {
-                this.homeLocationDate = location.date;
-                this.showingForm = false;
-                this.scoreService.calculateAndStoreExpositionScores();
-            }
-        });
-        this.fillScores();
+    ionViewWillEnter() {
+        console.log('ionViewWillEnter UserPage');
+        this.refreshScores();
+    }
+
+    async refreshScores(refresher = undefined) {
+        console.log('refreshing scores...');
+        const location = await this.storage.get('homeLocation');
+        if(location) {
+            this.homeLocationDate = location.date;
+            await this.scoreService.calculateAndStoreExpositionScores();
+        }
+        await this.fillScores();
+        refresher && refresher.complete();
     }
 
     async setNotificaciones() {
@@ -193,22 +197,21 @@ export class UserPage implements OnInit{
 
     }
 
-    fillScores() {
-        this.database.getScores().then(scores => {
-            scores.forEach(score => {
-                score.color = this.getColorByScore(score.score);
-            });
-
-            let scoresToShow = scores;
-
-            for(let i = scoresToShow.length + 1; i < 25; i++){
-                const missingScore = {'hour': i, 'score': -1};
-                missingScore['color'] = this.getColorByScore(missingScore.score);
-                scoresToShow.push(missingScore);
-            }
-
-            this.updateScores(scoresToShow);
+    async fillScores() {
+        const scores = await this.database.getScores();
+        scores.forEach(score => {
+            score.color = this.getColorByScore(score.score);
         });
+
+        let scoresToShow = scores;
+
+        for(let i = scoresToShow.length + 1; i < 25; i++){
+            const missingScore = {'hour': i, 'score': -1};
+            missingScore['color'] = this.getColorByScore(missingScore.score);
+            scoresToShow.push(missingScore);
+        }
+
+        this.updateScores(scoresToShow);
     }
 
     updateCurrentScore(score: number) {
@@ -264,7 +267,6 @@ export class UserPage implements OnInit{
             }).then(() => {
                 this.alert.saveHomeInfoSuccess();
 
-                this.showingForm = false;
                 this.api.postHomeInformation();
                 this.scoreService.startBackgroundGeolocation();
                 this.scoreService.calculateAndStoreExpositionScores();

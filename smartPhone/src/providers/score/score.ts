@@ -124,57 +124,55 @@ export class ScoreProvider {
         this.calculateAndStoreExpositionScores();
     }
 
-    calculateAndStoreExpositionScores() {
+    async calculateAndStoreExpositionScores() {
 
         const date = new Date();
         const currentHour = date.getHours();
-        this.checkForPendingScores(Number(currentHour));
+        await this.checkForPendingScores(Number(currentHour));
         //calculate actual score
-        this.calculateCompleteScore(Number(currentHour + 1), false).then(score => {
-            this.storage.setCurrentScore(score.completeScore);
-            this.events.publish('scoreChanges', score.completeScore);
-        });
-        this.api.sendPendingScoresToServer();
+        const score = await this.calculateCompleteScore(Number(currentHour + 1), false);
+        await this.storage.setCurrentScore(score.completeScore);
+        this.events.publish('scoreChanges', score.completeScore);
+        await this.api.sendPendingScoresToServer();
     }
 
 // Calculate and save the scores only for complete hours
-    checkForPendingScores(currentHour: number){
+    async checkForPendingScores(currentHour: number){
 
         if(currentHour == 0) currentHour = 24;
 
-        this.database.getScores().then(async (data:any) => {
-            if(data){
-                const lastScoreHour = data.length;
-                if(lastScoreHour > currentHour){ //  if we are in different days, delete previous scores and check again
-                    this.database.deleteScores();
-                    this.checkForPendingScores(currentHour);
-                } else{                          // if we are in the same day, only calculate the score from the last score hour to the current hour
-                    for (let hour = lastScoreHour+1; hour < currentHour; hour++) {
-                        const score = await this.calculateCompleteScore(hour);
-                        this.database.saveScore(
-                            score.completeScore,
-                            hour,
-                            score.maxDistanceToHome,
-                            score.maxTimeAway,
-                            score.encodedRoute
-                        );
-                        this.database.deleteLocationsByHour(hour);
-                    }
-                }
-            } else{   //there aren't scores yet, calculate all scores until the current hour
-                for (let hour = 1; hour < currentHour; hour++) {
+        const data = await this.database.getScores();
+        if(data){
+            const lastScoreHour = data.length;
+            if(lastScoreHour > currentHour){ //  if we are in different days, delete previous scores and check again
+                await this.database.deleteScores();
+                await this.checkForPendingScores(currentHour);
+            } else{                          // if we are in the same day, only calculate the score from the last score hour to the current hour
+                for (let hour = lastScoreHour+1; hour < currentHour; hour++) {
                     const score = await this.calculateCompleteScore(hour);
-                    this.database.saveScore(
+                    await this.database.saveScore(
                         score.completeScore,
                         hour,
                         score.maxDistanceToHome,
                         score.maxTimeAway,
                         score.encodedRoute
                     );
-                    this.database.deleteLocationsByHour(hour);
+                    await this.database.deleteLocationsByHour(hour);
                 }
             }
-        });
+        } else{   //there aren't scores yet, calculate all scores until the current hour
+            for (let hour = 1; hour < currentHour; hour++) {
+                const score = await this.calculateCompleteScore(hour);
+                await this.database.saveScore(
+                    score.completeScore,
+                    hour,
+                    score.maxDistanceToHome,
+                    score.maxTimeAway,
+                    score.encodedRoute
+                );
+                await this.database.deleteLocationsByHour(hour);
+            }
+        }
     }
 
     async getParameters() : Promise<{}>{

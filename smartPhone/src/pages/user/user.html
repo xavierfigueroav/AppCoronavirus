@@ -10,6 +10,9 @@
 </ion-header>
 
 <ion-content padding>
+    <ion-refresher (ionRefresh)="refreshScores($event)">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
     <ion-card id="nivelExposicion">
         <ion-card-title>
             Exposición actual
@@ -60,7 +63,7 @@
                         <ion-icon id="locationIconRed" name="pin" *ngIf="homeLocationDate == undefined"></ion-icon>
                     </ion-col>
                     <ion-col id="radiusColumn">
-                        <ion-input id="inputRadioCasa" type="number" min="2" max="30" [(ngModel)]="homeRadius" 
+                        <ion-input id="inputRadioCasa" type="number" min="2" max="30" [(ngModel)]="homeRadius"
                                    placeholder="RADIO DE CASA" (keypress)="onEnterKey($event)">
                         </ion-input>
                     </ion-col>
