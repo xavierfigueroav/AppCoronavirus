@@ -242,7 +242,7 @@ export class ScoreProvider {
         var scores: number[] = [];
         var maxDistanceToHome = 0;
         var maxTimeAway = 0;
-        var completeScore = Number(await this.storage.getCurrentScore()) || 1;
+        var completeScore = -1;
 
         if(locations !== undefined && locations.length > 0){
             locations.forEach((location) =>{
