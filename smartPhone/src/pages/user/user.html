@@ -22,18 +22,25 @@
         </ion-card-title>
 
         <ion-card-content>
-        <div class="circle-container" style="text-align: center;">
-            <div class="circle" [ngClass]="{
-                'green': currentScore <= 1,
-                'orange': currentScore > 1 && currentScore <= 2,
-                'red': currentScore > 2 && currentScore <= 3
-            }">
-                <span class="circle-text" *ngIf="currentScore <= 1">Bajo</span>
-                <span class="circle-text" *ngIf="currentScore > 1 && currentScore <= 2">Medio</span>
-                <span class="circle-text" *ngIf="currentScore > 2 && currentScore <= 3">Alto</span>
+            <div class="circle-container" style="text-align: center;">
+                <div class="circle" [ngClass]="{
+                    'green': currentScore <= 1,
+                    'orange': currentScore > 1 && currentScore <= 2,
+                    'red': currentScore > 2 && currentScore <= 3
+                }">
+                    <span class="circle-text" *ngIf="currentScore === undefined">Registra ubicación de casa<br />⬇</span>
+                    <span class="circle-text" *ngIf="currentScore <= 1">Bajo</span>
+                    <span class="circle-text" *ngIf="currentScore > 1 && currentScore <= 2">Medio</span>
+                    <span class="circle-text" *ngIf="currentScore > 2 && currentScore <= 3">Alto</span>
+                </div>
             </div>
-        </div>
-    </ion-card-content>
+            <div id="landmark-container">
+                <ion-icon id="locationIconGreen" name="pin" *ngIf="ableToTrack !== undefined"
+                            (click)="showHomeInfoModal()"></ion-icon>
+                <ion-icon id="locationIconRed" name="pin" *ngIf="ableToTrack == undefined"
+                            (click)="showHomeInfoModal()"></ion-icon>
+            </div>
+        </ion-card-content>
     </ion-card>
 
     <h4 class="subTitulo">
@@ -45,35 +52,5 @@
     </div>
     <div id="score-bar">
         <div class="score-square" *ngFor="let score of scores"  [ngStyle]="{ 'background-color': score.color }"></div>
-    </div>
-
-    <h4 id="ubicacionCasaTitle" class="subTitulo">
-        Ubicación de la casa
-        <ion-icon id="infoUbicacion" name="ios-information-circle-outline"
-                  (click)="infoHomeLocation()">
-        </ion-icon>
-    </h4>
-
-    <div class="container">
-        <div class="form-body">
-            <ion-grid id="gridUbicacionCasa">
-                <ion-row>
-                    <ion-col id="iconColumn">
-                        <ion-icon id="locationIconGreen" name="pin" *ngIf="homeLocationDate !== undefined"></ion-icon>
-                        <ion-icon id="locationIconRed" name="pin" *ngIf="homeLocationDate == undefined"></ion-icon>
-                    </ion-col>
-                    <ion-col id="radiusColumn">
-                        <ion-input id="inputRadioCasa" type="number" min="2" max="30" [(ngModel)]="homeRadius"
-                                   placeholder="RADIO DE CASA" (keypress)="onEnterKey($event)">
-                        </ion-input>
-                    </ion-col>
-                    <ion-col id="saveColumn">
-                        <button id="enviarUbicacionButton" ion-button (click)="registerHomeHandler(homeRadius)">
-                            <p id="enviarRadioText">Guardar</p>
-                        </button>
-                    </ion-col>
-                </ion-row>
-            </ion-grid>
-        </div>
     </div>
 </ion-content>

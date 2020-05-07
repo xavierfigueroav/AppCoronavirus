@@ -1,16 +1,14 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { App, Events } from 'ionic-angular';
+import { App, Events, ModalController } from 'ionic-angular';
 import { StorageProvider } from '../../providers/storage/storage';
 import { AuthPage } from '../auth/auth';
-import { LocationProvider } from '../../providers/location/location';
 import { ScoreProvider } from '../../providers/score/score';
-import { ValidationsProvider } from '../../providers/validations/validations';
-import { APIProvider } from '../../providers/api/api';
 import { AlertProvider } from '../../providers/alert/alert';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
 import * as plantilla from '../../assets/plantilla/plantilla.json';
 import { DatabaseProvider } from '../../providers/database/database';
+import { HomeInformationComponent } from '../../components/home-information/home-information';
 
 @Component({
 	selector: 'page-user',
@@ -22,25 +20,25 @@ export class UserPage implements OnInit{
     templates = (<any>plantilla);
     currentScore: number;
     currentScoreColor: string;
-    homeLocationDate: number;
+    ableToTrack: boolean;
+    latitude: number;
+    longitude: number;
+    homeArea: number;
     scores: any;
     colors: any;
-    homeRadius: number;
     notifications;
     id;
 
     constructor(
         private app: App,
         private storage: StorageProvider,
-        private location: LocationProvider,
         private database: DatabaseProvider,
         private scoreService: ScoreProvider,
-        private api: APIProvider,
         private events: Events,
         private ngZone: NgZone,
         private localNotifications: LocalNotifications,
-        private validations: ValidationsProvider,
-        private alert: AlertProvider
+        private alert: AlertProvider,
+        private modalController: ModalController
         ) {
             this.events.subscribe('scoreChanges', (score: number) => {
                 this.updateCurrentScore(score);
@@ -65,7 +63,7 @@ export class UserPage implements OnInit{
         console.log('refreshing scores...');
         const location = await this.storage.get('homeLocation');
         if(location) {
-            this.homeLocationDate = location.date;
+            this.ableToTrack = true;
             await this.scoreService.calculateAndStoreExpositionScores();
         }
         await this.fillScores();
@@ -242,60 +240,19 @@ export class UserPage implements OnInit{
         });
     }
 
-    async registerHomeHandler(radius) {
-        if(this.homeRadius !== undefined && this.validations.validateHomeRadius(radius)) {
-
-            this.scoreService.startScan().then(numberOfWifiNetworks => {
-                console.log('homeWifiNetworks set');
-                return this.storage.set('homeWifiNetworks', numberOfWifiNetworks);
-            }).then(() => {
-                console.log('homeRadius set');
-                return this.storage.set('homeRadius', this.homeRadius);
-            }).then(() => {
-                this.homeRadius = undefined;
-                console.log('getCurrentLocation called');
-                return this.location.getCurrentLocation();
-            }).then(location => {
-                console.log('getCurrentLocation resolved');
-                this.homeLocationDate = location.timestamp;
-
-                return this.storage.set('homeLocation', {
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                    date: location.timestamp
-                });
-            }).then(() => {
-                this.alert.saveHomeInfoSuccess();
-
-                this.api.postHomeInformation();
-                this.scoreService.startBackgroundGeolocation();
-                this.scoreService.calculateAndStoreExpositionScores();
-            }).catch(() => {
-                this.alert.saveHomeInfoError();
+    showHomeInfoModal() {
+        const modal = this.modalController.create(HomeInformationComponent);
+        modal.present();
+        modal.onWillDismiss(() => {
+            this.storage.get('homeLocation').then(location => {
+                if(location) {
+                    this.ableToTrack = true;
+                }
             });
-
-        } else {
-            this.alert.radiusError();
-        }
-    }
-
-    getDateFromeTimestamp(timestamp: number) {
-        const date = new Date(timestamp);
-        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+        });
     }
 
     scoreInformation(){
         this.alert.scoreInformation();
     }
-
-    infoHomeLocation() {
-        this.alert.infoHomeLocation();
-    }
-
-    onEnterKey(e) {
-        if (e.keyCode == 13) {
-            let activeElement = <HTMLElement>document.activeElement;
-            activeElement && activeElement.blur && activeElement.blur();
-        }
-      }
 }

@@ -87,12 +87,13 @@ export class ScoreProvider {
     startBackgroundGeolocation() {
         this.storage.get('homeLocation').then(location => {
             if(location) {
-                return this.storage.get('homeRadius');
+                return this.storage.get('homeArea');
             }
             return null;
-        }).then(radius => {
-            if(radius){
-                this.backgroundGeolocationConfig.distanceFilter = radius;
+        }).then(homeArea => {
+            if(homeArea){
+                const homeRadius = Math.sqrt(homeArea) / 2;
+                this.backgroundGeolocationConfig.distanceFilter = homeRadius;
                 this.backgroundGeolocation.configure(this.backgroundGeolocationConfig).then(() => {
                     console.log('Background geolocation => configured');
                     this.backgroundGeolocation

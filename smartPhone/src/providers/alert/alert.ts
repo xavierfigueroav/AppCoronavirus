@@ -59,6 +59,10 @@ export class AlertProvider {
         this.showOkButtonAlert('Datos actualizados.')
     }
 
+    showFieldValueErrorAlert() {
+        this.showOkButtonAlert('Campo vacío o incorrecto.')
+    }
+
     scoreInformation(){
         const alert = this.alertController.create({
             title: '<p align="center">Nivel de exposición</p>',
@@ -97,7 +101,7 @@ export class AlertProvider {
         }).present();
     }
 
-    saveHomeInfoSuccess(){
+    saveHomeInfoSuccessAlert(){
         this.alertController.create({
             title: 'La ubicación de tu casa fue almacenada exitosamente',
             subTitle: 'Esto nos permitirá brindarte información actualizada sobre tu nivel de exposición.',

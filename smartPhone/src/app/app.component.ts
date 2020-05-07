@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Platform, App, AlertController, LoadingController } from 'ionic-angular';
+import { Platform, App, AlertController, LoadingController, ModalCmp } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StorageProvider } from '../providers/storage/storage';
@@ -78,6 +78,8 @@ export class MyApp {
                         this.confirmBackButtonAction();
                     }
                 });
+            } else if(this.activePage.component === ModalCmp) {
+                this.activeNav.pop();
             } else {
                 this.app.getRootNav().setRoot(TabsPage, { 'tabIndex': 0 });
             }
