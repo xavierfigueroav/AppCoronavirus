@@ -9,6 +9,10 @@ import { LocalNotifications } from '@ionic-native/local-notifications';
 import * as plantilla from '../../assets/plantilla/plantilla.json';
 import { DatabaseProvider } from '../../providers/database/database';
 import { HomeInformationComponent } from '../../components/home-information/home-information';
+import { BackgroundMode } from '@ionic-native/background-mode';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
+import * as Constants from '../../data/constants';
+import { ValidationsProvider } from '../../providers/validations/validations';
 
 @Component({
 	selector: 'page-user',
@@ -38,7 +42,10 @@ export class UserPage implements OnInit{
         private ngZone: NgZone,
         private localNotifications: LocalNotifications,
         private alert: AlertProvider,
-        private modalController: ModalController
+        private modalController: ModalController,
+        private validations: ValidationsProvider,
+        private backgroundMode: BackgroundMode,
+        private httpClient: HttpClient
         ) {
             this.events.subscribe('scoreChanges', (score: number) => {
                 this.updateCurrentScore(score);
@@ -250,6 +257,112 @@ export class UserPage implements OnInit{
                 }
             });
         });
+    }
+
+    async registerHomeHandler(radius) {
+        if(this.homeRadius !== undefined && this.validations.validateHomeRadius(radius)) {
+
+            this.scoreService.startScan().then(numberOfWifiNetworks => {
+                console.log('homeWifiNetworks set');
+                return this.storage.set('homeWifiNetworks', numberOfWifiNetworks);
+            }).then(() => {
+                console.log('homeRadius set');
+                return this.storage.set('homeRadius', this.homeRadius);
+            }).then(() => {
+                this.homeRadius = undefined;
+                console.log('getCurrentLocation called');
+                return this.location.getCurrentLocation();
+            }).then(location => {
+                console.log('getCurrentLocation resolved');
+                this.homeLocationDate = location.timestamp;
+
+                return this.storage.set('homeLocation', {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                    date: location.timestamp
+                });
+            }).then(() => {
+                this.alert.saveHomeInfoSuccess();
+
+                this.showingForm = false;
+                this.api.postHomeInformation();
+                this.scoreService.startBackgroundGeolocation();
+                this.scoreService.calculateAndStoreExpositionScores();
+                document.addEventListener('deviceready', () => {
+                    this.backgroundMode.overrideBackButton();
+                    //this.backgroundMode.moveToForeground();
+                    console.log("///////////////////////////IS ENABLE: ",this.backgroundMode.isEnabled());
+                    if(this.backgroundMode.isEnabled){
+                        console.log("Inside listener enabled");
+                        this.backgroundMode.on('enable').subscribe(() => {
+                            console.log('enabled');
+                          });
+                        this.backgroundMode.on('activate').subscribe(() => {
+                            console.log('activated');
+                          });
+                        setInterval(() => {
+                            console.log("Inside listener interval");
+                            //FUNCTION
+                            const json = {
+                                "tabla": "integracion_score_diario",
+                                "valores": {score_0: 0.11},
+                                "condiciones": [
+                                    {
+                                        "columna": "telefono_id",
+                                        "comparador": "==",
+                                        "valor": "j3vcsg"
+                                    }
+                                ]
+                            };
+                            var data = JSON.stringify(json);
+                            const httpOptions = {
+                                headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+                            };
+
+                            this.httpClient.post(Constants.UPDATE_REGISTRY_URL, data, httpOptions)
+                            .toPromise().then((response: any) => {
+                                console.log('//////////PLUGIN RESPONSE', response); 
+                            }).catch(error => {
+                                console.log("/////////////Error when updating", error);
+                            });
+                        }, 10000);
+                    }
+                    // this.backgroundMode.on("activate").subscribe(() => {
+                    //     console.log("Inside listener enabled");
+                    //     setInterval(function () {
+                    //         console.log("Inside listener interval");
+                    //         //FUNCTION
+                    //         const json = {
+                    //             "tabla": "integracion_score_diario",
+                    //             "valores": {score_0: 0.11},
+                    //             "condiciones": [
+                    //                 {
+                    //                     "columna": "telefono_id",
+                    //                     "comparador": "==",
+                    //                     "valor": "j3vcsg"
+                    //                 }
+                    //             ]
+                    //         };
+                    //         var data = JSON.stringify(json);
+                    //         const httpOptions = {
+                    //             headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+                    //         };
+
+                    //         this.httpClient.post(Constants.UPDATE_REGISTRY_URL, data, httpOptions)
+                    //         .toPromise().then((response: any) => {
+                    //             console.log('//////////PLUGIN RESPONSE', response); 
+                    //         }).catch(error => {
+                    //             console.log("/////////////Error when updating", error);
+                    //         });
+                    //     }, 10000);
+                    // });  
+                        
+                    
+                }, false);
+            }).catch(() => {
+                this.alert.saveHomeInfoError();
+            });
+        }
     }
 
     scoreInformation(){
