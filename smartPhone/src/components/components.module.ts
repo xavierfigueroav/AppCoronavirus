@@ -7,21 +7,32 @@ import { TimeSeriesComparePlotComponent } from './time-series-compare-plot/time-
 import { BarPlotComponent } from './bar-plot/bar-plot';
 import { MapComponent } from './map/map';
 import { ScoreScaleComponent } from './score-scale/score-scale';
+import { HomeInformationComponent } from './home-information/home-information';
+
 @NgModule({
-	declarations: [TimeSeriesPlotComponent,
-    StatsSegmentComponent,
-    MapsSegmentComponent,
-    TimeSeriesComparePlotComponent,
-    BarPlotComponent,
-    MapComponent,
-    ScoreScaleComponent],
+	declarations: [
+        TimeSeriesPlotComponent,
+        StatsSegmentComponent,
+        MapsSegmentComponent,
+        TimeSeriesComparePlotComponent,
+        BarPlotComponent,
+        MapComponent,
+        ScoreScaleComponent,
+        HomeInformationComponent
+    ],
 	imports: [IonicModule],
-	exports: [TimeSeriesPlotComponent,
-    StatsSegmentComponent,
-    MapsSegmentComponent,
-    TimeSeriesComparePlotComponent,
-    BarPlotComponent,
-    MapComponent,
-    ScoreScaleComponent]
+	exports: [
+        TimeSeriesPlotComponent,
+        StatsSegmentComponent,
+        MapsSegmentComponent,
+        TimeSeriesComparePlotComponent,
+        BarPlotComponent,
+        MapComponent,
+        ScoreScaleComponent,
+        HomeInformationComponent
+    ],
+    entryComponents: [
+        HomeInformationComponent
+    ]
 })
 export class ComponentsModule {}

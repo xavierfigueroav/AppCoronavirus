@@ -96,7 +96,8 @@ export class APIProvider {
     async postHomeInformation() {
         const user = await this.storage.getUser();
         const homeLocation = await this.storage.get('homeLocation');
-        const homeRadius = await this.storage.get('homeRadius');
+        const homeArea = await this.storage.get('homeArea');
+        const homeRadius = Math.sqrt(homeArea) / 2;
         const scores = await this.database.getScores();
         // FIXME: Pass in current max distance and time to compare to previous days
         const maxDistanceAway = this.getMaxDistanceAway(scores);
@@ -193,6 +194,22 @@ export class APIProvider {
                 resolve(1);
             }).catch(error => {
                 if(error.status === 404) resolve(0);
+                reject(error);
+            });
+        });
+    }
+
+    getAreaByLocation(latitude: number, longitude: number) {
+        return new Promise<any>((resolve, reject) => {
+            const requestURL = `${Constants.GET_AREA_URL}/${longitude}/${latitude}`;
+            this.httpClient.get(requestURL).toPromise()
+            .then((response: any[]) => {
+                if(response.length > 0) {
+                    resolve(response[0].area);
+                }
+                resolve();
+            }).catch(error => {
+                console.log(error);
                 reject(error);
             });
         });

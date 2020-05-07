@@ -11,6 +11,7 @@ page-user {
     .circle {
         height: 250px;
         width: 250px;
+        padding: 0 20px 0 20px;
         background-color: #999999;
         border-radius: 200px 200px 200px 200px;
         -moz-border-radius: 200px 200px 200px 200px;
@@ -36,6 +37,11 @@ page-user {
 
     .red {
         background-color: #EF767A;
+    }
+
+    #landmark-container {
+        margin-top: 10px;
+        padding-top: 10px;
     }
 
     #score-bar {
@@ -205,14 +211,11 @@ page-user {
     #locationIconRed{
         color:#D32F2F;
         font-size: xxx-large;
-        margin-top: -5%;
-        margin-left: 7%;
     }
+
     #locationIconGreen{
         color: #50C878;
         font-size: xxx-large;
-        margin-top: -5%;
-        margin-left: 7%;
     }
 
     #radiusColumn{
