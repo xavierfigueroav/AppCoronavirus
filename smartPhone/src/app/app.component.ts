@@ -7,6 +7,7 @@ import { AuthPage } from '../pages/auth/auth';
 import { TabsPage } from '../pages/tabs/tabs';
 import { FormPage } from '../pages/form/form';
 import { UserPage } from '../pages/user/user';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 @Component({
     templateUrl: 'app.html'
@@ -25,12 +26,14 @@ export class MyApp {
         private splashScreen: SplashScreen,
         private alertController: AlertController,
         private app: App,
-        private loadingCtrl: LoadingController) {
+        private loadingCtrl: LoadingController,
+        private backgroundMode: BackgroundMode) {
         this.platform.ready().then(() => {
             const loader = this.loadingCtrl.create({
                 content: "Espere...",
             });
             loader.present();
+            this.backgroundMode.enable();
 
             this.platform.registerBackButtonAction(() => { this.handleBackButtonAction(); }, 1);
 

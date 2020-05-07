@@ -37,6 +37,7 @@ import { ValidationsProvider } from '../providers/validations/validations';
 import { AlertProvider } from '../providers/alert/alert';
 import { DatabaseProvider } from '../providers/database/database';
 import { StorageProvider } from '../providers/storage/storage';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 @NgModule({
   declarations: [
@@ -95,6 +96,7 @@ import { StorageProvider } from '../providers/storage/storage';
     DatabaseProvider,
     ValidationsProvider,
     StorageProvider,
+    BackgroundMode,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
