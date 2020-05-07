@@ -131,7 +131,8 @@
         "CONTENT_AUTHORITY": "$PACKAGE_NAME"
       },
       "cordova-sqlite-storage": {},
-      "cordova-plugin-googlemaps": {}
+      "cordova-plugin-googlemaps": {},
+      "cordova-plugin-background-mode": {}
     },
     "platforms": [
       "browser",
