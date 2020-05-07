@@ -10,8 +10,7 @@ import * as plantilla from '../../assets/plantilla/plantilla.json';
 import { DatabaseProvider } from '../../providers/database/database';
 import { HomeInformationComponent } from '../../components/home-information/home-information';
 import { BackgroundMode } from '@ionic-native/background-mode';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
-import * as Constants from '../../data/constants';
+import {  HttpClient } from '@angular/common/http';
 import { ValidationsProvider } from '../../providers/validations/validations';
 
 @Component({
