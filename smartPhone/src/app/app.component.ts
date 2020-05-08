@@ -71,7 +71,9 @@ export class MyApp {
         } else {
             this.activePage = this.activeNav.getActive();
             if(this.activePage.component === UserPage || this.activePage.component === AuthPage) {
-                this.platform.exitApp();
+                //this.platform.exitApp();
+                this.platform.pause;
+                this.backgroundMode.moveToBackground();
             } else if(this.activePage.component === FormPage){
                 this.storage.get('firstUseDate').then(firstUseDate => {
                     if(firstUseDate == null) {

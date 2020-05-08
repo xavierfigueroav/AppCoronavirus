@@ -80,10 +80,7 @@ export class HomeInformationComponent implements OnInit {
         await this.storage.set('homeArea', this.area);
 
         this.api.postHomeInformation();
-        const backgroundGeolocationStatus = await this.scoreService.backgroundGeolocation.checkStatus();
-        if (!backgroundGeolocationStatus.isRunning) {
-            this.scoreService.startBackgroundGeolocation();
-        }
+        this.scoreService.startBackgroundGeolocation();
         this.scoreService.calculateAndStoreExpositionScores();
 
         loader.dismiss();

@@ -12,6 +12,8 @@ import {
 import { Events } from 'ionic-angular';
 import { Encoding, LatLng, ILatLng } from "@ionic-native/google-maps";
 import { DatabaseProvider } from '../database/database';
+import { LocationProvider } from '../location/location';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 declare var WifiWizard2: any;
 
@@ -31,7 +33,9 @@ export class ScoreProvider {
         public backgroundGeolocation: BackgroundGeolocation,
         public database: DatabaseProvider,
         public api: APIProvider,
-        private events: Events
+        private events: Events,
+        private location: LocationProvider,
+        private backgroundMode: BackgroundMode
         ) {
         console.log('Hello ScoreProvider Provider');
         this.backgroundGeolocationConfig = {
@@ -90,26 +94,43 @@ export class ScoreProvider {
                 return this.storage.get('homeArea');
             }
             return null;
-        }).then(homeArea => {
+        }).then(async homeArea => {
             if(homeArea){
-                const homeRadius = Math.sqrt(homeArea) / 2;
-                this.backgroundGeolocationConfig.distanceFilter = homeRadius;
-                this.backgroundGeolocation.configure(this.backgroundGeolocationConfig).then(() => {
-                    console.log('Background geolocation => configured');
-                    this.backgroundGeolocation
-                    .on(BackgroundGeolocationEvents.location)
-                    .subscribe((location: BackgroundGeolocationResponse) => {
-                        console.log('Movement detected');
-                        this.locationHandler(location);
+                if(this.backgroundMode.isEnabled){
+                    this.backgroundMode.on('enable').subscribe(() => {
+                        console.log("IS ENABLE");
                     });
-                });
-                this.backgroundGeolocation.start();
-                console.log('Background geolocation => started');
+                    console.log("Inside listener enabled");
+                    this.backgroundMode.disableWebViewOptimizations();
+                    setInterval(async () => {
+                        console.log("Inside listener interval");
+                        //FUNCTION
+                        const geoloc = await this.location.getCurrentLocation();
+                        var location_obj = {"latitulde": geoloc.coords.latitude, 
+                                            "longitude":geoloc.coords.longitude, 
+                                            "time":geoloc.timestamp};
+                        console.log("//////////////////LOCATION OBJECT INTERVAL: ",location_obj);
+                        //this.locationHandler(location_obj);
+                    }, 10000);
+                }
+                // const homeRadius = Math.sqrt(homeArea) / 2;
+                // this.backgroundGeolocationConfig.distanceFilter = homeRadius;
+                // this.backgroundGeolocation.configure(this.backgroundGeolocationConfig).then(() => {
+                //     console.log('Background geolocation => configured');
+                //     this.backgroundGeolocation
+                //     .on(BackgroundGeolocationEvents.location)
+                //     .subscribe((location: BackgroundGeolocationResponse) => {
+                //         console.log('Movement detected');
+                //         this.locationHandler(location);
+                //     });
+                // });
+                // this.backgroundGeolocation.start();
+                // console.log('Background geolocation => started');
             }
         });
     }
 
-    async locationHandler(location: BackgroundGeolocationResponse){
+    async locationHandler(location){
         console.log('Background geolocation => location received');
 
         const distanceScore = await this.calculateDistanceScore(location);
