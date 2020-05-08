@@ -65,10 +65,8 @@ export class AlertProvider {
 
     scoreInformation(){
         const alert = this.alertController.create({
-            title: '<p align="center">Nivel de exposición</p>',
-            message: "<br>Los valores de exposición son calculados en base a información geoespacial disponible en un momento dado.</br>"+
-                      "No deben considerarse de ninguna manera información medica u oficial, solo una referencia del comportamiento "+
-                      "de movilidad propio.",
+            title: '<p align="center">Información de casa</p>',
+            message: "Toca el globo de ubicación que está debajo del círculo para registrar o actualizar la ubicación de tu casa y el tamaño del terreno. Esta información es necesaria para calcular tu nivel de exposición.",
             buttons: ['OK']
           });
           alert.present();
