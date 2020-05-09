@@ -203,6 +203,30 @@ export class APIProvider {
         });
     }
 
+    createResourceInDataset(dataset: string, name: string, resource: any) {
+        return new Promise<any>((resolve, reject) => {
+            const resourceString = JSON.stringify(resource, null, 2);
+            const resourceBlob = new Blob([resourceString], { type: 'application/json' });
+            const data = new FormData();
+            data.append('package_id', dataset);
+            data.append('format', 'JSON');
+            data.append('mimetype', 'application/json');
+            data.append('name', name);
+            data.append('upload', resourceBlob);
+            const httpOptions = {
+                headers: new HttpHeaders({
+                    'Authorization': Constants.API_KEY
+                })
+            };
+            this.httpClient.post(Constants.CREATE_RESOURCE_URL, data, httpOptions)
+            .toPromise().then(response => resolve(response))
+            .catch(error => {
+                console.log('[createResourceInDataset]', error);
+                reject(error);
+            });
+        });
+    }
+
     sendAppIdToEmail(cedula: string, emailAddress: string) {
         return new Promise<any>((resolve, reject) => {
             const data = this.generateSendAppIdToEmailBody(cedula, emailAddress);

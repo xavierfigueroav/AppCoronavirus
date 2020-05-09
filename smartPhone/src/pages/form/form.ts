@@ -4,14 +4,15 @@ import { StorageProvider } from '../../providers/storage/storage';
 import { Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { Diagnostic } from '@ionic-native/diagnostic';
-import { HTTP } from '@ionic-native/http';
-import { File } from '@ionic-native/file';
 import { TabsPage } from '../tabs/tabs';
+
 import uuid from 'uuid/v4';
+import * as moment from 'moment';
 
 import * as calculos from '../../assets/calculos/calculo.json';
 import * as plantilla from '../../assets/plantilla/plantilla.json';
 import { AlertProvider } from '../../providers/alert/alert';
+import { APIProvider } from '../../providers/api/api';
 
 @Component({
     selector: 'page-form',
@@ -50,10 +51,9 @@ export class FormPage {
         private locationAccuracy: LocationAccuracy,
         private loadingController: LoadingController,
         private navCtrl: NavController,
-        private http: HTTP,
         private app: App,
-        private file: File,
-        private alerts: AlertProvider) {
+        private alerts: AlertProvider,
+        private api: APIProvider) {
 
         this.loader = this.loadingController.create({
             content: 'Espere...',
@@ -475,7 +475,7 @@ export class FormPage {
         if(this.formChanged || this.isSavedForm) {
             const pendingForm = pendingForms[0];
             const id_dataset = pendingForm.id_dataset;
-            this.subirArchivo(pendingForm, id_dataset);
+            this.uploadForm(pendingForm, id_dataset);
         } else {
             this.app.getRootNav().setRoot(TabsPage);
             this.loader.dismiss();
@@ -487,47 +487,21 @@ export class FormPage {
         }
     }
 
-    subirArchivo(pendingForm: any, id_dataset: string) {
-        let fileName = 'AUTODIAGNÓSTICO';
-        if(pendingForm.formData.type === 'initial') {
-            fileName = 'DATOS-PERSONALES';
-        }
-
-        const formattedDate = this.obtenerFechaActual();
-        fileName = fileName + '_' + formattedDate + '.json';
-        const string_form = JSON.stringify(pendingForm, null, 2);
-
-        this.file.createFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', fileName, true).then(() => {
-            this.file.writeFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', fileName, string_form, {replace:true, append:false}).then((response) => {
-                const url = 'http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create';
-                const carpeta = this.file.externalApplicationStorageDirectory+'AppCoronavirus/';
-                const ruta_completa = carpeta + fileName;
-                console.log('RUTA ARCHIVO:', ruta_completa);
-
-                this.http.uploadFile(url, {package_id: id_dataset, name: fileName}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
-                    this.file.removeFile(carpeta, fileName).then(async () => {
-                        await this.storeDataAfterSend(pendingForm);
-                        this.app.getRootNav().setRoot(TabsPage);
-                        this.loader.dismiss();
-                        this.alerts.showFormSentAlert();
-                    }).catch(async () => {
-                        await this.storeDataAfterSend(pendingForm);
-                        this.app.getRootNav().setRoot(TabsPage);
-                        this.loader.dismiss();
-                        this.alerts.showFormSentAlert();
-                    });
-                }).catch(async error => {
-                    console.log(error);
-                    await this.setFirstUseDateIfAbsent();
-                    this.app.getRootNav().setRoot(TabsPage);
-                    this.loader.dismiss()
-                    this.alerts.showConnectionErrorAlert();
-                });
-            }).catch(error => {
-                console.log(error);
-            });
-        }).catch(error => {
+    uploadForm(pendingForm: any, id_dataset: string) {
+        let fileName = pendingForm.formData.type === 'initial' ? 'DATOS-PERSONALES' : 'AUTODIAGNÓSTICO';
+        const currentDate = moment().format('DD-MM-YYYY_HH-mm-ss');
+        fileName = `${fileName}_${currentDate}.json`;
+        this.api.createResourceInDataset(id_dataset, fileName, pendingForm).then(async() => {
+            await this.storeDataAfterSend(pendingForm);
+            this.app.getRootNav().setRoot(TabsPage);
+            this.loader.dismiss();
+            this.alerts.showFormSentAlert();
+        }).catch(async error => {
             console.log(error);
+            await this.setFirstUseDateIfAbsent();
+            this.app.getRootNav().setRoot(TabsPage);
+            this.loader.dismiss()
+            this.alerts.showConnectionErrorAlert();
         });
     }
 
@@ -558,43 +532,6 @@ export class FormPage {
         if(firstUseDate == null) {
             await this.storage.set('firstUseDate', new Date());
         }
-    }
-
-    obtenerFechaActual() {
-        const fecha_actual = new Date();
-
-        const dia = fecha_actual.getDate();
-        let dia_actual = dia.toString();
-        if(dia < 10) {
-            dia_actual = '0' + dia.toString();
-        }
-
-        const mes = Number(fecha_actual.getMonth()) + 1;
-        let mes_actual = mes.toString();
-        if(mes < 10) {
-            mes_actual = '0' + mes.toString();
-        }
-
-        const hora = fecha_actual.getHours();
-        let hora_actual = hora.toString();
-        if(hora < 10) {
-            hora_actual = '0' + hora.toString();
-        }
-
-        const minutos = fecha_actual.getMinutes();
-        let minutos_actual = minutos.toString();
-        if(minutos < 10) {
-            minutos_actual = '0' + minutos.toString();
-        }
-
-        const segundos = fecha_actual.getSeconds();
-        let segundos_actual = segundos.toString();
-        if(segundos < 10) {
-            segundos_actual = '0' + segundos.toString();
-        }
-
-        const fecha = dia_actual + '-' + mes_actual + '-' + fecha_actual.getFullYear() + '_' + hora_actual + '-'+ minutos_actual + '-' + segundos_actual;
-        return fecha;
     }
 
     saveCoordinates() {
