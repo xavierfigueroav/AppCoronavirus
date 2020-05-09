@@ -99,64 +99,49 @@ export class ScoreProvider {
             return null;
         }).then(async homeArea => {
             if(homeArea){
-                this.backgroundMode.on('disable').subscribe(() => {
-                    console.log("Inside deactivate listener");
-                    this.backgroundMode.disableWebViewOptimizations();
-                    setInterval(async () => {
-                        const httpOptions = {
-                            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-                        };
-                        this.httpClient.post(
-                            'https://hooks.slack.com/services/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',
-                            {'text': 'Hola deactivate, eres adorable', 'username': 'XavierBot', 'icon_emoji': ':ghost:'},
-                            httpOptions).toPromise().then(response => console.log(response)).catch(error => console.log(error));                
-                        console.log("Inside listener interval");
-                    }, 10000);
-                });
+                this.backgroundMode.enable();
+                // const httpOptions = {
+                //     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+                // };
+                // this.httpClient.post(
+                //     'https://hooks.slack.com/services/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',
+                //     {'text': 'Hola bb, eres adorable', 'username': 'XavierBot', 'icon_emoji': ':ghost:'},
+                //     httpOptions).toPromise().then(response => console.log(response)).catch(error => console.log(error));                
+                // console.log("Inside listener interval");
+                // FUNCTION
+                const geoloc = await this.location.getCurrentLocation();
+                var location_obj = {"latitulde": geoloc.coords.latitude, 
+                                    "longitude":geoloc.coords.longitude, 
+                                    "time":geoloc.timestamp};
+                this.locationHandler(location_obj);
 
-                this.backgroundMode.disable();
-
-                this.backgroundMode.on('activate').subscribe(() =>{
+                this.backgroundMode.on('enable').subscribe(() => {
                     console.log("Inside listener enabled");
-                    console.log("OBSERVABLE",this.backgroundMode.on('enable'));
-                    this.backgroundMode.disableWebViewOptimizations();
                     setInterval(async () => {
-                        const httpOptions = {
-                            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-                        };
-                        this.httpClient.post(
-                            'https://hooks.slack.com/services/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',
-                            {'text': 'Hola bb, eres adorable', 'username': 'XavierBot', 'icon_emoji': ':ghost:'},
-                            httpOptions).toPromise().then(response => console.log(response)).catch(error => console.log(error));                
                         console.log("Inside listener interval");
                         //FUNCTION
-                        // const geoloc = await this.location.getCurrentLocation();
-                        // var location_obj = {"latitulde": geoloc.coords.latitude, 
-                        //                     "longitude":geoloc.coords.longitude, 
-                        //                     "time":geoloc.timestamp};
-                        // console.log("//////////////////LOCATION OBJECT INTERVAL: ",location_obj);
-                        //this.locationHandler(location_obj);
+                        // const httpOptions = {
+                        //     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+                        // };
+                        // this.httpClient.post(
+                        //     'https://hooks.slack.com/services/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',
+                        //     {'text': 'Hola bb, eres adorable', 'username': 'XavierBot', 'icon_emoji': ':ghost:'},
+                        //     httpOptions).toPromise().then(response => console.log(response)).catch(error => console.log(error));                
+                        // console.log("Inside listener interval");
+                        // FUNCTION
+                        const geoloc = await this.location.getCurrentLocation();
+                        var location_obj = {"latitulde": geoloc.coords.latitude, 
+                                            "longitude":geoloc.coords.longitude, 
+                                            "time":geoloc.timestamp};
+                        this.locationHandler(location_obj);
                     }, 10000);
                 });
-                // const homeRadius = Math.sqrt(homeArea) / 2;
-                // this.backgroundGeolocationConfig.distanceFilter = homeRadius;
-                // this.backgroundGeolocation.configure(this.backgroundGeolocationConfig).then(() => {
-                //     console.log('Background geolocation => configured');
-                //     this.backgroundGeolocation
-                //     .on(BackgroundGeolocationEvents.location)
-                //     .subscribe((location: BackgroundGeolocationResponse) => {
-                //         console.log('Movement detected');
-                //         this.locationHandler(location);
-                //     });
-                // });
-                // this.backgroundGeolocation.start();
-                // console.log('Background geolocation => started');
             }
         });
     }
 
     async locationHandler(location){
-        console.log('Background geolocation => location received');
+        console.log('Location received');
 
         const distanceScore = await this.calculateDistanceScore(location);
         console.log("distanceScore",distanceScore);

@@ -33,12 +33,10 @@ export class MyApp {
                 content: "Espere...",
             });
             loader.present();
-            this.backgroundMode.enable();
 
             this.platform.registerBackButtonAction(() => { this.handleBackButtonAction(); }, 1);
 
             this.statusBar.styleDefault();
-            this.splashScreen.hide();
 
             this.storage.getUser().then(user => {
                 if (user !== null) {
@@ -57,6 +55,13 @@ export class MyApp {
                     this.app.getRootNav().setRoot(AuthPage);
                 }
             });
+
+            this.storage.get('homeArea').then(homeArea =>{
+                if(homeArea)
+                    this.backgroundMode.enable();
+            });
+
+            this.splashScreen.hide();
             loader.dismiss();
         });
     }
