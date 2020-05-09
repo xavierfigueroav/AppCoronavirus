@@ -33,6 +33,7 @@ export class MyApp {
                 content: "Espere...",
             });
             loader.present();
+            this.backgroundMode.enable();
 
             this.platform.registerBackButtonAction(() => { this.handleBackButtonAction(); }, 1);
 
