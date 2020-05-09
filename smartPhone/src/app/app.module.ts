@@ -37,6 +37,7 @@ import { ValidationsProvider } from '../providers/validations/validations';
 import { AlertProvider } from '../providers/alert/alert';
 import { DatabaseProvider } from '../providers/database/database';
 import { StorageProvider } from '../providers/storage/storage';
+import { AboutPage } from '../pages/about/about';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import { StorageProvider } from '../providers/storage/storage';
     TabsPage,
     ProfilePage,
     MedicalPage,
-    TestResultsPage
+    TestResultsPage,
+    AboutPage
   ],
   imports: [
     BrowserModule,
@@ -69,7 +71,8 @@ import { StorageProvider } from '../providers/storage/storage';
     TabsPage,
     ProfilePage,
     MedicalPage,
-    TestResultsPage
+    TestResultsPage,
+    AboutPage
   ],
   providers: [
     StatusBar,
