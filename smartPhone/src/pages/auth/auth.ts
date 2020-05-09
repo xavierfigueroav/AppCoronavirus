@@ -67,11 +67,14 @@ export class AuthPage {
 
         let datasetCreated: any;
         try {
-            datasetCreated = await this.api.createFormsDataSet(this.appPIN);
+            await this.api.getFormsDataset(this.appPIN);
         } catch {
-            loader.dismiss();
-            this.alerts.showConnectionErrorAlert();
-            return;
+            try {
+                datasetCreated = await this.api.createFormsDataSet(this.appPIN);
+            } catch {
+                this.alerts.showConnectionErrorAlert();
+                return;
+            }
         } finally {
             loader.dismiss();
         }
@@ -85,7 +88,7 @@ export class AuthPage {
             return;
         }
 
-        if(datasetCreated === 0) { // Already created
+        if(!datasetCreated) { // Already created
             this.app.getRootNav().setRoot(TabsPage);
             this.storage.get('firstUseDate').then(firstUseDate => {
                 if(firstUseDate == null) {

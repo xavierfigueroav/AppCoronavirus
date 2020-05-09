@@ -182,6 +182,27 @@ export class APIProvider {
         });
     }
 
+    getFormsDataset(datasetId: string | number) {
+        return new Promise<any>((resolve, reject) => {
+
+            const data = JSON.stringify({id: datasetId});
+            const httpOptions = {
+                headers: new HttpHeaders({
+                    'Content-Type':'application/json',
+                    'Authorization': Constants.API_KEY
+                })
+            };
+
+            this.httpClient.post(Constants.READ_DATASET_URL, data, httpOptions)
+            .toPromise().then(response => resolve(response))
+            .catch(error => {
+                console.log('[GET DATASET]', error);
+                reject(error);
+            });
+
+        });
+    }
+
     sendAppIdToEmail(cedula: string, emailAddress: string) {
         return new Promise<any>((resolve, reject) => {
             const data = this.generateSendAppIdToEmailBody(cedula, emailAddress);
