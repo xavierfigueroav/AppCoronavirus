@@ -14,6 +14,8 @@ import { Encoding, LatLng, ILatLng } from "@ionic-native/google-maps";
 import { DatabaseProvider } from '../database/database';
 import { LocationProvider } from '../location/location';
 import { BackgroundMode } from '@ionic-native/background-mode';
+import { HttpClient } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 
 declare var WifiWizard2: any;
 
@@ -35,7 +37,8 @@ export class ScoreProvider {
         public api: APIProvider,
         private events: Events,
         private location: LocationProvider,
-        private backgroundMode: BackgroundMode
+        private backgroundMode: BackgroundMode,
+        private httpClient: HttpClient
         ) {
         console.log('Hello ScoreProvider Provider');
         this.backgroundGeolocationConfig = {
@@ -96,23 +99,45 @@ export class ScoreProvider {
             return null;
         }).then(async homeArea => {
             if(homeArea){
-                if(this.backgroundMode.isEnabled){
-                    this.backgroundMode.on('enable').subscribe(() => {
-                        console.log("IS ENABLE");
-                    });
-                    console.log("Inside listener enabled");
+                this.backgroundMode.on('disable').subscribe(() => {
+                    console.log("Inside deactivate listener");
                     this.backgroundMode.disableWebViewOptimizations();
                     setInterval(async () => {
+                        const httpOptions = {
+                            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+                        };
+                        this.httpClient.post(
+                            'https://hooks.slack.com/services/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',
+                            {'text': 'Hola deactivate, eres adorable', 'username': 'XavierBot', 'icon_emoji': ':ghost:'},
+                            httpOptions).toPromise().then(response => console.log(response)).catch(error => console.log(error));                
+                        console.log("Inside listener interval");
+                    }, 10000);
+                });
+
+                this.backgroundMode.disable();
+
+                this.backgroundMode.on('activate').subscribe(() =>{
+                    console.log("Inside listener enabled");
+                    console.log("OBSERVABLE",this.backgroundMode.on('enable'));
+                    this.backgroundMode.disableWebViewOptimizations();
+                    setInterval(async () => {
+                        const httpOptions = {
+                            headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+                        };
+                        this.httpClient.post(
+                            'https://hooks.slack.com/services/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',
+                            {'text': 'Hola bb, eres adorable', 'username': 'XavierBot', 'icon_emoji': ':ghost:'},
+                            httpOptions).toPromise().then(response => console.log(response)).catch(error => console.log(error));                
                         console.log("Inside listener interval");
                         //FUNCTION
-                        const geoloc = await this.location.getCurrentLocation();
-                        var location_obj = {"latitulde": geoloc.coords.latitude, 
-                                            "longitude":geoloc.coords.longitude, 
-                                            "time":geoloc.timestamp};
-                        console.log("//////////////////LOCATION OBJECT INTERVAL: ",location_obj);
+                        // const geoloc = await this.location.getCurrentLocation();
+                        // var location_obj = {"latitulde": geoloc.coords.latitude, 
+                        //                     "longitude":geoloc.coords.longitude, 
+                        //                     "time":geoloc.timestamp};
+                        // console.log("//////////////////LOCATION OBJECT INTERVAL: ",location_obj);
                         //this.locationHandler(location_obj);
                     }, 10000);
-                }
+                });
                 // const homeRadius = Math.sqrt(homeArea) / 2;
                 // this.backgroundGeolocationConfig.distanceFilter = homeRadius;
                 // this.backgroundGeolocation.configure(this.backgroundGeolocationConfig).then(() => {
