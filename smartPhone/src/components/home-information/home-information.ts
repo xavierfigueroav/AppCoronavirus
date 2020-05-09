@@ -59,7 +59,7 @@ export class HomeInformationComponent implements OnInit {
             loader.dismiss();
         } catch {
             loader.dismiss();
-            this.alerts.showConnectionErrorAlert();
+            this.alerts.showAreaServerConnectionErrorAlert();
         }
     }
 

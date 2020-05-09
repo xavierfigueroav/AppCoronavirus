@@ -27,6 +27,10 @@ export class AlertProvider {
         this.showOkButtonAlert('Hubo un problema al comunicarse con el servidor. Por favor, verifique su conexión a internet o inténtelo más tarde.');
     }
 
+    showAreaServerConnectionErrorAlert() {
+        this.showOkButtonAlert('Hubo un problema al obtener el área del terreno desde el servidor. Por favor, verifica tu conexión a internet o ingrésala manualmente.');
+    }
+
     showInvalidAppIdAlert() {
         this.showOkButtonAlert('El código de app no es válido.');
     }
