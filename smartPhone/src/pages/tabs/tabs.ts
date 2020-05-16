@@ -18,15 +18,9 @@ export class TabsPage {
     selectedIndex: number;
 
     constructor(private navCtrl: NavController,
-        private navParams: NavParams,
-        private scoreService: ScoreProvider) {
+        private navParams: NavParams) {
 
         this.selectedIndex = this.navParams.get('tabIndex') || 0;
-        this.scoreService.backgroundGeolocation.checkStatus().then(status => {
-            if(!status.isRunning) {
-                this.scoreService.startBackgroundGeolocation();
-            }
-        });
     }
 
     goToForm() {

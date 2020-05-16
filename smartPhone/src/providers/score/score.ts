@@ -103,10 +103,10 @@ export class ScoreProvider {
                         this.locationHandler(location);
                     });
                 });
-                this.backgroundGeolocation.start();
                 console.log('Background geolocation => started');
             }
         });
+        this.backgroundGeolocation.start();
     }
 
     async locationHandler(location: BackgroundGeolocationResponse){
