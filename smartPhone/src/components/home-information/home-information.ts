@@ -26,7 +26,7 @@ export class HomeInformationComponent implements OnInit {
     constructor(
         private viewController: ViewController,
         private loadingController: LoadingController,
-        private scoreService: ScoreProvider,
+        private scoreProvider: ScoreProvider,
         private storage: StorageProvider,
         private location: LocationProvider,
         private api: APIProvider,
@@ -49,7 +49,7 @@ export class HomeInformationComponent implements OnInit {
             content: 'Obteniendo ubicación...',
         });
         loader.present();
-        this.homeWifiNetworks = await this.scoreService.startScan();
+        this.homeWifiNetworks = await this.scoreProvider.startScan();
         const location = await this.location.getCurrentLocation();
         this.latitude = location.coords.latitude;
         this.longitude = location.coords.longitude;
@@ -80,8 +80,9 @@ export class HomeInformationComponent implements OnInit {
         await this.storage.set('homeArea', this.area);
 
         this.api.postHomeInformation();
-        this.scoreService.startBackgroundGeolocation();
-        this.scoreService.calculateAndStoreExpositionScores();
+        this.scoreProvider.startOrReconfigureTracking();
+
+        this.scoreProvider.calculateAndStoreExpositionScores();
 
         loader.dismiss();
         this.viewController.dismiss();

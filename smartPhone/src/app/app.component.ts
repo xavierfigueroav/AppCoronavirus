@@ -7,6 +7,7 @@ import { AuthPage } from '../pages/auth/auth';
 import { TabsPage } from '../pages/tabs/tabs';
 import { FormPage } from '../pages/form/form';
 import { UserPage } from '../pages/user/user';
+import { ScoreProvider } from '../providers/score/score';
 
 @Component({
     templateUrl: 'app.html'
@@ -19,13 +20,14 @@ export class MyApp {
     backButtonAlertPresent: boolean;
 
     constructor(
-        private storage: StorageProvider,
         private platform: Platform,
         private statusBar: StatusBar,
         private splashScreen: SplashScreen,
         private alertController: AlertController,
         private app: App,
-        private loadingCtrl: LoadingController) {
+        private loadingCtrl: LoadingController,
+        private storage: StorageProvider,
+        private scoreProvider: ScoreProvider) {
         this.platform.ready().then(() => {
             const loader = this.loadingCtrl.create({
                 content: "Espere...",
@@ -47,6 +49,7 @@ export class MyApp {
                                 { 'formType': 'initial' }
                             );
                         } else {
+                            this.scoreProvider.restartTrackingIfKilled();
                             this.app.getRootNav().setRoot(TabsPage);
                         }
                     });
