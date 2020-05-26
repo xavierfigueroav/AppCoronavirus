@@ -35,82 +35,53 @@ export class ScoreProvider {
         ) {
         console.log('Hello ScoreProvider Provider');
         this.backgroundGeolocationConfig = {
-            desiredAccuracy: 10,
-            stationaryRadius: 20,
+            stationaryRadius: 1,
             distanceFilter: 1,
+            desiredAccuracy: 10,
             stopOnTerminate: false,
             startOnBoot : true,
-            notificationsEnabled: false,
             saveBatteryOnBackground: true,
-            interval: 300000
+            startForeground: true,
+            notificationTitle: 'Lava tus manos regularmente',
+            notificationText: 'Cuida de ti y de los que te rodean',
+            interval: 120000, // 2 minutes
         };
     }
 
-    async startScan(): Promise<number> {
-        let num_networks: number;
-        if (typeof WifiWizard2 !== 'undefined') {
-            console.log("WifiWizard2 loaded: ");
-            console.log(WifiWizard2);
-        } else {
-            console.warn('WifiWizard2 not loaded.');
+    async startOrReconfigureTracking() {
+        await this.configureTracking();
+        const backgroundGeolocationStatus = await this.backgroundGeolocation.checkStatus();
+        if(!backgroundGeolocationStatus.isRunning){
+            this.registerTrackingListeners();
+            this.backgroundGeolocation.start();
         }
-        await WifiWizard2.scan().then((wifiNetworks: any[]) => {
-            console.log("Inside Scan function");
-            for (let wifiNetwork of wifiNetworks) {
-                const level = wifiNetwork['level'];
-                const ssid = wifiNetwork['SSID'];
-                const timestamp = wifiNetwork['timestamp'];
-                console.log(`Level: ${level} SSID: ${ssid} Timestamp: ${timestamp}`);
-            }
-            num_networks = wifiNetworks.length;
-        }).catch((error: any) => {
-            console.log('ERROR SCAN', JSON.stringify(error));
-            num_networks = 0;
-        });
-
-        return num_networks;
     }
 
-
-    calculateExpositionScore(
-        distance_score: number,
-        wifi_score=1,
-        density_score=1,
-        time_score=1,
-        alpha=0.33,
-        beta=0.33,
-        theta=0.33): number{ //time given in minutes
-        const score = distance_score * ((alpha*wifi_score) + (beta*density_score) + (theta*time_score));
-        return Number(score.toFixed(2));
+    async configureTracking() {
+        const homeArea = await this.storage.get('homeArea');
+        const homeRadius = Math.sqrt(homeArea) / 2;
+        this.backgroundGeolocationConfig.distanceFilter = homeRadius;
+        this.backgroundGeolocationConfig.stationaryRadius = homeRadius;
+        this.backgroundGeolocation.configure(this.backgroundGeolocationConfig)
+        .then(() => console.log('Tracking configured'));
     }
 
-    startBackgroundGeolocation() {
-        this.storage.get('homeLocation').then(location => {
-            if(location) {
-                return this.storage.get('homeArea');
-            }
-            return null;
-        }).then(homeArea => {
-            if(homeArea){
-                const homeRadius = Math.sqrt(homeArea) / 2;
-                this.backgroundGeolocationConfig.distanceFilter = homeRadius;
-                this.backgroundGeolocation.configure(this.backgroundGeolocationConfig).then(() => {
-                    console.log('Background geolocation => configured');
-                    this.backgroundGeolocation
-                    .on(BackgroundGeolocationEvents.location)
-                    .subscribe((location: BackgroundGeolocationResponse) => {
-                        console.log('Movement detected');
-                        this.locationHandler(location);
-                    });
-                });
-                console.log('Background geolocation => started');
-            }
-        });
-        this.backgroundGeolocation.start();
+    registerTrackingListeners() {
+        console.log('Registering tracking listeners...');
+        this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
+        .subscribe(location => this.locationHandler(location));
+
+        this.backgroundGeolocation.on(BackgroundGeolocationEvents.stop)
+        .subscribe(() => console.log('TRACKING STOPPED!'));
+
+        this.backgroundGeolocation.on(BackgroundGeolocationEvents.error)
+        .subscribe(() => console.log('[ERROR] Tracking'));
     }
 
     async locationHandler(location: BackgroundGeolocationResponse){
-        console.log('Background geolocation => location received');
+        console.log('MOVEMENT DETECTED!');
+
+        await this.backgroundGeolocation.deleteLocation(location.id);
 
         const distanceScore = await this.calculateDistanceScore(location);
         console.log("distanceScore",distanceScore);
@@ -123,6 +94,38 @@ export class ScoreProvider {
         await this.database.addLocation(location.latitude, location.longitude, location.time, distanceScore.score, distanceScore.distance, timeScore.time, timeScore.score, wifiScore, populationDensityScore);
 
         this.calculateAndStoreExpositionScores();
+    }
+
+    async restartTrackingIfStopped() {
+        console.log('RESTARTING IF STOPPED...');
+        const homeArea = await this.storage.get('homeArea');
+        if(homeArea != null) {
+            await this.configureTracking();
+            this.backgroundGeolocation.start();
+        }
+    }
+
+    async restartTrackingIfKilled() {
+        console.log('RESTARTING IF KILLED...');
+        const homeArea = await this.storage.get('homeArea');
+        if(homeArea != null) {
+            await this.checkForPendingLocations();
+            this.backgroundGeolocation.stop();
+            this.registerTrackingListeners();
+            await this.configureTracking();
+            this.backgroundGeolocation.start();
+        }
+    }
+
+    async checkForPendingLocations() {
+        console.log('Checking for pending locations...');
+        const locations = await this.backgroundGeolocation.getLocations();
+        // FIXME: these scores might be calcultated upon
+        // inconsistent parameters: location and num of wifi networks
+        locations.forEach(async location => {
+            await this.backgroundGeolocation.deleteLocation(location.id);
+            await this.locationHandler(location);
+        });
     }
 
     async calculateAndStoreExpositionScores() {
@@ -255,6 +258,18 @@ export class ScoreProvider {
         return {score: completeScore, maxDistanceToHome: maxDistanceToHome, maxTimeAway: maxTimeAway};
     }
 
+    calculateExpositionScore(
+        distance_score: number,
+        wifi_score=1,
+        density_score=1,
+        time_score=1,
+        alpha=0.33,
+        beta=0.33,
+        theta=0.33): number{ //time given in minutes
+        const score = distance_score * ((alpha*wifi_score) + (beta*density_score) + (theta*time_score));
+        return Number(score.toFixed(2));
+    }
+
     calculateMaxDistanceToHome(scores: Map<any,any>): number{
         const distances = Array.from(scores.values()).map(value => value.distance_home);
         return Math.max(...distances);
@@ -272,6 +287,31 @@ export class ScoreProvider {
     async calculatePopulationDensityScore(){
         //TODO implement
         return 1;
+    }
+
+    async startScan(): Promise<number> {
+        let num_networks: number;
+        if (typeof WifiWizard2 !== 'undefined') {
+            console.log("WifiWizard2 loaded: ");
+            console.log(WifiWizard2);
+        } else {
+            console.warn('WifiWizard2 not loaded.');
+        }
+        await WifiWizard2.scan().then((wifiNetworks: any[]) => {
+            console.log("Inside Scan function");
+            for (let wifiNetwork of wifiNetworks) {
+                const level = wifiNetwork['level'];
+                const ssid = wifiNetwork['SSID'];
+                const timestamp = wifiNetwork['timestamp'];
+                console.log(`Level: ${level} SSID: ${ssid} Timestamp: ${timestamp}`);
+            }
+            num_networks = wifiNetworks.length;
+        }).catch((error: any) => {
+            console.log('ERROR SCAN', JSON.stringify(error));
+            num_networks = 0;
+        });
+
+        return num_networks;
     }
 
 }

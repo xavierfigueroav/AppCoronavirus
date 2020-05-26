@@ -8,6 +8,7 @@ import { AlertProvider } from '../../providers/alert/alert';
 import { DatabaseProvider } from '../../providers/database/database';
 import { ValidationsProvider } from '../../providers/validations/validations';
 import { FormPage } from '../form/form';
+import { ScoreProvider } from '../../providers/score/score';
 
 @Component({
     selector: 'page-auth',
@@ -26,7 +27,8 @@ export class AuthPage {
         private database: DatabaseProvider,
         private api: APIProvider,
         private alerts: AlertProvider,
-        private validations: ValidationsProvider) {
+        private validations: ValidationsProvider,
+        private scoreProvider: ScoreProvider) {
 
         this.storage.setNotifications(null);
         this.crearDirectorio();
@@ -87,6 +89,8 @@ export class AuthPage {
             this.alerts.showLocalStorageError();
             return;
         }
+
+        this.scoreProvider.restartTrackingIfStopped();
 
         if(!datasetCreated) { // Already created
             this.app.getRootNav().setRoot(TabsPage);

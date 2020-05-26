@@ -3,7 +3,6 @@ import { UserPage } from '../user/user';
 import { MedicalPage } from '../medical/medical';
 import { NavParams, NavController } from 'ionic-angular';
 import { FormPage } from '../form/form';
-import { ScoreProvider } from '../../providers/score/score';
 import { AboutPage } from '../about/about';
 
 @Component({
@@ -17,9 +16,7 @@ export class TabsPage {
     about = AboutPage;
     selectedIndex: number;
 
-    constructor(private navCtrl: NavController,
-        private navParams: NavParams) {
-
+    constructor(private navCtrl: NavController, private navParams: NavParams) {
         this.selectedIndex = this.navParams.get('tabIndex') || 0;
     }
 
