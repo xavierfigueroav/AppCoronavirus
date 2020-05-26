@@ -4,6 +4,7 @@ import { AuthPage } from '../auth/auth';
 import { StorageProvider } from '../../providers/storage/storage';
 import { TestResultsPage } from '../test-results/test-results';
 import { FormPage } from '../form/form';
+import { ScoreProvider } from '../../providers/score/score';
 
 /**
  * Generated class for the MedicalPage page.
@@ -20,15 +21,20 @@ export class MedicalPage {
 
     status: string;
 
-  constructor(private navCtrl: NavController, private app: App, private storage: StorageProvider) {
+  constructor(
+      private navCtrl: NavController,
+      private app: App,
+      private storage: StorageProvider,
+      private scoreProvider: ScoreProvider) {
   }
 
     ionViewDidLoad() {
         console.log('ionViewDidLoad MedicalPage');
     }
 
-    cerrarSesion() {
+    logout() {
         this.storage.setUser(null).then(() => {
+            this.scoreProvider.backgroundGeolocation.stop();
             this.app.getRootNav().setRoot(AuthPage);
         });
     }

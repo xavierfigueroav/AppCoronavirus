@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { App } from 'ionic-angular';
 import { StorageProvider } from '../../providers/storage/storage';
 import { AuthPage } from '../auth/auth';
+import { ScoreProvider } from '../../providers/score/score';
 
 /**
  * Generated class for the AboutPage page.
@@ -16,11 +17,15 @@ import { AuthPage } from '../auth/auth';
 })
 export class AboutPage {
 
-    constructor(private app: App, private storage: StorageProvider) {
+    constructor(
+        private app: App,
+        private storage: StorageProvider,
+        private scoreProvider: ScoreProvider) {
     }
 
-    cerrarSesion() {
+    logout() {
         this.storage.setUser(null).then(() => {
+            this.scoreProvider.backgroundGeolocation.stop();
             this.app.getRootNav().setRoot(AuthPage);
         });
     }

@@ -4,6 +4,7 @@ import { AuthPage } from '../auth/auth';
 import { StorageProvider } from '../../providers/storage/storage';
 
 import { Clipboard } from '@ionic-native/clipboard';
+import { ScoreProvider } from '../../providers/score/score';
 
 /**
  * Generated class for the ProfilePage page.
@@ -20,7 +21,11 @@ export class ProfilePage implements OnInit {
 
     hideCopyMessage: boolean;
 
-    constructor(private app: App, private storage: StorageProvider, private clipboard: Clipboard) {
+    constructor(
+        private app: App,
+        private storage: StorageProvider,
+        private clipboard: Clipboard,
+        private scoreProvider: ScoreProvider) {
     }
 
     ngOnInit() {
@@ -31,8 +36,9 @@ export class ProfilePage implements OnInit {
         console.log('ionViewDidLoad ProfilePage');
     }
 
-    cerrarSesion() {
+    logout() {
         this.storage.setUser(null).then(() => {
+            this.scoreProvider.backgroundGeolocation.stop();
             this.app.getRootNav().setRoot(AuthPage);
         });
     }

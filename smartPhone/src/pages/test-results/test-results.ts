@@ -4,6 +4,7 @@ import { AuthPage } from '../auth/auth';
 
 import { StorageProvider } from '../../providers/storage/storage';
 import { APIProvider } from '../../providers/api/api';
+import { ScoreProvider } from '../../providers/score/score';
 
 /**
  * Generated class for the TestResultsPage page.
@@ -25,7 +26,11 @@ export class TestResultsPage implements OnInit {
     testStatuses = { 0: 'EN PROCESO', 1: 'PROCESADA' };
     testResults = { 0: 'NEGATIVO', 1: 'POSITIVO', 2: 'INCONCLUSO', 3: 'PENDIENTE' };
 
-    constructor(private app: App, private storage: StorageProvider, private api: APIProvider) {
+    constructor(
+        private app: App,
+        private storage: StorageProvider,
+        private api: APIProvider,
+        private scoreProvider: ScoreProvider) {
     }
 
     ngOnInit() {
@@ -37,8 +42,9 @@ export class TestResultsPage implements OnInit {
         console.log('ionViewDidLoad TestResultsPage');
     }
 
-    cerrarSesion() {
+    logout() {
         this.storage.setUser(null).then(() => {
+            this.scoreProvider.backgroundGeolocation.stop();
             this.app.getRootNav().setRoot(AuthPage);
         });
     }
