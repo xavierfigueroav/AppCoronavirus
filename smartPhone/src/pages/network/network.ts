@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { App } from 'ionic-angular';
 import { StorageProvider } from '../../providers/storage/storage';
 import { AuthPage } from '../auth/auth';
+import { ScoreProvider } from '../../providers/score/score';
 
 
 @Component({
@@ -13,7 +14,10 @@ export class NetworkPage implements OnInit{
 
     people: any[];
 
-	constructor(private app: App, private storage: StorageProvider) {
+	constructor(
+        private app: App,
+        private storage: StorageProvider,
+        private scoreProvider: ScoreProvider) {
     }
 
     ngOnInit() {
@@ -24,8 +28,9 @@ export class NetworkPage implements OnInit{
 		console.log('ionViewDidLoad NetworkPage');
 	}
 
-	cerrarSesion() {
+	logout() {
         this.storage.setUser(null).then(() => {
+            this.scoreProvider.backgroundGeolocation.stop();
             this.app.getRootNav().setRoot(AuthPage);
         });
     }

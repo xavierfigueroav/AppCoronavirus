@@ -33,7 +33,7 @@ export class UserPage implements OnInit{
         private app: App,
         private storage: StorageProvider,
         private database: DatabaseProvider,
-        private scoreService: ScoreProvider,
+        private scoreProvider: ScoreProvider,
         private events: Events,
         private ngZone: NgZone,
         private localNotifications: LocalNotifications,
@@ -64,7 +64,7 @@ export class UserPage implements OnInit{
         const location = await this.storage.get('homeLocation');
         if(location) {
             this.ableToTrack = true;
-            await this.scoreService.calculateAndStoreExpositionScores();
+            await this.scoreProvider.calculateAndStoreExpositionScores();
         }
         await this.fillScores();
         refresher && refresher.complete();
@@ -234,8 +234,9 @@ export class UserPage implements OnInit{
         return this.colors[Math.ceil(score)];
     }
 
-	cerrarSesion() {
+	logout() {
         this.storage.setUser(null).then(() => {
+            this.scoreProvider.backgroundGeolocation.stop();
             this.app.getRootNav().setRoot(AuthPage);
         });
     }
