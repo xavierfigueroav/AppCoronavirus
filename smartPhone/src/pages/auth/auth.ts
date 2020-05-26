@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { LoadingController, AlertController, App } from 'ionic-angular';
 import { TabsPage } from '../tabs/tabs';
 import { StorageProvider } from '../../providers/storage/storage';
-import { File } from '@ionic-native/file';
 import { APIProvider } from '../../providers/api/api';
 import { AlertProvider } from '../../providers/alert/alert';
 import { DatabaseProvider } from '../../providers/database/database';
@@ -21,7 +20,6 @@ export class AuthPage {
     constructor(
         private app: App,
         private storage: StorageProvider,
-        private file: File,
         private loadingCtrl: LoadingController,
         private alertCtrl: AlertController,
         private database: DatabaseProvider,
@@ -31,21 +29,6 @@ export class AuthPage {
         private scoreProvider: ScoreProvider) {
 
         this.storage.setNotifications(null);
-        this.crearDirectorio();
-    }
-
-    crearDirectorio() {
-        this.file.checkDir(this.file.externalApplicationStorageDirectory, 'AppCoronavirus').then(response => {
-            console.log('EL DIRECTORIO YA EXISTE');
-            console.log(this.file.externalApplicationStorageDirectory + "/AppCoronavirus");
-        }).catch(() => {
-            console.log('EL DIRECTORIO NO EXISTE');
-            this.file.createDir(this.file.externalApplicationStorageDirectory, 'AppCoronavirus', false).then(response => {
-                console.log('SE CREÓ EL DIRECTORIO');
-            }).catch(() => {
-                console.log('ERROR AL CREAR EL DIRECTORIO');
-            });
-        });
     }
 
     async attemptAuth() {

@@ -5,6 +5,7 @@ export const OWNER_ORG = '0daa04ac-4b43-4316-bbf0-537cd5b881ac';
 
 export const CREATE_DATASET_URL = `${API_ENDPOINT}/api/3/action/package_create`;
 export const READ_DATASET_URL = `${API_ENDPOINT}/api/3/action/package_show`;
+export const CREATE_RESOURCE_URL = `${API_ENDPOINT}/api/3/action/resource_create`
 export const CREATE_REGISTRY_URL = `${API_ENDPOINT}/api/integracion/table/insert`;
 export const READ_REGISTRY_URL = `${API_ENDPOINT}/api/integracion/table/read`;
 export const UPDATE_REGISTRY_URL = `${API_ENDPOINT}/api/integracion/table/update`;
