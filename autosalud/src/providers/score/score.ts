@@ -9,7 +9,7 @@ import {
     BackgroundGeolocationEvents,
     BackgroundGeolocationConfig
 } from '@ionic-native/background-geolocation';
-import { Events } from 'ionic-angular';
+import { Events, LoadingController } from 'ionic-angular';
 import { Encoding, LatLng, ILatLng } from "@ionic-native/google-maps";
 import { DatabaseProvider } from '../database/database';
 
@@ -28,11 +28,12 @@ export class ScoreProvider {
 
     constructor(
         private storage: StorageProvider,
+        private loadingController: LoadingController,
         public backgroundGeolocation: BackgroundGeolocation,
-        public database: DatabaseProvider,
-        public api: APIProvider,
+        private database: DatabaseProvider,
+        private api: APIProvider,
         private events: Events
-        ) {
+    ) {
         console.log('Hello ScoreProvider Provider');
         this.backgroundGeolocationConfig = {
             stationaryRadius: 1,
@@ -80,20 +81,25 @@ export class ScoreProvider {
 
     async locationHandler(location: BackgroundGeolocationResponse){
         console.log('MOVEMENT DETECTED!');
+        try {
+            await this.backgroundGeolocation.deleteLocation(location.id);
+        } catch(error) {
+            console.log('[ERROR]', error);
+        } finally {
+            const distanceScore = await this.calculateDistanceScore(location);
+            console.log("distanceScore",distanceScore);
+            const wifiScore = await this.calculateWifiScore();
+            console.log("wifiScore",wifiScore);
+            const timeScore = this.calculateTimeScore();
+            console.log("timeScore",timeScore);
+            const populationDensityScore = await this.calculatePopulationDensityScore();
+            console.log("populationDensityScore",populationDensityScore);
+            await this.database.addLocation(location.latitude, location.longitude, new Date(location.time), distanceScore.score, distanceScore.distance, timeScore.time, timeScore.score, wifiScore, populationDensityScore);
 
-        await this.backgroundGeolocation.deleteLocation(location.id);
-
-        const distanceScore = await this.calculateDistanceScore(location);
-        console.log("distanceScore",distanceScore);
-        const wifiScore = await this.calculateWifiScore();
-        console.log("wifiScore",wifiScore);
-        const timeScore = this.calculateTimeScore();
-        console.log("timeScore",timeScore);
-        const populationDensityScore = await this.calculatePopulationDensityScore();
-        console.log("populationDensityScore",populationDensityScore);
-        await this.database.addLocation(location.latitude, location.longitude, location.time, distanceScore.score, distanceScore.distance, timeScore.time, timeScore.score, wifiScore, populationDensityScore);
-
-        this.calculateAndStoreExpositionScores();
+            await this.checkForPendingScores(location.time);
+            await this.calculateCurrentScore();
+            this.api.sendPendingScoresToServer();
+        }
     }
 
     async restartTrackingIfStopped() {
@@ -109,7 +115,16 @@ export class ScoreProvider {
         console.log('RESTARTING IF KILLED...');
         const homeArea = await this.storage.get('homeArea');
         if(homeArea != null) {
-            await this.checkForPendingLocations();
+            let loader: any;
+            try {
+                loader = this.loadingController.create({
+                    content: 'Calculando niveles de exposición durante tu ausencia...',
+                });
+                loader.present();
+                await this.checkForPendingLocations(); // IT MUST BE CALLED FIRST. DO NOT MOVE THIS LINE
+            } finally {
+                loader.dismiss();
+            }
             this.backgroundGeolocation.stop();
             this.registerTrackingListeners();
             await this.configureTracking();
@@ -122,61 +137,63 @@ export class ScoreProvider {
         const locations = await this.backgroundGeolocation.getLocations();
         // FIXME: these scores might be calcultated upon
         // inconsistent parameters: location and num of wifi networks
-        locations.forEach(async location => {
-            await this.backgroundGeolocation.deleteLocation(location.id);
+        for(const location of locations) {
             await this.locationHandler(location);
-        });
+        }
     }
 
-    async calculateAndStoreExpositionScores() {
+    async updateScores() {
+        const currentLocation = await this.backgroundGeolocation.getCurrentLocation();
+        await this.locationHandler(currentLocation);
+    }
 
+    async calculateCurrentScore() {
         const date = new Date();
         const currentHour = date.getHours();
-        await this.checkForPendingScores(Number(currentHour));
-        //calculate actual score
-        const score = await this.calculateCompleteScore(Number(currentHour + 1), false);
+        const score = await this.calculateCompleteScore(currentHour, date, false);
         await this.storage.setCurrentScore(score.completeScore);
         this.events.publish('scoreChanges', score.completeScore);
-        await this.api.sendPendingScoresToServer();
     }
 
-// Calculate and save the scores only for complete hours
-    async checkForPendingScores(currentHour: number){
+    // Calculate and save the scores only for complete hours
+    async checkForPendingScores(locationTime: number) {
+        console.log('checkForPendingScores...');
+        const locationDate = new Date(locationTime);
+        const locationHour = locationDate.getHours();
+        const lastScore = await this.database.getLastScore();
+        const lastScoreDate = lastScore ? new Date(lastScore.date) : locationDate;
+        let lastScoreHour = lastScore && lastScore.hour !== 23 ? lastScore.hour : -1;
 
-        if(currentHour == 0) currentHour = 24;
+        if(lastScoreDate.toLocaleDateString() < locationDate.toLocaleDateString()) { // on different days
+            for(let date = lastScoreDate; date <= locationDate; date.setDate(date.getDate() + 1)) {
+                const scoreDate = new Date(date);
+                const maxHour = date.toLocaleDateString() === locationDate.toLocaleDateString() ? locationHour : 24;
 
-        const data = await this.database.getScores();
-        if(data){
-            const lastScoreHour = data.length;
-            if(lastScoreHour > currentHour){ //  if we are in different days, delete previous scores and check again
-                await this.database.deleteScores();
-                await this.checkForPendingScores(currentHour);
-            } else{                          // if we are in the same day, only calculate the score from the last score hour to the current hour
-                for (let hour = lastScoreHour+1; hour < currentHour; hour++) {
-                    const score = await this.calculateCompleteScore(hour);
-                    await this.database.saveScore(
-                        score.completeScore,
-                        hour,
-                        score.maxDistanceToHome,
-                        score.maxTimeAway,
-                        score.encodedRoute
-                    );
-                    await this.database.deleteLocationsByHour(hour);
+                for(let hour = lastScoreHour + 1; hour < maxHour; hour++) {
+                    await this.calculatePendingScore(hour, scoreDate);
+                }
+                lastScoreHour = -1;
+            }
+        } else {
+            if (lastScoreHour + 1 < locationHour) {
+                for (let hour = lastScoreHour + 1; hour < locationHour; hour++) {
+                    await this.calculatePendingScore(hour, locationDate);
                 }
             }
-        } else{   //there aren't scores yet, calculate all scores until the current hour
-            for (let hour = 1; hour < currentHour; hour++) {
-                const score = await this.calculateCompleteScore(hour);
-                await this.database.saveScore(
-                    score.completeScore,
-                    hour,
-                    score.maxDistanceToHome,
-                    score.maxTimeAway,
-                    score.encodedRoute
-                );
-                await this.database.deleteLocationsByHour(hour);
-            }
         }
+    }
+
+    async calculatePendingScore(hour: number, scoreDate: Date) {
+        const score = await this.calculateCompleteScore(hour, scoreDate);
+        await this.database.saveScore(
+            score.completeScore,
+            scoreDate,
+            hour,
+            score.maxDistanceToHome,
+            score.maxTimeAway,
+            score.encodedRoute
+        );
+        await this.database.deleteLocationsByHourAndDate(hour, scoreDate);
     }
 
     async getParameters() : Promise<{}>{
@@ -203,8 +220,8 @@ export class ScoreProvider {
         };
     }
 
-    async calculateCompleteScore(hour: number, full = true): Promise< {completeScore: number, maxDistanceToHome: number, maxTimeAway: number, encodedRoute: string}>{
-        let locationsByHour = await this.database.getLocationByHour(hour);
+    async calculateCompleteScore(hour: number, scoreDate: Date, full = true): Promise< {completeScore: number, maxDistanceToHome: number, maxTimeAway: number, encodedRoute: string}>{
+        let locationsByHour = await this.database.getLocationsByHourAndDate(hour, scoreDate);
         const lastElement = locationsByHour[locationsByHour.length - 1];
         locationsByHour = full ? locationsByHour : lastElement ? [lastElement] : [];
         const completeScore = await this.calculateCompleteExposition(locationsByHour);
@@ -245,7 +262,7 @@ export class ScoreProvider {
         var scores: number[] = [];
         var maxDistanceToHome = 0;
         var maxTimeAway = 0;
-        var completeScore = -1;
+        var completeScore = 1;
 
         if(locations !== undefined && locations.length > 0){
             locations.forEach((location) =>{
@@ -314,4 +331,14 @@ export class ScoreProvider {
         return num_networks;
     }
 
+    async checkforInestimableScores(){
+        const scores = await this.database.getScores();
+        if(scores.length === 0){
+            const date = new Date();
+            const currentHour = date.getHours();
+            for (let hour = 0; hour < currentHour; hour++) {
+                this.database.saveScore(-1, date, hour, 0, 0, '');
+            }
+        }
+    }
 }

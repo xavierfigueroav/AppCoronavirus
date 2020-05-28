@@ -36,7 +36,7 @@ export class DatabaseProvider {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             app_id TEXT,
             score FLOAT,
-            time INTEGER,
+            date TEXT,
             hour NUMBER,
             max_distance_home FLOAT,
             max_time_away FLOAT,
@@ -49,7 +49,8 @@ export class DatabaseProvider {
             app_id TEXT,
             latitude FLOAT,
             longitude FLOAT,
-            time INTEGER,
+            date TEXT,
+            hour INTEGER,
             distance_score FLOAT,
             time_score FLOAT,
             wifi_score FLOAT,
@@ -87,17 +88,58 @@ export class DatabaseProvider {
         });
     }
 
+    async getPendingScores(){
+        const appId = await this.storage.getUser();
+        return this.isReady().then(async () => {
+            return this.database.executeSql(`SELECT * from score WHERE app_id = '${appId}' AND status = 'PENDING';`, []).then(data => {
+                let lists = [];
+                for(let i = 0; i < data.rows.length; i++){
+                    lists.push(data.rows.item(i));
+                }
+                return lists;
+            });
+        });
+    }
+
+    async getTodayScores(){
+        const appId = await this.storage.getUser();
+        const date = new Date().toLocaleDateString();
+        return this.isReady().then(async () => {
+            return this.database.executeSql(`SELECT * from score WHERE app_id = '${appId}' AND date = '${date}' ORDER BY hour ASC;`, []).then(data => {
+                let lists = [];
+                for(let i = 0; i < data.rows.length; i++){
+                    lists.push(data.rows.item(i));
+                }
+                return lists;
+            });
+        });
+    }
+
+    async getLastScore(){
+        const appId = await this.storage.getUser();
+        return this.isReady().then(async () => {
+            return this.database.executeSql(`SELECT * FROM score WHERE app_id = '${appId}' ORDER BY id DESC LIMIT 1;`, []).then(data => {
+                if(data.rows.length){
+                    return data.rows.item(0);
+                }
+                return null;
+            });
+        });
+    }
+
     async saveScore(
         score: number,
+        date: Date,
         hour: number,
         maxDistanceHome: number,
         maxTimeAway: number,
         encodedRoute: string
     ){
         const appId = await this.storage.getUser();
+        const dateString = date.toLocaleDateString();
         return this.isReady().then(async () => {
-            return this.database.executeSql(`INSERT INTO score(app_id,score,hour,max_distance_home,max_time_away,encoded_route)
-            VALUES ('${appId}','${score}','${hour}','${maxDistanceHome}','${maxTimeAway}','${encodedRoute}');`, {}).then(result => {
+            return this.database.executeSql(`INSERT INTO score(app_id,score,date,hour,max_distance_home,max_time_away,encoded_route)
+            VALUES ('${appId}','${score}','${dateString}','${hour}','${maxDistanceHome}','${maxTimeAway}','${encodedRoute}');`, {}).then(result => {
                 if(result.insertId){
                     return this.getScore(result.insertId);
                 }
@@ -144,13 +186,13 @@ export class DatabaseProvider {
         });
     }
 
-    async addLocation(latitude: number, longitude: number, time: number, distanceScore: number, distanceHome: number, timeAway: number, timeScore: number, wifiScore: number, populationDensity: number){
-        const date = new Date(time);
+    async addLocation(latitude: number, longitude: number, date: Date, distanceScore: number, distanceHome: number, timeAway: number, timeScore: number, wifiScore: number, populationDensity: number){
         const hour = date.getHours();
+        const dateString = date.toLocaleDateString();
         const appId = await this.storage.getUser();
         return this.isReady().then(async () => {
-            return this.database.executeSql(`INSERT INTO location(app_id,latitude,longitude,time,distance_score,wifi_score,distance_home,time_away,time_score,population_density)
-            VALUES ('${appId}','${latitude}','${longitude}','${hour}','${distanceScore}','${wifiScore}','${distanceHome}','${timeScore}','${timeAway}','${populationDensity}');`, {}).then(result => {
+            return this.database.executeSql(`INSERT INTO location(app_id,latitude,longitude,date,hour,distance_score,wifi_score,distance_home,time_away,time_score,population_density)
+            VALUES ('${appId}','${latitude}','${longitude}','${dateString}','${hour}','${distanceScore}','${wifiScore}','${distanceHome}','${timeScore}','${timeAway}','${populationDensity}');`, {}).then(result => {
                 if(result.insertId){
                     return this.getScore(result.insertId);
                 }
@@ -177,12 +219,11 @@ export class DatabaseProvider {
         });
     }
 
-    async deleteLocationsByHour(time: number){
-        const date = new Date(time);
-        const hour = date.getHours();
+    async deleteLocationsByHourAndDate(hour: number, date: Date){
         const appId = await this.storage.getUser();
+        const dateString = date.toLocaleDateString();
         return this.isReady().then(() => {
-            return this.database.executeSql(`DELETE FROM location WHERE time = ${hour} AND app_id = '${appId}';`, []);
+            return this.database.executeSql(`DELETE FROM location WHERE hour = ${hour} AND date = '${dateString}' AND app_id = '${appId}';`, []);
         });
     }
 
@@ -198,10 +239,11 @@ export class DatabaseProvider {
         });
     }
 
-    async getLocationByHour(hour: number){
+    async getLocationsByHourAndDate(hour: number, date: Date){
         const appId = await this.storage.getUser();
+        const dateString = date.toLocaleDateString();
         return this.isReady().then(async () => {
-            return this.database.executeSql(`SELECT * FROM location WHERE time = '${hour-1}' AND app_id = '${appId}';` , []).then(data => {
+            return this.database.executeSql(`SELECT * FROM location WHERE hour = '${hour}' AND date = '${dateString}' AND app_id = '${appId}' ORDER BY id ASC;` , []).then(data => {
                 const locations = [];
                 for(let i = 0; i < data.rows.length; i++){
                     locations.push(data.rows.item(i));
