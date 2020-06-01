@@ -65,9 +65,12 @@ export class UserPage implements OnInit{
 
     async refreshScores(refresher = undefined) {
         console.log('refreshing scores...');
-        const location = await this.storage.get('homeArea');
-        if(location) {
+        const homeArea = await this.storage.get('homeArea');
+        if(homeArea) {
             this.ableToTrack = true;
+            const currentScore = await this.storage.getCurrentScore();
+            this.updateCurrentScore(currentScore);
+            this.fillScores();
             await this.scoreProvider.updateScores();
         }
         await this.fillScores();

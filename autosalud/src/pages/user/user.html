@@ -28,7 +28,7 @@
                     'orange': currentScore > 1 && currentScore <= 2,
                     'red': currentScore > 2 && currentScore <= 3
                 }">
-                    <span class="circle-text" *ngIf="currentScore === undefined">Registra ubicación de casa<br />⬇</span>
+                    <span class="circle-text" *ngIf="currentScore == undefined">Registra ubicación de casa<br />⬇</span>
                     <span class="circle-text" *ngIf="currentScore <= 1">Bajo</span>
                     <span class="circle-text" *ngIf="currentScore > 1 && currentScore <= 2">Medio</span>
                     <span class="circle-text" *ngIf="currentScore > 2 && currentScore <= 3">Alto</span>
