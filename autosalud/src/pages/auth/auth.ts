@@ -83,7 +83,7 @@ export class AuthPage {
 
         try {
             await this.storeUser();
-            await this.checkforInestimableScores();
+            await this.scoreProvider.checkforInestimableScores();
         } catch {
             loader.dismiss();
             this.alerts.showLocalStorageError();
@@ -108,18 +108,6 @@ export class AuthPage {
         await this.storage.setDatasetId(this.appPIN);
         await this.storage.setUser(this.appPIN);
         await this.storage.setUserData(this.appPIN);
-    }
-
-    async checkforInestimableScores(){
-        const scores = await this.database.getScores();
-        if(scores.length === 0){
-            const date = new Date();
-            let currentHour = date.getHours();
-            currentHour = currentHour === 0 ? 24 : currentHour;
-            for (let hour = 1; hour < currentHour; hour++) {
-                this.database.saveScore(-1, hour, 0, 0, '');
-            }
-        }
     }
 
     passwordRecover(){

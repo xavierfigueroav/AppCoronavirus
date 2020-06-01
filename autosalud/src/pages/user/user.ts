@@ -61,10 +61,10 @@ export class UserPage implements OnInit{
 
     async refreshScores(refresher = undefined) {
         console.log('refreshing scores...');
-        const location = await this.storage.get('homeLocation');
+        const location = await this.storage.get('homeArea');
         if(location) {
             this.ableToTrack = true;
-            await this.scoreProvider.calculateAndStoreExpositionScores();
+            await this.scoreProvider.updateScores();
         }
         await this.fillScores();
         refresher && refresher.complete();
@@ -196,14 +196,14 @@ export class UserPage implements OnInit{
     }
 
     async fillScores() {
-        const scores = await this.database.getScores();
+        const scores = await this.database.getTodayScores();
         scores.forEach(score => {
             score.color = this.getColorByScore(score.score);
         });
 
         let scoresToShow = scores;
 
-        for(let i = scoresToShow.length + 1; i < 25; i++){
+        for(let i = scoresToShow.length; i < 24; i++){
             const missingScore = {'hour': i, 'score': -1};
             missingScore['color'] = this.getColorByScore(missingScore.score);
             scoresToShow.push(missingScore);

@@ -26,26 +26,26 @@ export class APIProvider {
     }
 
     async sendPendingScoresToServer(){
-        const scores = await this.database.getScores();
-        const pendingScores = [];
+        const scores = await this.database.getPendingScores();
+        const scoresByDate = {};
         scores.forEach(score => {
-            if(score.status === 'PENDING' && score.score !== -1){
-                if(score.hour === 24 ) score.hour = 0;
-                pendingScores.push(score);
+            if(score.date in scoresByDate) {
+                scoresByDate[score.date].push(score);
+            } else {
+                scoresByDate[score.date] = [score];
             }
         });
 
-        if(pendingScores.length > 0) {
+        for(const scoreDate of Object.keys(scoresByDate)) {
+            const scores = scoresByDate[scoreDate];
             const user = await this.storage.getUser();
-            // FIXME: Get date from scores table in database
-            const date = this.getCurrentStringDate();
-            await this.sendPostRequest(pendingScores, user, date);
+            const date = this.formatStringDate(scoreDate);
+            await this.sendPostRequest(scores, user, date);
         }
     }
 
-    async sendPostRequest(pendingScores: any[], phone_id: string | number, datetime: string){
-        console.log('Sending cores');
-        const data = this.generateUpdateScoreBody(pendingScores, phone_id, datetime);
+    async sendPostRequest(pendingScores: any[], phone_id: string | number, date: string){
+        const data = this.generateUpdateScoreBody(pendingScores, phone_id, date);
         const httpOptions = {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         };
@@ -65,11 +65,11 @@ export class APIProvider {
                 });
 
             } else {
-                const data = this.generateInsertScoreBody(phone_id, datetime);
+                const data = this.generateInsertScoreBody(phone_id, date);
                 this.httpClient.post(Constants.CREATE_REGISTRY_URL, data, httpOptions)
                 .toPromise().then(response => {
                     console.log('SUCCESS CREATE', response);
-                    this.sendPostRequest(pendingScores, phone_id, datetime);
+                    this.sendPostRequest(pendingScores, phone_id, date);
                 }).catch(error => {
                     console.log('error when creating scores', error);
                 });
@@ -254,11 +254,12 @@ export class APIProvider {
         return JSON.stringify(data);
     }
 
-    generateUpdateScoreBody(pendingScores: any[], phone_id: string | number, datetime: string){
+    generateUpdateScoreBody(pendingScores: any[], phone_id: string | number, date: string){
         const values = {};
         pendingScores.forEach(score => {
             values[`score_${score.hour}`] = score.score;
         });
+        values['dia'] = date;
         values['gps_point'] = this.joinEncodedRoutes(pendingScores);
         const data = {
             "tabla": "integracion_score_diario",
@@ -285,13 +286,13 @@ export class APIProvider {
         return Encoding.encodePath(points);
     }
 
-    generateInsertScoreBody(phone_id: string | number, datetime: string){
+    generateInsertScoreBody(phone_id: string | number, date: string){
         const data = {
             "tabla": "integracion_score_diario",
             "datos": [
                 {
                     "telefono_id": phone_id,
-                    "dia": datetime
+                    "dia": date
                 }
             ]
         };
@@ -396,6 +397,10 @@ export class APIProvider {
             }
         });
         return maxTimeAway;
+    }
+
+    formatStringDate(date: string) {
+        return moment(date, 'M/DD/YYYY').startOf('day').format('YYYY-MM-DD hh:mm:ss');
     }
 
     getCurrentStringDate() {
