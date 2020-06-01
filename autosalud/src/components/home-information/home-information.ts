@@ -36,8 +36,10 @@ export class HomeInformationComponent implements OnInit {
 
     ngOnInit() {
         this.storage.get('homeLocation').then(homeLocation => {
-            this.latitude = homeLocation.latitude;
-            this.longitude = homeLocation.longitude;
+            if(homeLocation) {
+                this.latitude = homeLocation.latitude;
+                this.longitude = homeLocation.longitude;
+            }
             return this.storage.get('homeArea');
         }).then(homeArea => {
             this.area = homeArea;
@@ -49,10 +51,20 @@ export class HomeInformationComponent implements OnInit {
             content: 'Obteniendo ubicación...',
         });
         loader.present();
-        this.homeWifiNetworks = await this.scoreProvider.startScan();
-        const location = await this.location.getCurrentLocation();
+
+        let location: any;
+        try {
+            location = await this.location.getCurrentLocation();
+        } catch {
+            loader.dismiss();
+            this.alerts.showLocationPermissionErrorAlert();
+            return;
+        }
         this.latitude = location.coords.latitude;
         this.longitude = location.coords.longitude;
+
+        this.homeWifiNetworks = await this.scoreProvider.startScan();
+
         try {
             const homeArea = await this.api.getAreaByLocation(this.latitude, this.longitude);
             this.area = Math.round(homeArea);

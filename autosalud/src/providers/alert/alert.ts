@@ -27,6 +27,10 @@ export class AlertProvider {
         this.showOkButtonAlert('Hubo un problema al comunicarse con el servidor. Por favor, verifique su conexión a internet o inténtelo más tarde.');
     }
 
+    showLocationPermissionErrorAlert() {
+        this.showOkButtonAlert('Hubo un problema al obtener tu ubicación. Verifica que tengas activado el GPS, inténtalo de nuevo y asegúrate otorgarnos permiso para usarlo.');
+    }
+
     showAreaServerConnectionErrorAlert() {
         this.showOkButtonAlert('Hubo un problema al obtener el área del terreno desde el servidor. Por favor, verifica tu conexión a internet o ingrésala manualmente.');
     }
