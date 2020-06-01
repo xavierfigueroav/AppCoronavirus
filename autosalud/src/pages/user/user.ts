@@ -42,7 +42,6 @@ export class UserPage implements OnInit{
         ) {
             this.events.subscribe('scoreChanges', (score: number) => {
                 this.updateCurrentScore(score);
-                this.updateCurrentScoreColor(score);
                 this.fillScores();
             });
 
@@ -52,6 +51,11 @@ export class UserPage implements OnInit{
     ngOnInit() {
         console.log('ngOnInit UserPage');
         this.colors = {'1': '#49BEAA', '2': '#EEB868', '3': '#EF767A', '-1': '#999999'};
+        const scores = [];
+        for(let i = 0; i < 24; i++) {
+            scores.push({ color: '#999999' });
+        }
+        this.scores = scores; // Default score bar while waiting for stored scores
     }
 
     ionViewWillEnter() {
@@ -215,12 +219,7 @@ export class UserPage implements OnInit{
     updateCurrentScore(score: number) {
         this.ngZone.run(() => {
             this.currentScore = score || -1;
-        });
-    }
-
-    updateCurrentScoreColor(score: number) {
-        this.ngZone.run(() => {
-            this.currentScoreColor = this.getColorByScore(score);
+            this.currentScoreColor = this.getColorByScore(this.currentScore);
         });
     }
 
