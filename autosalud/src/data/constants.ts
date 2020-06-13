@@ -1,5 +1,5 @@
 
-const API_ENDPOINT = 'http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000';
+const API_ENDPOINT = 'http://3.22.195.65:5000';
 export const API_KEY = '491c5713-dd3e-4dda-adda-e36a95d7af77';
 export const OWNER_ORG = '0daa04ac-4b43-4316-bbf0-537cd5b881ac';
 
