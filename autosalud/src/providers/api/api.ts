@@ -26,9 +26,9 @@ export class APIProvider {
     }
 
     async sendPendingScoresToServer(){
-        const scores = await this.database.getPendingScores();
+        const pendingScores = await this.database.getPendingScores();
         const scoresByDate = {};
-        scores.forEach(score => {
+        pendingScores.forEach(score => {
             if(score.date in scoresByDate) {
                 scoresByDate[score.date].push(score);
             } else {
@@ -39,13 +39,12 @@ export class APIProvider {
         for(const scoreDate of Object.keys(scoresByDate)) {
             const scores = scoresByDate[scoreDate];
             const user = await this.storage.getUser();
-            const date = this.formatStringDate(scoreDate);
-            await this.sendPostRequest(scores, user, date);
+            await this.sendPostRequest(scores, user, scoreDate);
         }
     }
 
     async sendPostRequest(pendingScores: any[], phone_id: string | number, date: string){
-        const data = this.generateUpdateScoreBody(pendingScores, phone_id, date);
+        const data = await this.generateUpdateScoreBody(pendingScores, phone_id, date);
         const httpOptions = {
             headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         };
@@ -254,32 +253,39 @@ export class APIProvider {
         return JSON.stringify(data);
     }
 
-    generateUpdateScoreBody(pendingScores: any[], phone_id: string | number, date: string){
+    async generateUpdateScoreBody(pendingScores: any[], phone_id: string | number, date: string){
         const values = {};
         pendingScores.forEach(score => {
             values[`score_${score.hour}`] = score.score;
         });
-        values['dia'] = date;
-        values['gps_point'] = this.joinEncodedRoutes(pendingScores);
+        values['gps_point'] = await this.getEncodedRoutesByDate(date);
         const data = {
             "tabla": "integracion_score_diario",
+            "operador": "and",
             "valores": values,
             "condiciones": [
                 {
                     "columna": "telefono_id",
                     "comparador": "==",
                     "valor": phone_id
+                },
+                {
+                    "columna": "dia",
+                    "comparador": "==",
+                    "valor": this.formatStringDate(date)
                 }
             ]
         };
         return JSON.stringify(data);
     }
 
-    joinEncodedRoutes(pendingScores: any[]) {
+    async getEncodedRoutesByDate(date: string) {
+        const scores = await this.database.getScoresByDate(date);
+        const routes = scores.map(score => score.encoded_route);
         const points = [];
-        pendingScores.forEach(score => {
-            if(score.encoded_route) {
-                const decoded = Encoding.decodePath(score.encoded_route);
+        routes.forEach(route => {
+            if(route) {
+                const decoded = Encoding.decodePath(route);
                 points.push(...decoded);
             }
         });
@@ -292,7 +298,7 @@ export class APIProvider {
             "datos": [
                 {
                     "telefono_id": phone_id,
-                    "dia": date
+                    "dia": this.formatStringDate(date)
                 }
             ]
         };

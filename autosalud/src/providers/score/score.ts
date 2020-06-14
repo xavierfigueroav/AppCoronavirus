@@ -162,7 +162,7 @@ export class ScoreProvider {
         const locationHour = locationDate.getHours();
         const lastScore = await this.database.getLastScore();
         const lastScoreDate = lastScore ? new Date(lastScore.date) : locationDate;
-        let lastScoreHour = lastScore && lastScore.hour !== 23 ? lastScore.hour : -1;
+        let lastScoreHour = lastScore ? lastScore.hour : -1;
 
         if(lastScoreDate.toLocaleDateString() < locationDate.toLocaleDateString()) { // on different days
             for(let date = lastScoreDate; date <= locationDate; date.setDate(date.getDate() + 1)) {
