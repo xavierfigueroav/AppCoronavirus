@@ -127,6 +127,19 @@ export class DatabaseProvider {
         });
     }
 
+    async getScoresByDate(date: string){
+        const appId = await this.storage.getUser();
+        return this.isReady().then(async () => {
+            return this.database.executeSql(`SELECT * from score WHERE app_id = '${appId}' AND date = '${date}' ORDER BY hour ASC;`, []).then(data => {
+                let lists = [];
+                for(let i = 0; i < data.rows.length; i++){
+                    lists.push(data.rows.item(i));
+                }
+                return lists;
+            });
+        });
+    }
+
     async saveScore(
         score: number,
         date: Date,
