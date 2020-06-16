@@ -8,6 +8,7 @@ import { HTTP } from '@ionic-native/http';
 import { File } from '@ionic-native/file';
 import { TabsPage } from '../tabs/tabs';
 import uuid from 'uuid/v4';
+import * as Constants from '../../data/constants';
 
 import * as calculos from '../../assets/calculos/calculo.json';
 import * as plantilla from '../../assets/plantilla/plantilla.json';
@@ -499,12 +500,11 @@ export class FormPage {
 
         this.file.createFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', fileName, true).then(() => {
             this.file.writeFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', fileName, string_form, {replace:true, append:false}).then((response) => {
-                const url = 'http://ec2-3-17-143-36.us-east-2.compute.amazonaws.com:5000/api/3/action/resource_create';
                 const carpeta = this.file.externalApplicationStorageDirectory+'AppCoronavirus/';
                 const ruta_completa = carpeta + fileName;
                 console.log('RUTA ARCHIVO:', ruta_completa);
 
-                this.http.uploadFile(url, {package_id: id_dataset, name: fileName}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
+                this.http.uploadFile(Constants.CREATE_RESOURCE_URL, {package_id: id_dataset, name: fileName}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
                     this.file.removeFile(carpeta, fileName).then(async () => {
                         await this.storeDataAfterSend(pendingForm);
                         this.app.getRootNav().setRoot(TabsPage);
