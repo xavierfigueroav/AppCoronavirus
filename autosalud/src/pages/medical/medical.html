@@ -14,29 +14,7 @@
 
     </h1>
 
-    <ion-card>
-        <ion-card-title>
-            Último diagnóstico
-        </ion-card-title>
-        <ion-card-content>
-            <ion-item>
-                <ion-select [(ngModel)]="status" okText="CONFIRMAR" cancelText="CANCELAR">
-                <ion-option value="sal" selected>SALUDABLE</ion-option>
-                <ion-option value="asi">CASO ASINTOMÁTICO</ion-option>
-                <ion-option value="sos">CASO SOSPECHOSO</ion-option>
-                <ion-option value="con">CASO CONFIRMADO</ion-option>
-                <ion-option value="rec">CASO RECUPERADO</ion-option>
-                <ion-option value="sin">CON SÍNTOMAS</ion-option>
-                </ion-select>
-            </ion-item>
-        </ion-card-content>
-    </ion-card>
-
     <div class="container">
-
-        <button ion-button icon-end full class="button" (click)="goToTestResults()">
-            <p>CONSULTAR RESULTADOS DE PRUEBAS</p>
-        </button>
 
         <button ion-button icon-end full class="button" (click)="goToDiagnostic()">
             <p> ENVIAR REPORTE DIARIO DE SALUD</p>
