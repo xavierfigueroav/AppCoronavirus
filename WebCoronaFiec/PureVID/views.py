@@ -49,7 +49,7 @@ def login_laboratorista(request):
 	}
 	datos = json.dumps(parametros)
 	print(datos)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
 
 	
@@ -89,7 +89,7 @@ def login_recolector(request):
 	}
 	datos = json.dumps(parametros)
 	print(datos)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
 	if len(respuesta.get("data")) == 0:
 		print("error")
@@ -121,7 +121,7 @@ def clave_app(request):
 		]
 	}
 	datos = json.dumps(parametros)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
 	if len(respuesta.get("data")) == 0:
 		parametros = {"tabla" : "integracion_claves_app",
@@ -136,7 +136,7 @@ def clave_app(request):
 			]
 		}
 		datos = json.dumps(parametros)
-		response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+		response = requests.post('http://3.22.195.65:5000/api/integracion/table/read', data = datos)
 		respuesta = json.loads(response.text)
 		codigo = response.get("data")[0].get("app_id")
 		parametros={"tabla": "integracion_usuario",
@@ -153,7 +153,7 @@ def clave_app(request):
 			]
 		}
 		datos = json.dumps(parametros)
-		response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
+		response = requests.post('http://3.22.195.65:5000/api/integracion/table/update', data = datos)
 		respuesta = json.loads(response.text)
 		parametros={"tabla": "integracion_claves_app",
 			"operador": "and",
@@ -169,7 +169,7 @@ def clave_app(request):
 			]
 		}
 		datos = json.dumps(parametros)
-		response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
+		response = requests.post('http://3.22.195.65:5000/api/integracion/table/update', data = datos)
 		respuesta = {"data": [
 		        {
 		            "telefono_id": codigo
@@ -210,7 +210,7 @@ def registro_muestra(request):
 	}
 
 	datos = json.dumps(parametros)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/read', data = datos)
 
 	print("AQUI IRA ID")
 	respuesta = json.loads(response.text)
@@ -243,7 +243,7 @@ def registro_muestra(request):
 	}
 	datos = json.dumps(parametros)
 	print(datos)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/insert', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/insert', data = datos)
 	print(response.text)
 	respuesta = json.loads(response.text)
 
@@ -270,7 +270,7 @@ def muestras_lab(request):
 	}
 	datos = json.dumps(parametros)
 	print(datos)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
 	return repuesta.get("data")
 
@@ -292,7 +292,7 @@ def estado_muestra(request):
 	}
 	datos = json.dumps(parametros)
 	print(datos)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
 	print(respuesta)
 	estado = "en proceso"
@@ -324,7 +324,7 @@ def muestras_lab(request):
 	}
 	datos = json.dumps(parametros)
 	print(datos)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
 	print("respuesta")
 	print(response.text)
@@ -351,7 +351,7 @@ def actualizar_estado_muestra(request):
 	}
 	datos = json.dumps(parametros)
 	print(datos)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/update', data = datos)
 	respuesta = json.loads(response.text)
 	return HttpResponse(json.dumps(respuesta, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
@@ -404,7 +404,7 @@ def enviar_correo(request):
 		}
 		datos = json.dumps(parametros)
 		print(datos)
-		response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+		response = requests.post('http://3.22.195.65:5000/api/integracion/table/read', data = datos)
 		respuesta = json.loads(response.text)
 		print("respuesta")
 		print(response.text)
@@ -414,9 +414,9 @@ def enviar_correo(request):
 	                , content_type='application/json',status = 404)
 		else:
 			codigo = respuesta.get("data")[0].get("telefono_id")
-			text = " Te informamos que tu clave de app es: \n "
-		    
-			text += codigo+ "\n" + "Gracias por usar la app!"
+			text = "Te informamos que tu clave de app es: \n ".center(50,"")
+			text += codigo.center(50,"")+ "\n" + "Gracias por usar AutoSalud!".center(50,"")
+			print(text)
 			send_mail("AppPrueba: AppKey", text, EMAIL_HOST_USER, [correo],fail_silently=False)
 			datos_retornar = {"mensaje": "Correo enviado"}
 			return HttpResponse(json.dumps(datos_retornar, ensure_ascii=False).encode("utf-8")\
@@ -443,7 +443,7 @@ def send_email_asf(datos):
 		}
 	datos = json.dumps(parametros)
 	print(datos)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
 	print("respuesta")
 	print(response.text)
@@ -523,7 +523,7 @@ def update_test(request):
 	}
 	datos = json.dumps(parametros)
 	print(datos)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/update', data = datos)
 	respuesta = json.loads(response.text)
 	print(respuesta)
 
@@ -554,7 +554,7 @@ def buscar_por_cedula(request):
 	}
 	datos = json.dumps(parametros)
 	print(datos)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/read', data = datos)
 
 
 	respuesta = json.loads(response.text)
@@ -587,7 +587,7 @@ def registrar_usuario(request):
 		]
 	}
 	datos = json.dumps(parametros)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/read', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/read', data = datos)
 	respuesta = json.loads(response.text)
 	codigo = respuesta.get("data")[0].get("app_id")
 	parametros=	{"tabla" : "integracion_usuario",
@@ -599,7 +599,7 @@ def registrar_usuario(request):
 		
 	}
 	datos = json.dumps(parametros)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/insert', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/insert', data = datos)
 	respuesta = json.loads(response.text)
 	print("Registrando usuario...")
 	print(respuesta)
@@ -617,7 +617,7 @@ def registrar_usuario(request):
 		]
 	}
 	datos = json.dumps(parametros)
-	response = requests.post('http://3.17.143.36:5000/api/integracion/table/update', data = datos)
+	response = requests.post('http://3.22.195.65:5000/api/integracion/table/update', data = datos)
 
 
 
