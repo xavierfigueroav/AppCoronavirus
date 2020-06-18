@@ -34,6 +34,7 @@
 											<th>Resultado</th>
 											<th>Recomendación</th>
 											<th>Confirmar?</th>
+											<th>Finalizada</th>
 										</tr>
 									</thead>
 									<tbody id="tests-drawer">
@@ -43,24 +44,6 @@
 						</div>
 					</div>
 				</div>
-				
-				<!--div class="form-group row">
-					<select name="estado"  id="result">
-						<option value="0">EN PROCESO</option>
-						<option value="1">PROCESADA</option>
-					</select>
-					<select name="resultado"  id="result">
-						<option value="1">POSITIVO</option>
-						<option value="0">NEGATIVO</option>
-						<option value="2">INCONCLUSO</option>
-					</select>
-				</div-->
-				<!--
-				<div>
-					<label  class="labels">Tiene experiencia en primeros auxilios:</label>
-					<label class="radio-inline"><input type="radio" name="optradio">Si</label>
-					<label class="radio-inline"><input type="radio" name="optradio">No</label>
-				</div>-->
 
 		</div>
 		</div>
@@ -114,11 +97,11 @@
 						html_to_add += '<option  value="1">POSITIVO</option><option  selected = "selected" value="0">NEGATIVO</option><option value="2">INCONCLUSO</option><option  value="3">PENDIENTE</option></select></th>'
 					}
 				
-					html_to_add += '<th><input class = "entrada" type="text" name="nombre" id="recomendacion'+code+'" value="'+recomendacion+'"/></th><th><input id= '+code+'class="enviar_prueba" type="submit" name="submit" value="Confirmar" class="btn btn-default sender"></th></tr>'
+					html_to_add += '<th><input class = "entrada" type="text" name="nombre" id="recomendacion'+code+'" value="'+recomendacion+'"/></th><th><input id= '+code+'class="enviar_prueba" type="submit" name="submit" value="Confirmar" class="btn btn-default sender"></th><th style="text-align:center;"><i class="fas fa-check-circle" style="color:green;"></i></th></tr>'
 				}
 				else{
 					html_to_add += '<th><select name="estado"  id="state'+code+'"><option selected = "selected" value="0">EN PROCESO</option><option value="1">PROCESADA</option></select></th><th>	'
-					html_to_add += '<select name="resultado"  id="result'+code+'"><option value="1">POSITIVO</option><option value="0">NEGATIVO</option><option value="2">INCONCLUSO</option><option selected = "selected" value="3">PENDIENTE</option></select></th><th><input class = "entrada" type="text" name="nombre" id="recomendacion'+code+'" autocomplete="off" placeholder = "Ingrese recomendaciones"/></th><th><input id= '+code+' class="enviar_prueba" type="submit" name="submit" value="Confirmar" class="btn btn-default sender"></th></tr>'
+					html_to_add += '<select name="resultado"  id="result'+code+'"><option value="1">POSITIVO</option><option value="0">NEGATIVO</option><option value="2">INCONCLUSO</option><option selected = "selected" value="3">PENDIENTE</option></select></th><th><input class = "entrada" type="text" name="nombre" id="recomendacion'+code+'" autocomplete="off" placeholder = "Ingrese recomendaciones"/></th><th><input id= '+code+' class="enviar_prueba" type="submit" name="submit" value="Confirmar" class="btn btn-default sender"></th><th   style="text-align:center;"><i id= icon'+code+' style="color:red;"class=" fas fa-times-circle"></i></th></tr>'
 				}	
 			}
 
@@ -146,7 +129,16 @@
 			        },
 			        dataType: 'json',
 			        success: function (data) {
-			        	console.log($(this).attr("id"));
+			        	   if (data.respuesta) {
+
+		            		alert("Resultado ingresado!");
+		            		$("#icon"+codigo).attr('class', 'fas fa-check-circle');
+		            		$("#icon"+codigo).attr('style', 'color:green');
+
+
+			          }else{
+			          	alert("Error en registro. Revisar datos de ingreso.");
+			          }
 			        }
 			      });
 			    });
