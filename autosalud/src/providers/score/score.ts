@@ -25,6 +25,7 @@ declare var WifiWizard2: any;
 export class ScoreProvider {
 
     backgroundGeolocationConfig: BackgroundGeolocationConfig;
+    runningScoresCalculation: boolean;
 
     constructor(
         private storage: StorageProvider,
@@ -35,6 +36,7 @@ export class ScoreProvider {
         private events: Events
     ) {
         console.log('Hello ScoreProvider Provider');
+        this.runningScoresCalculation = false;
         this.backgroundGeolocationConfig = {
             stationaryRadius: 1,
             distanceFilter: 1,
@@ -80,11 +82,18 @@ export class ScoreProvider {
     }
 
     async locationHandler(location: BackgroundGeolocationResponse){
+        // This prevents race conditions between pending locations and new locations
+        if(this.runningScoresCalculation){
+            console.log('score calculation PREVENTED');
+            return;
+        }
+        this.runningScoresCalculation = true;
+
         console.log('MOVEMENT DETECTED!');
         try {
             await this.backgroundGeolocation.deleteLocation(location.id);
         } catch(error) {
-            console.log('[ERROR]', error);
+            console.log('[EXPECTED ERROR]', error);
         } finally {
             const distanceScore = await this.calculateDistanceScore(location);
             console.log("distanceScore",distanceScore);
@@ -98,6 +107,7 @@ export class ScoreProvider {
 
             await this.checkForPendingScores(location.time);
             await this.calculateCurrentScore();
+            this.runningScoresCalculation = false;
             this.api.sendPendingScoresToServer();
         }
     }
