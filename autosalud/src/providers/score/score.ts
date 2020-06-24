@@ -96,6 +96,8 @@ export class ScoreProvider {
             console.log('[EXPECTED ERROR]', error);
         } finally {
             const partialScores = await this.getPartialScores(location);
+            console.log("Partial Scores: ",partialScores);
+            console.log("Location: ",location)
             await this.database.addLocation(partialScores.latitude, partialScores.longitude,
                                             partialScores.date, partialScores.distance_score,
                                             partialScores.distance_home, partialScores.time_away,
@@ -256,20 +258,23 @@ export class ScoreProvider {
     }
 
     async calculateCompleteScore(hour: number, scoreDate: Date, full = true): Promise< {completeScore: number, maxDistanceToHome: number, maxTimeAway: number, encodedRoute: string}>{
+        console.log("Hour: ",hour," scoreDate: ",scoreDate);
         let locationsByHour = await this.database.getLocationsByHourAndDate(hour, scoreDate);
         const lastElement = locationsByHour[locationsByHour.length - 1];
         if(full && locationsByHour.length == 0){
             let lastHour;
             let lastScoreDate;
             [lastHour,lastScoreDate] = this.validateZeroHour(hour,scoreDate);
-            
+            console.log("lastHour: ",lastHour," lastScoreDate: ",lastScoreDate);
             let locationsByLastHour = await this.database.getLocationsByHourAndDate(lastHour, lastScoreDate);
             locationsByHour = [locationsByLastHour[locationsByLastHour.length - 1]];
-            await this.database.addLocation(locationsByHour[-1].latitude, locationsByHour[-1].longitude,
-                                            scoreDate, locationsByHour[-1].distance_score,
-                                            locationsByHour[-1].distance_home, locationsByHour[-1].time_away,
-                                            locationsByHour[-1].time_score, locationsByHour[-1].wifi_score, 
-                                            locationsByHour[-1].population_score);
+            console.log("locationsByLastHour: ",locationsByLastHour);
+            console.log("LocationByHour ultima con score: ",locationsByHour[0]);
+            await this.database.addLocation(locationsByHour[0].latitude, locationsByHour[0].longitude,
+                                            scoreDate, locationsByHour[0].distance_score,
+                                            locationsByHour[0].distance_home, locationsByHour[0].time_away,
+                                            locationsByHour[0].time_score, locationsByHour[0].wifi_score, 
+                                            locationsByHour[0].population_score);
         }else{
             locationsByHour = full ? locationsByHour : lastElement ? [lastElement] : [];
         }
