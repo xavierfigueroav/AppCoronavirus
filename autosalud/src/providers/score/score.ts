@@ -35,7 +35,6 @@ export class ScoreProvider {
         private api: APIProvider,
         private events: Events
     ) {
-        console.log('Hello ScoreProvider Provider');
         this.runningScoresCalculation = false;
         this.backgroundGeolocationConfig = {
             stationaryRadius: 1,
@@ -96,8 +95,8 @@ export class ScoreProvider {
             console.log('[EXPECTED ERROR]', error);
         } finally {
             const partialScores = await this.getPartialScores(location);
-            console.log("Partial Scores: ",partialScores);
-            console.log("Location: ",location)
+            console.log("Partial Scores (LH): ",partialScores);
+            console.log("Location (LH): ",location)
             await this.database.addLocation(partialScores.latitude, partialScores.longitude,
                                             partialScores.date, partialScores.distance_score,
                                             partialScores.distance_home, partialScores.time_away,
@@ -114,11 +113,8 @@ export class ScoreProvider {
         const distanceScore = await this.calculateDistanceScore(location);
         console.log("distanceScore",distanceScore);
         const wifiScore = await this.calculateWifiScore();
-        console.log("wifiScore",wifiScore);
         const timeScore = this.calculateTimeScore();
-        console.log("timeScore",timeScore);
         const populationDensityScore = await this.calculatePopulationDensityScore();
-        console.log("populationDensityScore",populationDensityScore);
         return {"latitude":location.latitude,"longitude":location.longitude,"date":new Date(location.time),
                 "distance_score":distanceScore.score, "distance_home":distanceScore.distance,
                 "time_away":timeScore.time, "time_score":timeScore.score, "wifi_score":wifiScore,
@@ -258,18 +254,18 @@ export class ScoreProvider {
     }
 
     async calculateCompleteScore(hour: number, scoreDate: Date, full = true): Promise< {completeScore: number, maxDistanceToHome: number, maxTimeAway: number, encodedRoute: string}>{
-        console.log("Hour: ",hour," scoreDate: ",scoreDate);
+        console.log("Hour (CCS): ",hour," scoreDate: ",scoreDate);
         let locationsByHour = await this.database.getLocationsByHourAndDate(hour, scoreDate);
         const lastElement = locationsByHour[locationsByHour.length - 1];
         if(full && locationsByHour.length == 0){
             let lastHour;
             let lastScoreDate;
             [lastHour,lastScoreDate] = this.validateZeroHour(hour,scoreDate);
-            console.log("lastHour: ",lastHour," lastScoreDate: ",lastScoreDate);
+            console.log("lastHour (CCS): ",lastHour," lastScoreDate: ",lastScoreDate);
             let locationsByLastHour = await this.database.getLocationsByHourAndDate(lastHour, lastScoreDate);
             locationsByHour = [locationsByLastHour[locationsByLastHour.length - 1]];
-            console.log("locationsByLastHour: ",locationsByLastHour);
-            console.log("LocationByHour ultima con score: ",locationsByHour[0]);
+            console.log("locationsByLastHour (CCS): ",locationsByLastHour);
+            console.log("LocationByHour ultima con score (CCS): ",locationsByHour[0]);
             await this.database.addLocation(locationsByHour[0].latitude, locationsByHour[0].longitude,
                                             scoreDate, locationsByHour[0].distance_score,
                                             locationsByHour[0].distance_home, locationsByHour[0].time_away,
@@ -361,19 +357,11 @@ export class ScoreProvider {
 
     async startScan(): Promise<number> {
         let num_networks: number;
-        if (typeof WifiWizard2 !== 'undefined') {
-            console.log("WifiWizard2 loaded: ");
-            console.log(WifiWizard2);
-        } else {
-            console.warn('WifiWizard2 not loaded.');
-        }
         await WifiWizard2.scan().then((wifiNetworks: any[]) => {
-            console.log("Inside Scan function");
             for (let wifiNetwork of wifiNetworks) {
                 const level = wifiNetwork['level'];
                 const ssid = wifiNetwork['SSID'];
                 const timestamp = wifiNetwork['timestamp'];
-                console.log(`Level: ${level} SSID: ${ssid} Timestamp: ${timestamp}`);
             }
             num_networks = wifiNetworks.length;
         }).catch((error: any) => {
