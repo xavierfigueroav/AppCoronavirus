@@ -95,8 +95,6 @@ export class ScoreProvider {
             console.log('[EXPECTED ERROR]', error);
         } finally {
             const partialScores = await this.getPartialScores(location);
-            console.log("Partial Scores (LH): ",partialScores);
-            console.log("Location (LH): ",location)
             await this.database.addLocation(partialScores.latitude, partialScores.longitude,
                                             partialScores.date, partialScores.distance_score,
                                             partialScores.distance_home, partialScores.time_away,
@@ -111,7 +109,6 @@ export class ScoreProvider {
 
     async getPartialScores(location: BackgroundGeolocationResponse){
         const distanceScore = await this.calculateDistanceScore(location);
-        console.log("distanceScore",distanceScore);
         const wifiScore = await this.calculateWifiScore();
         const timeScore = this.calculateTimeScore();
         const populationDensityScore = await this.calculatePopulationDensityScore();
@@ -180,15 +177,16 @@ export class ScoreProvider {
         const locationDate = new Date(locationTime);
         const locationHour = locationDate.getHours();
         const lastScore = await this.database.getLastScore();
-        const lastScoreDate = lastScore ? new Date(lastScore.date) : locationDate;
+        const lastScoreDate = lastScore ? new Date(lastScore.date) : new Date(locationDate);
         let lastScoreHour = lastScore ? lastScore.hour : -1;
 
         if(lastScoreDate.toLocaleDateString() < locationDate.toLocaleDateString()) { // on different days
-            for(let date = lastScoreDate; date <= locationDate; date.setDate(date.getDate() + 1)) {
+            for(let date = new Date(lastScoreDate); date <= locationDate; date.setDate(date.getDate() + 1)) {
                 const scoreDate = new Date(date);
                 const maxHour = date.toLocaleDateString() === locationDate.toLocaleDateString() ? locationHour : 24;
 
                 for(let hour = lastScoreHour + 1; hour < maxHour; hour++) {
+                    scoreDate.setHours(hour);
                     await this.calculatePendingScore(hour, scoreDate);
                 }
                 lastScoreHour = -1;
@@ -196,6 +194,7 @@ export class ScoreProvider {
         } else {
             if (lastScoreHour + 1 < locationHour) {
                 for (let hour = lastScoreHour + 1; hour < locationHour; hour++) {
+                    locationDate.setHours(hour);
                     await this.calculatePendingScore(hour, locationDate);
                 }
             }
@@ -254,18 +253,14 @@ export class ScoreProvider {
     }
 
     async calculateCompleteScore(hour: number, scoreDate: Date, full = true): Promise< {completeScore: number, maxDistanceToHome: number, maxTimeAway: number, encodedRoute: string}>{
-        console.log("Hour (CCS): ",hour," scoreDate: ",scoreDate);
         let locationsByHour = await this.database.getLocationsByHourAndDate(hour, scoreDate);
         const lastElement = locationsByHour[locationsByHour.length - 1];
         if(full && locationsByHour.length == 0){
             let lastHour;
             let lastScoreDate;
             [lastHour,lastScoreDate] = this.validateZeroHour(hour,scoreDate);
-            console.log("lastHour (CCS): ",lastHour," lastScoreDate: ",lastScoreDate);
             let locationsByLastHour = await this.database.getLocationsByHourAndDate(lastHour, lastScoreDate);
             locationsByHour = [locationsByLastHour[locationsByLastHour.length - 1]];
-            console.log("locationsByLastHour (CCS): ",locationsByLastHour);
-            console.log("LocationByHour ultima con score (CCS): ",locationsByHour[0]);
             await this.database.addLocation(locationsByHour[0].latitude, locationsByHour[0].longitude,
                                             scoreDate, locationsByHour[0].distance_score,
                                             locationsByHour[0].distance_home, locationsByHour[0].time_away,

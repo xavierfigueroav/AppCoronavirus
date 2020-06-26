@@ -50,7 +50,7 @@ export class UserPage implements OnInit{
 
     ngOnInit() {
         console.log('ngOnInit UserPage');
-        this.colors = {'1': '#49BEAA', '2': '#EEB868', '3': '#EF767A', '-1': '#999999'};
+        this.colors = {'0':'#49BEAA','1': '#49BEAA', '2': '#EEB868', '3': '#EF767A', '-1': '#999999'};
         const scores = [];
         for(let i = 0; i < 24; i++) {
             scores.push({ color: '#999999' });
