@@ -16,7 +16,7 @@
     <div *ngFor="let item of ((selectedTemplate?.children)[indice_seccion]).children">
 
         <div *ngIf="item.type=='collapseList'">
-            <button text-wrap ion-item color="secondary" data-toggle="collapse" [attr.href]="'#collapseExample'+indexCategoria" aria-expanded="false" (click)="clickCollapseButton(indexCategoria,'collapseExample'+indexCategoria,$event)">
+            <button text-wrap ion-item  data-toggle="collapse" [attr.href]="'#collapseExample'+indexCategoria" aria-expanded="false" (click)="clickCollapseButton(indexCategoria,'collapseExample'+indexCategoria,$event)">
                 <ion-label>{{item.label}}</ion-label>
                 <ion-icon *ngIf="item.initialShow" item-end name="arrow-dropdown"></ion-icon>
                 <ion-icon *ngIf="!item.initialShow" item-end name="arrow-dropright"></ion-icon>
@@ -95,7 +95,7 @@
 
         <ion-list no-lines *ngIf="item.type=='button'">
             <button *ngFor="let item2 of item.children;let indexSubCategoria = index" ion-item (click)="clickNextPage(item2,0,indexSubCategoria)">
-                <ion-label>{{item.label}}</ion-label>
+                <ion-label >{{item.label}}</ion-label>
             </button>
         </ion-list>
 
