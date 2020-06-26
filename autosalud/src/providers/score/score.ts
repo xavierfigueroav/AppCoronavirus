@@ -202,16 +202,16 @@ export class ScoreProvider {
         }
     }
 
-    validateZeroHour(hour:number,scoreDate:Date): [number, Date]{
+    validateZeroHour(hour:number, scoreDate:Date): [number, Date]{
         let newHour = hour;
         let newDate = new Date(scoreDate);
         if(hour == 0){
             newHour = 23;
-            newDate = new Date(scoreDate.getDate() - 1)
+            newDate.setDate(scoreDate.getDate() - 1)
         }else{
             --newHour;
         }
-        return [newHour,newDate];
+        return [newHour, newDate];
     }
 
     async calculatePendingScore(hour: number, scoreDate: Date) {
