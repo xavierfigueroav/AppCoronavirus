@@ -6,8 +6,6 @@ import { File } from '@ionic-native/file';
 import { TabsPage } from '../tabs/tabs';
 import * as Constants from '../../data/constants';
 
-import * as validations from '../../assets/calculos/calculo.json';
-import * as plantilla from '../../assets/plantilla/plantilla.json';
 import { AlertProvider } from '../../providers/alert/alert';
 
 @Component({
@@ -15,8 +13,6 @@ import { AlertProvider } from '../../providers/alert/alert';
     templateUrl: 'form.html'
 })
 export class FormPage {
-    validations = (<any>validations);
-    templates = JSON.parse(JSON.stringify(<any>plantilla));
     formData: any;
     editingForm: any;
     validationFunctions: any[];
@@ -43,10 +39,7 @@ export class FormPage {
 
         this.storage.getDatasetId().then(datasetId => { this.dataset = datasetId; });
 
-        this.validationFunctions = [];
-        for (let calc of this.validations.calculos) {
-            this.validationFunctions[calc.name] = eval('var a;a=' + calc.structure);
-        }
+        this.setValidationFunctions();
 
         this.formData = this.navParams.get('formData');
         this.isSavedForm = this.navParams.get('isSavedForm');
@@ -54,6 +47,14 @@ export class FormPage {
         this.sectionIndex = this.navParams.get('sectionIndex') || 0;
 
         this.dispatchTemplate();
+    }
+
+    async setValidationFunctions() {
+        const validations = await this.storage.get('formValidators');
+        this.validationFunctions = [];
+        for (let calc of validations.calculos) {
+            this.validationFunctions[calc.name] = eval('var a;a=' + calc.structure);
+        }
     }
 
     dispatchTemplate() {
@@ -74,9 +75,10 @@ export class FormPage {
         }
     }
 
-    startForm(formType: string) {
-        const template = this.templates[0];
-        this.editingForm = JSON.parse(JSON.stringify(template.data[formType]));
+    async startForm(formType: string) {
+        let template = await this.storage.get('formTemplates');
+        template = template[formType][0];
+        this.editingForm = template.data[formType];
         this.formData = {
             template: template.uuid,
             dataset: this.dataset,
@@ -89,7 +91,7 @@ export class FormPage {
     }
 
     async editForm(template: any) {
-        this.editingForm = JSON.parse(JSON.stringify(template.form));
+        this.editingForm = template.form;
         this.formData = {
             template: template.template,
             dataset: this.dataset,
@@ -241,7 +243,8 @@ export class FormPage {
     async storeDataAfterSend(form: any) {
         const lastForms = await this.storage.get('lastForms') || {};
         if(form.type === 'follow_up') {
-            form.form = this.templates[0].data.follow_up;
+            const template = await this.storage.get('formTemplates');
+            form.form = template[form.type][0].data.follow_up;
         }
         lastForms[form.type] = form;
         await this.storage.set('lastForms', lastForms);

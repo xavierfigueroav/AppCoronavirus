@@ -10,6 +10,10 @@ import { ValidationsProvider } from '../../providers/validations/validations';
 import { FormPage } from '../form/form';
 import { ScoreProvider } from '../../providers/score/score';
 
+import * as calculos from '../../assets/calculos/calculo.json';
+import * as initial from '../../assets/plantilla/initial.json';
+import * as followUp from '../../assets/plantilla/follow_up.json';
+
 @Component({
     selector: 'page-auth',
     templateUrl: 'auth.html'
@@ -17,6 +21,9 @@ import { ScoreProvider } from '../../providers/score/score';
 
 export class AuthPage {
     appPIN: string;
+    formValidators = <any>calculos;
+    initialFormTemplate = <any>initial;
+    followUpFormTemplate = <any>followUp;
 
     constructor(
         private app: App,
@@ -91,6 +98,7 @@ export class AuthPage {
         }
 
         this.scoreProvider.restartTrackingIfStopped();
+        await this.copyTemplatesFromSourceToStorageIfAbsent();
 
         if(!datasetCreated) { // Already created
             this.app.getRootNav().setRoot(TabsPage);
@@ -101,6 +109,19 @@ export class AuthPage {
             });
         } else {
             this.app.getRootNav().setRoot(FormPage, { 'formType': 'initial' });
+        }
+    }
+
+    async copyTemplatesFromSourceToStorageIfAbsent() {
+        let formTemplates = await this.storage.get('formTemplates');
+
+        if(formTemplates == null) {
+            formTemplates = {};
+            formTemplates.initial = this.initialFormTemplate;
+            formTemplates.follow_up = this.followUpFormTemplate;
+
+            await this.storage.set('formTemplates', formTemplates);
+            await this.storage.set('formValidators', this.formValidators);
         }
     }
 
