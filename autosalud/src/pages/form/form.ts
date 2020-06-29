@@ -1,16 +1,12 @@
-import { Component, ViewChild } from '@angular/core';
-import { NavController, NavParams, AlertController, App, LoadingController, Navbar, Loading } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { NavController, NavParams, AlertController, App, LoadingController, Loading } from 'ionic-angular';
 import { StorageProvider } from '../../providers/storage/storage';
-import { Geolocation } from '@ionic-native/geolocation';
-import { LocationAccuracy } from '@ionic-native/location-accuracy';
-import { Diagnostic } from '@ionic-native/diagnostic';
 import { HTTP } from '@ionic-native/http';
 import { File } from '@ionic-native/file';
 import { TabsPage } from '../tabs/tabs';
-import uuid from 'uuid/v4';
 import * as Constants from '../../data/constants';
 
-import * as calculos from '../../assets/calculos/calculo.json';
+import * as validations from '../../assets/calculos/calculo.json';
 import * as plantilla from '../../assets/plantilla/plantilla.json';
 import { AlertProvider } from '../../providers/alert/alert';
 
@@ -19,306 +15,89 @@ import { AlertProvider } from '../../providers/alert/alert';
     templateUrl: 'form.html'
 })
 export class FormPage {
-    calculos = (<any>calculos);
-    infoTemplates = JSON.parse(JSON.stringify(<any>plantilla));
-    template: any;
+    validations = (<any>validations);
+    templates = JSON.parse(JSON.stringify(<any>plantilla));
     formData: any;
-    formsData = {};
-    selectedTemplate: any;
-    currentForm: any;
-    forms: any[];
-    pendingForms: any[];
-    geoLocationAuth: string;
-    coordinates = null;
-    templateUuid: string;
-    funciones = [];
-    id_dataset: string;
-    indice_seccion: number;
-    locationLoader: Loading;
+    editingForm: any;
+    validationFunctions: any[];
+    dataset: string;
+    sectionIndex: number;
     loader: Loading;
-    formulario_uso: any;
     isSavedForm: boolean;
     formChanged: boolean;
 
-    @ViewChild(Navbar) navbarName: Navbar;
-
     constructor(
-        private diagnostic: Diagnostic,
         private alertCtrl: AlertController,
         private navParams: NavParams,
         private storage: StorageProvider,
-        private geoLocation: Geolocation,
-        private locationAccuracy: LocationAccuracy,
         private loadingController: LoadingController,
         private navCtrl: NavController,
         private http: HTTP,
         private app: App,
         private file: File,
-        private alerts: AlertProvider) {
+        private alerts: AlertProvider
+    ) {
 
-        this.loader = this.loadingController.create({
-            content: 'Espere...',
-        });
+        this.loader = this.loadingController.create({ content: 'Espere...' });
         this.loader.present();
 
-        this.storage.getDatasetId().then(id_dataset => {
-            this.id_dataset = id_dataset;
-        });
+        this.storage.getDatasetId().then(datasetId => { this.dataset = datasetId; });
 
+        this.validationFunctions = [];
+        for (let calc of this.validations.calculos) {
+            this.validationFunctions[calc.name] = eval('var a;a=' + calc.structure);
+        }
+
+        this.formData = this.navParams.get('formData');
         this.isSavedForm = this.navParams.get('isSavedForm');
-        this.formulario_uso = this.navParams.get('formulario_uso');
         this.formChanged = this.navParams.get('formChanged');
+        this.sectionIndex = this.navParams.get('sectionIndex') || 0;
 
-        if(this.formulario_uso) {
-            this.prepareDataForForms();
+        this.dispatchTemplate();
+    }
+
+    dispatchTemplate() {
+        if(this.formData) {
+            this.editingForm = this.formData.form;
+            this.loader.dismiss();
         } else {
             const formType = this.navParams.get('formType');
-
-            this.storage.get('savedForms').then(savedForms => {
-                if(savedForms != null && savedForms[formType] != undefined) {
-                    this.isSavedForm = true;
-                    const pendingForm = savedForms[formType];
-                    this.clickEditForm(pendingForm);
+            this.storage.get('lastForms').then(lastForms => {
+                if(lastForms == null || lastForms[formType] == null) {
+                    this.startForm(formType);
                 } else {
-                    if(formType === 'initial') {
-                        this.storage.get('sentForms').then((sentForms) => {
-                            if(sentForms != null && sentForms.length > 0) {
-                                const initialForms = sentForms.filter(
-                                    (sentForm: any) => sentForm.formData.type === 'initial'
-                                );
-                                if(initialForms.length > 0) {
-                                    const pendingForm = initialForms[initialForms.length - 1];
-                                    this.clickEditForm(pendingForm);
-                                    return;
-                                }
-                            }
-                            this.startForm(formType);
-                        });
-                    } else {
-                        this.startForm(formType);
-                    }
+                    const form = lastForms[formType];
+                    this.isSavedForm = this.isSavedForm || form.saved;
+                    this.editForm(form);
                 }
-            });
+            }).catch(console.log);
         }
     }
 
-    async startForm(formType: string) {
-        const template = this.infoTemplates[0];
-        if (template.gps === 'required') {
-            await this.requestLocationAuthorization(template, formType);
-        } else {
-            await this.startInitialForm(template, template.data[formType], formType);
-        }
-        this.prepareDataForForms();
-    }
-
-    prepareDataForForms() {
-        try {
-            for (let calc of this.calculos.calculos) {
-                this.funciones[calc.name] = eval('var a;a=' + calc.structure);
-            }
-        } catch(error){
-            console.log('[ERROR] prepateDataFormForms', error);
-        } finally {
-            this.cargarDatos();
-        }
-    }
-
-    async clickEditForm(pendingForm: any) {
-        try{
-            const currentForm = pendingForm.formData;
-            const templateUuid = pendingForm.template;
-
-            let formsData = this.navParams.get('formsData') || await this.storage.get('formsData') || {};
-            if(formsData[templateUuid] === undefined) {
-                formsData[templateUuid] = [currentForm];
-            }
-
-            const forms = formsData[templateUuid];
-            const currentFormExists = forms.filter((form: any) => form.uuid === currentForm.uuid).length > 0;
-            if(!currentFormExists) {
-                forms.push(currentForm);
-            }
-
-            let template: any;
-            let infoTemplateIndex: number;
-            for (let i = 0; i < this.infoTemplates.length; i++) {
-                let temp = this.infoTemplates[i];
-                if (temp.uuid === templateUuid) {
-                    template = temp;
-                    infoTemplateIndex = i;
-                    break;
-                }
-            }
-
-            // FIXME: Deep copies are made in when storing. Analyse whether this is still needed
-            template.data = JSON.parse(JSON.stringify(currentForm.data));
-            const selectedTemplate = JSON.parse(JSON.stringify(currentForm.data));
-
-            let pendingForms = this.navParams.get('pendingForms') || await this.storage.get('pendingForms');
-
-            if (pendingForms != null) {
-                pendingForms.push(pendingForm);
-            } else {
-                pendingForms = [pendingForm];
-            }
-
-            this.formulario_uso = {
-                template: template,
-                selectedTemplate: selectedTemplate,
-                formData: selectedTemplate,
-                currentForm: currentForm,
-                forms: forms,
-                formsData: formsData,
-                pendingForms: pendingForms,
-                geolocationAuth: this.geoLocationAuth,
-                infoTemplates: this.infoTemplates,
-                infoTemplateIndex: infoTemplateIndex,
-                indice_seccion: 0
-            };
-
-            this.prepareDataForForms();
-
-        } catch(error) {
-            console.log('[ERROR] clickEditForm', error);
-        }
-    }
-
-    async startInitialForm(template: any, selectedTemplate: any, formType: string) {
-        let formsData = this.navParams.get('formsData') || await this.storage.get('formsData');
-
-        let forms: any[];
-        if (formsData != null && Object.keys(formsData).length > 0 && formsData.hasOwnProperty(template.uuid)) {
-            forms = formsData[template.uuid].slice(0);
-        }
-
-        const currentForm = {
-            uuid: uuid(),
-            version: 0,
-            type: formType,
-            name: template.name,
-            gps: template.gps,
-            data: {},
-            createdDate: new Date()
-        };
-        if (template.gps === 'required') {
-            currentForm['coordinates'] = this.coordinates;
-        }
-
-        if (forms != null && forms.length > 0) {
-            forms.push(currentForm);
-        } else {
-            forms = [currentForm];
-        }
-
-        let pendingForms = this.navParams.get('pendingForms') || await this.storage.get('pendingForms');
-
-        const newPendingForm = {
+    startForm(formType: string) {
+        const template = this.templates[0];
+        this.editingForm = JSON.parse(JSON.stringify(template.data[formType]));
+        this.formData = {
             template: template.uuid,
-            formData: currentForm,
-            id_dataset: this.id_dataset,
-            index: 0
+            dataset: this.dataset,
+            created: new Date(),
+            type: formType,
+            form: this.editingForm
         };
-
-        if (pendingForms != null && pendingForms.length > 0) {
-            if (formsData != null && formsData[template.uuid] != null) {
-                newPendingForm.index = formsData[template.uuid].length;
-            }
-            pendingForms.push(newPendingForm);
-        } else {
-            pendingForms = [newPendingForm];
-        }
-
-        this.formulario_uso = {
-            template: template,
-            selectedTemplate: selectedTemplate,
-            formData: selectedTemplate,
-            currentForm: currentForm,
-            forms: forms,
-            formsData: formsData,
-            pendingForms: pendingForms,
-            geolocationAuth: this.geoLocationAuth,
-            infoTemplates: this.infoTemplates,
-            infoTemplateIndex: 0,
-            indice_seccion: 0
-        };
+        this.editingForm = this.formData.form;
+        this.loader.dismiss();
     }
 
-    // FIXME: On permissions denied this do not return to the main tab and this one keeps empty.
-    async requestLocationAuthorization(template: any, formType: string) {
-        console.log('START OF REQUEST LOCATION', new Date().getTime());
-        this.diagnostic.requestLocationAuthorization().then(res => {
-            this.geoLocationAuth = res;
-            this.locationAccuracy.canRequest().then((canRequest: boolean) => {
-                if (canRequest) {
-                    this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(() => {
-                        this.locationLoader = this.loadingController.create({
-                            content: 'Obteniendo ubicación...',
-                        });
-                        this.locationLoader.present();
-                        this.geoLocation.getCurrentPosition({
-                            enableHighAccuracy: true,
-                            timeout: 12000
-                        }).then(async (res) => {
-                            this.locationLoader.dismiss();
-                            this.coordinates = {
-                                latitude: res.coords.latitude,
-                                longitude: res.coords.longitude
-                            }
-                            await this.startInitialForm(template, template.data[formType], formType);
-                        }).catch(async () => {
-                            this.locationLoader.dismiss();
-                            this.alerts.showLocationErrorAlert();
-                            await  this.startInitialForm(template, template.data[formType], formType);
-                        });
-                    }).catch(() => {
-                        this.loader.dismiss();
-                        this.locationLoader.dismiss();
-                        this.geoLocationAuth = 'DENIED';
-                        this.alerts.showLocationNoPermissionAlert();
-                        this.app.getRootNav().setRoot(TabsPage);
-                        return 0;
-                    });
-                } else {
-                    this.loader.dismiss();
-                    this.alerts.showLocationNoPermissionAlert();
-                    return 0;
-                }
-            }).catch(error => {
-                this.loader.dismiss();
-                this.alerts.showLocationNoPermissionAlert();
-                console.log(JSON.stringify(error));
-                return 0;
-            });
-
-        }).catch(error => {
-            this.loader.dismiss();
-            this.startInitialForm(template, template.data[formType], formType);
-            console.log(JSON.stringify(error));
-        });
-        console.log('END OF REQUEST LOCATION', new Date().getTime());
-    }
-
-    async cargarDatos() {
-        this.template = this.formulario_uso.template;
-        this.formData = this.formulario_uso.formData;
-        this.selectedTemplate = this.formulario_uso.selectedTemplate;
-        this.currentForm = this.formulario_uso.currentForm;
-        this.currentForm.data = this.selectedTemplate;
-        this.templateUuid = this.template.uuid;
-        this.forms = this.formulario_uso.forms;
-        this.geoLocationAuth = this.formulario_uso.geolocationAuth;
-        this.pendingForms = this.formulario_uso.pendingForms;
-        this.indice_seccion = this.formulario_uso.indice_seccion;
-
-        if(this.formulario_uso.formsData != null) {
-            this.formsData = this.formulario_uso.formsData;
-        } else {
-            let formsData = await this.storage.get('formsData');
-            if (formsData != null) {
-                this.formsData = formsData;
-            }
-        }
+    async editForm(template: any) {
+        this.editingForm = JSON.parse(JSON.stringify(template.form));
+        this.formData = {
+            template: template.template,
+            dataset: this.dataset,
+            created: template.saved ? template.created : new Date(),
+            type: template.type,
+            form: this.editingForm
+        };
+        this.editingForm = this.formData.form;
         this.loader.dismiss();
     }
 
@@ -326,19 +105,21 @@ export class FormPage {
         this.storage.get('formSent').then(async formSent => {
             if(formSent) {
                 await this.storage.set('formSent', false);
-            } else if (this.indice_seccion === 0) {
-                // FIXME: do not save if it didn't change
-                this.storage.get('savedForms').then(async savedForms => {
-                    savedForms = savedForms || {};
-                    savedForms[this.currentForm.type] = this.pendingForms[this.pendingForms.length - 1];
-                    await this.storage.set('savedForms', savedForms);
-                    await this.storage.set('formsData', this.formsData);
-                });
+            } else if (this.sectionIndex === 0) {
+                const lastForms = await this.storage.get('lastForms') || {};
+                this.formData.saved = true;
+                lastForms[this.formData.type] = this.formData;
+                await this.storage.set('lastForms', lastForms);
             }
         });
     }
 
-    siguienteSeccion(indice: number) {
+    async saveChanges() {
+        this.formData.form = this.editingForm;
+        this.formChanged = true;
+    }
+
+    nextSection() {
         const array = Array.from(document.querySelectorAll('ion-datetime, ion-input, ion-list, ion-item'));
         const elementos = [];
         let errores = 0;
@@ -358,23 +139,16 @@ export class FormPage {
         }
 
         if (errores == 0) {
-            const nuevo_indice = Number(indice) + 1;
-            if(this.formulario_uso.selectedTemplate.children.length > nuevo_indice) {
-                this.formulario_uso.indice_seccion = nuevo_indice;
-            } else {
-                this.formulario_uso.indice_seccion = null;
-            }
             this.navCtrl.push(FormPage, {
-                'formulario_uso': this.formulario_uso,
-                'formsData': this.formsData,
-                'pendingForms': this.pendingForms,
+                'formData': this.formData,
                 'formChanged': this.formChanged,
-                'isSavedForm': this.isSavedForm
+                'isSavedForm': this.isSavedForm,
+                'sectionIndex': this.sectionIndex + 1
             });
         }
     }
 
-    async finalizarEncuesta() {
+    async finishForm() {
         this.loader = this.loadingController.create({
             content: 'Espere...',
         });
@@ -405,78 +179,10 @@ export class FormPage {
         }
     }
 
-    copyDeeply(object: any) {
-        return JSON.parse(JSON.stringify(object));
-    }
-
-    save(index: number, pending_form_index: number) {
-        this.formChanged = true;
-        try {
-            this.currentForm.saveDate = new Date();
-            this.currentForm.data = this.selectedTemplate;
-            this.forms[index] = this.currentForm;
-            this.formsData[this.templateUuid] = this.forms;
-            this.pendingForms[pending_form_index].formData = this.currentForm;
-            this.pendingForms[pending_form_index].id_dataset = this.id_dataset;
-
-            this.formulario_uso.selectedTemplate = this.pendingForms[pending_form_index].formData.data;
-            this.formulario_uso.currentForm = this.currentForm;
-            this.formulario_uso.forms = this.forms;
-            this.formulario_uso.formsData = this.formsData;
-            this.formulario_uso.formData = this.pendingForms[pending_form_index].formData.data;
-            this.formulario_uso.pendingForms = this.pendingForms;
-        } catch(error){
-            console.log('[ERROR] save', error);
-        }
-    }
-
-    async saveForm() {
-        try {
-            const formsDataIsNull = this.formsData == null;
-            const formDataExists = (this.formsData != null &&
-                this.formsData.hasOwnProperty(this.templateUuid));
-            let currentFormExists = false;
-            let pending_form_index = this.pendingForms.length - 1;
-            if (formsDataIsNull || !formDataExists) {
-                this.save(this.forms.length - 1, pending_form_index);
-            }
-            else {
-                let index = 0;
-                for (let form of this.formsData[this.templateUuid]) {
-                    if (form.uuid == this.currentForm.uuid) {
-                        currentFormExists = true;
-                        break;
-                    } else {
-                        index += 1;
-                    }
-                }
-                pending_form_index = 0;
-
-                for (let pendingForm of this.pendingForms) {
-                    if (pendingForm.formData.uuid == this.currentForm.uuid) {
-                        break;
-                    } else {
-                        pending_form_index += 1;
-                    }
-                }
-
-                if (!currentFormExists) {
-                    this.save(this.forms.length - 1, pending_form_index);
-                } else {
-                    this.save(index, pending_form_index);
-                }
-            }
-        } catch(error){
-            console.log('[ERROR] saveForm', error);
-        }
-    }
-
     async enviarFormulario() {
-        const pendingForms = this.copyDeeply(this.pendingForms);
         if(this.formChanged || this.isSavedForm) {
-            const pendingForm = pendingForms[0];
-            const id_dataset = pendingForm.id_dataset;
-            this.subirArchivo(pendingForm, id_dataset);
+            delete this.formData.saved;
+            this.subirArchivo(this.formData);
         } else {
             this.app.getRootNav().setRoot(TabsPage);
             this.loader.dismiss();
@@ -488,30 +194,31 @@ export class FormPage {
         }
     }
 
-    subirArchivo(pendingForm: any, id_dataset: string) {
+    subirArchivo(form: any) {
         let fileName = 'AUTODIAGNÓSTICO';
-        if(pendingForm.formData.type === 'initial') {
+        if(form.type === 'initial') {
             fileName = 'DATOS-PERSONALES';
         }
 
         const formattedDate = this.obtenerFechaActual();
         fileName = fileName + '_' + formattedDate + '.json';
-        const string_form = JSON.stringify(pendingForm, null, 2);
+        form.finished = new Date();
+        const string_form = JSON.stringify(form, null, 2);
 
         this.file.createFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', fileName, true).then(() => {
-            this.file.writeFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', fileName, string_form, {replace:true, append:false}).then((response) => {
+            this.file.writeFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', fileName, string_form, {replace:true, append:false}).then(() => {
                 const carpeta = this.file.externalApplicationStorageDirectory+'AppCoronavirus/';
                 const ruta_completa = carpeta + fileName;
                 console.log('RUTA ARCHIVO:', ruta_completa);
 
-                this.http.uploadFile(Constants.CREATE_RESOURCE_URL, {package_id: id_dataset, name: fileName}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
+                this.http.uploadFile(Constants.CREATE_RESOURCE_URL, {package_id: form.dataset, name: fileName}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
                     this.file.removeFile(carpeta, fileName).then(async () => {
-                        await this.storeDataAfterSend(pendingForm);
+                        await this.storeDataAfterSend(form);
                         this.app.getRootNav().setRoot(TabsPage);
                         this.loader.dismiss();
                         this.alerts.showFormSentAlert();
                     }).catch(async () => {
-                        await this.storeDataAfterSend(pendingForm);
+                        await this.storeDataAfterSend(form);
                         this.app.getRootNav().setRoot(TabsPage);
                         this.loader.dismiss();
                         this.alerts.showFormSentAlert();
@@ -531,26 +238,14 @@ export class FormPage {
         });
     }
 
-    async storeDataAfterSend(pendingForm: any) {
-        let sentForms = await this.storage.get('sentForms');
-        if (sentForms != null && sentForms.length > 0) {
-            sentForms.push(pendingForm);
-        } else {
-            sentForms = [pendingForm];
+    async storeDataAfterSend(form: any) {
+        const lastForms = await this.storage.get('lastForms') || {};
+        if(form.type === 'follow_up') {
+            form.form = this.templates[0].data.follow_up;
         }
-        await this.storage.set('pendingForms', []);
-        await this.storage.set('formsData', this.formsData);
-        await this.storage.set('sentForms', sentForms);
-        await this.clearSavedForms();
+        lastForms[form.type] = form;
+        await this.storage.set('lastForms', lastForms);
         await this.setFirstUseDateIfAbsent();
-    }
-
-    async clearSavedForms() {
-        const savedForms = await this.storage.get('savedForms');
-        if(this.isSavedForm) {
-            savedForms[this.currentForm.type] = undefined;
-            await this.storage.set('savedForms', savedForms);
-        }
     }
 
     async setFirstUseDateIfAbsent() {
@@ -597,23 +292,11 @@ export class FormPage {
         return fecha;
     }
 
-    saveCoordinates() {
-        try {
-            this.currentForm.coordinates = this.coordinates;
-            const index = this.forms.length - 1;
-            this.forms[index] = this.currentForm;
-            this.formsData[this.templateUuid] = this.forms;
-            this.pendingForms[this.pendingForms.length - 1].formData = this.currentForm;
-        } catch(error){
-            console.log('[BUG] saveCoordinates', error);
-        }
-    }
-
     mappingParametros(parameters: any[]) {
         try {
             const parametrosMapeados = [];
             for (let i = 0; i < parameters.length; i++) {
-                parametrosMapeados.push(this.getObjects(this.selectedTemplate, 'id', parameters[i])[0]);
+                parametrosMapeados.push(this.getObjects(this.editingForm, 'id', parameters[i])[0]);
             }
             return parametrosMapeados;
         } catch(error){
@@ -640,7 +323,7 @@ export class FormPage {
 
     triggerFunction(functionName: string) {
         try {
-            const funcion = this.funciones[functionName];
+            const funcion = this.validationFunctions[functionName];
             const args = this.getArgs(funcion);
             const parametrosMapeados = this.mappingParametros(args);
             const stringFuncionMapeada = this.construirFuncionDinamicaString('funcion', 'parametrosMapeados', parametrosMapeados.length);
@@ -686,7 +369,7 @@ export class FormPage {
     triggerFunctionValidation(nombre_funcion, args) {
         try {
             // DO NOT DELETE THE NEXT LINE, ALTHOUGH IT SEEMS NOT TO BE USED
-            const funcion = this.funciones[nombre_funcion];
+            const funcion = this.validationFunctions[nombre_funcion];
             const parametrosMapeados = this.mappingParametros(args);
             const stringFuncionMapeada = this.construirFuncionDinamicaString('funcion', 'parametrosMapeados', parametrosMapeados.length);
             const valor = eval(stringFuncionMapeada);
@@ -744,7 +427,7 @@ export class FormPage {
         if (functionName) {
             this.triggerFunction(functionName);
         }
-        this.saveForm();
+        this.saveChanges();
     }
 
     validateBlurFunction($event, functionName) {
@@ -761,7 +444,7 @@ export class FormPage {
 
     blurFunction($event, functionName) {
         var valores = this.validateBlurFunction($event,functionName);
-        this.saveForm();
+        this.saveChanges();
         return valores;
     }
 
@@ -769,7 +452,7 @@ export class FormPage {
         if (functionName) {
             this.triggerFunction(functionName);
         }
-        this.saveForm();
+        this.saveChanges();
     }
 
     onEnterKey(e) {
@@ -777,5 +460,5 @@ export class FormPage {
             let activeElement = <HTMLElement>document.activeElement;
             activeElement && activeElement.blur && activeElement.blur();
         }
-      }
+    }
 }
