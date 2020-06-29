@@ -1,11 +1,11 @@
 <ion-header>
     <ion-navbar color="primary">
-        <ion-title>{{ ((selectedTemplate?.children)[indice_seccion]).label }}</ion-title>
+        <ion-title>{{ ((editingForm?.children)[sectionIndex]).label }}</ion-title>
         <ion-buttons right>
-            <button ion-button icon-only *ngIf="(selectedTemplate?.children.length-1)!=indice_seccion" (click)="siguienteSeccion(indice_seccion)">
+            <button ion-button icon-only *ngIf="(editingForm?.children.length-1)!=sectionIndex" (click)="nextSection()">
                 <ion-icon style="margin-right: 10px;color: white !important;" name="arrow-forward"></ion-icon>
             </button>
-            <button ion-button icon-only *ngIf="(selectedTemplate?.children.length-1)==indice_seccion" (click)="finalizarEncuesta()">
+            <button ion-button icon-only *ngIf="(editingForm?.children.length-1)==sectionIndex" (click)="finishForm()">
                 <p id="finalizarButtonText">Finalizar</p>
             </button>
         </ion-buttons>
@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content>
-    <div *ngFor="let item of ((selectedTemplate?.children)[indice_seccion]).children">
+    <div *ngFor="let item of ((editingForm?.children)[sectionIndex]).children">
 
         <div *ngIf="item.type=='collapseList'">
             <button text-wrap ion-item color="secondary" data-toggle="collapse" [attr.href]="'#collapseExample'+indexCategoria" aria-expanded="false" (click)="clickCollapseButton(indexCategoria,'collapseExample'+indexCategoria,$event)">
@@ -44,14 +44,14 @@
                 <ion-item>
                     <ion-label>{{item.label}}</ion-label>
                     <ion-toggle slot="start" [(ngModel)]="item.checked" checked="item.checked" (ionChange)="blurFunction($event,item.blurFunction)"></ion-toggle>
-                    <!--ion-checkbox [(ngModel)]="item.value" item-right checked="item.checked" (ionChange)="saveForm()"></ion-checkbox-->
+                    <!--ion-checkbox [(ngModel)]="item.value" item-right checked="item.checked" (ionChange)="saveChanges()"></ion-checkbox-->
                 </ion-item>
             </ion-list>
         </ion-list>
 
         <ion-item *ngIf="item.type=='input_text'" id={{item.id}} [class.hide_question]="!item.show" [class.show_question]="item.show">
             <ion-label stacked [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" class="pregunta">{{item.label}}</ion-label>
-            <ion-input type="text" [placeholder]="item.placeholder || 'Ingresa el valor'" [(ngModel)]="item.value" id={{item.id}} 
+            <ion-input type="text" [placeholder]="item.placeholder || 'Ingresa el valor'" [(ngModel)]="item.value" id={{item.id}}
                        [class.invalid_input]="item.errors !== undefined && item.errors.length > 0" (ionChange)="blurFunction($event,item.blurFunction)"
                        (keypress)="onEnterKey($event)">
             </ion-input>
@@ -62,7 +62,7 @@
 
         <ion-item *ngIf="item.type=='input_number'" id={{item.id}} [class.hide_question]="!item.show" [class.show_question]="item.show">
             <ion-label stacked [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" class="pregunta">{{item.label}}</ion-label>
-            <ion-input type="number" [placeholder]="item.placeholder || 'Ingresa el valor'" [(ngModel)]="item.value" id={{item.id}} 
+            <ion-input type="number" [placeholder]="item.placeholder || 'Ingresa el valor'" [(ngModel)]="item.value" id={{item.id}}
                        [class.invalid_input]="item.errors !== undefined && item.errors.length > 0" (ionChange)="blurFunction($event,item.blurFunction)"
                        (keypress)="onEnterKey($event)">
             </ion-input>
@@ -99,7 +99,7 @@
             </button>
         </ion-list>
 
-        <ion-list radio-group *ngIf="item.type=='radio'" id={{item.id}} [(ngModel)]="item.value" [class.hide_question]="!item.show" [class.show_question]="item.show" (blur)="item.show && blurFunction($event,item.blurFunction)" (ionBlur)="saveForm()">
+        <ion-list radio-group *ngIf="item.type=='radio'" id={{item.id}} [(ngModel)]="item.value" [class.hide_question]="!item.show" [class.show_question]="item.show" (blur)="item.show && blurFunction($event,item.blurFunction)" (ionBlur)="saveChanges()">
             <ion-list-header>
                 <ion-label [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" class="pregunta">{{item.label}}</ion-label>
             </ion-list-header>
@@ -115,7 +115,7 @@
         <ion-item *ngIf="item.type=='date'">
             <ion-label [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" class="pregunta">{{item.label}}</ion-label>
             <ion-datetime cancelText="Cancelar" doneText="Seleccionar" mode="md" displayFormat="DD/MM/YYYY" id={{item.id}} [(ngModel)]="item.value" (ionCancel)="blurFunction($event,item.blurFunction)"
-              (ionChange)="blurFunction($event,item.blurFunction)" (ionBlur)="saveForm()" [disabled]="readOnly()"></ion-datetime>
+              (ionChange)="blurFunction($event,item.blurFunction)" (ionBlur)="saveChanges()" [disabled]="readOnly()"></ion-datetime>
             <ion-icon item-end name="calendar" [class.invalid_datepicker]="item.errors !== undefined && item.errors.length > 0"></ion-icon>
         </ion-item>
         <div text-left *ngIf="item.type=='date'" class="div-error" [class.error_message]="item.errors !== undefined && item.errors.length > 0">
@@ -124,7 +124,7 @@
 
         <ion-item *ngIf="item.type=='time'">
             <ion-label [class.invalid_label]="item.errors !== undefined && item.errors.length > 0" class="pregunta">{{item.label}}</ion-label>
-            <ion-datetime cancelText="Cancelar" doneText="Seleccionar" mode="md" displayFormat="HH:mm" id={{item.id}} [(ngModel)]="item.value" (ionCancel)="blurFunction($event,item.blurFunction)" (ionChange)="blurFunction($event,item.blurFunction)" (ionBlur)="saveForm()" [disabled]="readOnly()"></ion-datetime>
+            <ion-datetime cancelText="Cancelar" doneText="Seleccionar" mode="md" displayFormat="HH:mm" id={{item.id}} [(ngModel)]="item.value" (ionCancel)="blurFunction($event,item.blurFunction)" (ionChange)="blurFunction($event,item.blurFunction)" (ionBlur)="saveChanges()" [disabled]="readOnly()"></ion-datetime>
             <ion-icon item-end name="calendar" [class.invalid_datepicker]="item.errors !== undefined && item.errors.length > 0"></ion-icon>
         </ion-item>
         <div text-left *ngIf="item.type=='time'" class="div-error" [class.error_message]="item.errors !== undefined && item.errors.length > 0">
@@ -136,7 +136,7 @@
         </div>
 
         <ion-item *ngIf="item.type=='textarea'">
-            <ion-textarea stacked placeholder={{item.placeholder}} type="text" [(ngModel)]="item.value" (ionBlur)="saveForm()" ></ion-textarea>
+            <ion-textarea stacked placeholder={{item.placeholder}} type="text" [(ngModel)]="item.value" (ionBlur)="saveChanges()" ></ion-textarea>
         </ion-item>
 
         <ion-list *ngIf="item.type=='checkbox'">
