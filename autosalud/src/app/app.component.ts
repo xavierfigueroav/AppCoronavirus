@@ -8,6 +8,7 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { FormPage } from '../pages/form/form';
 import { UserPage } from '../pages/user/user';
 import { ScoreProvider } from '../providers/score/score';
+import { APIProvider } from '../providers/api/api';
 
 @Component({
     templateUrl: 'app.html'
@@ -27,7 +28,8 @@ export class MyApp {
         private app: App,
         private loadingCtrl: LoadingController,
         private storage: StorageProvider,
-        private scoreProvider: ScoreProvider) {
+        private scoreProvider: ScoreProvider,
+        private api: APIProvider) {
         this.platform.ready().then(() => {
             const loader = this.loadingCtrl.create({
                 content: "Espere...",
@@ -50,6 +52,7 @@ export class MyApp {
                             );
                         } else {
                             this.scoreProvider.restartTrackingIfKilled();
+                            this.api.sendPendingForms();
                             this.app.getRootNav().setRoot(TabsPage);
                         }
                     });

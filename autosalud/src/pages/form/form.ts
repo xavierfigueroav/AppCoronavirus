@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, AlertController, App, LoadingController, Loading } from 'ionic-angular';
-import { StorageProvider } from '../../providers/storage/storage';
 import { HTTP } from '@ionic-native/http';
 import { File } from '@ionic-native/file';
+
+import * as moment from 'moment';
+
+import { StorageProvider } from '../../providers/storage/storage';
 import { TabsPage } from '../tabs/tabs';
 import * as Constants from '../../data/constants';
-
 import { AlertProvider } from '../../providers/alert/alert';
 
 @Component({
@@ -202,7 +204,7 @@ export class FormPage {
             fileName = 'DATOS-PERSONALES';
         }
 
-        const formattedDate = this.obtenerFechaActual();
+        const formattedDate = moment().format('DD-MM-YYYY_HH-mm-ss');
         fileName = fileName + '_' + formattedDate + '.json';
         form.finished = new Date();
         const string_form = JSON.stringify(form, null, 2);
@@ -213,7 +215,8 @@ export class FormPage {
                 const ruta_completa = carpeta + fileName;
                 console.log('RUTA ARCHIVO:', ruta_completa);
 
-                this.http.uploadFile(Constants.CREATE_RESOURCE_URL, {package_id: form.dataset, name: fileName}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then((response) => {
+                this.http.setRequestTimeout(10);
+                this.http.uploadFile(Constants.CREATE_RESOURCE_URL, {package_id: form.dataset, name: fileName}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then(() => {
                     this.file.removeFile(carpeta, fileName).then(async () => {
                         await this.storeDataAfterSend(form);
                         this.app.getRootNav().setRoot(TabsPage);
@@ -227,10 +230,11 @@ export class FormPage {
                     });
                 }).catch(async error => {
                     console.log(error);
-                    await this.setFirstUseDateIfAbsent();
+                    await this.storeDataAfterSend(form);
+                    await this.addFormToPendingForms(form);
                     this.app.getRootNav().setRoot(TabsPage);
                     this.loader.dismiss()
-                    this.alerts.showConnectionErrorAlert();
+                    this.alerts.showFormSentAlert();
                 });
             }).catch(error => {
                 console.log(error);
@@ -258,41 +262,14 @@ export class FormPage {
         }
     }
 
-    obtenerFechaActual() {
-        const fecha_actual = new Date();
-
-        const dia = fecha_actual.getDate();
-        let dia_actual = dia.toString();
-        if(dia < 10) {
-            dia_actual = '0' + dia.toString();
+    async addFormToPendingForms(form: any) {
+        const pendingForms = await this.storage.get('pendingForms');
+        if(pendingForms == null) {
+            await this.storage.set('pendingForms', [form]);
+        } else {
+            pendingForms.push(form);
+            await this.storage.set('pendingForms', pendingForms);
         }
-
-        const mes = Number(fecha_actual.getMonth()) + 1;
-        let mes_actual = mes.toString();
-        if(mes < 10) {
-            mes_actual = '0' + mes.toString();
-        }
-
-        const hora = fecha_actual.getHours();
-        let hora_actual = hora.toString();
-        if(hora < 10) {
-            hora_actual = '0' + hora.toString();
-        }
-
-        const minutos = fecha_actual.getMinutes();
-        let minutos_actual = minutos.toString();
-        if(minutos < 10) {
-            minutos_actual = '0' + minutos.toString();
-        }
-
-        const segundos = fecha_actual.getSeconds();
-        let segundos_actual = segundos.toString();
-        if(segundos < 10) {
-            segundos_actual = '0' + segundos.toString();
-        }
-
-        const fecha = dia_actual + '-' + mes_actual + '-' + fecha_actual.getFullYear() + '_' + hora_actual + '-'+ minutos_actual + '-' + segundos_actual;
-        return fecha;
     }
 
     mappingParametros(parameters: any[]) {
