@@ -3,6 +3,8 @@ import * as Constants from '../../data/constants';
 import { StorageProvider } from '../../providers/storage/storage';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Encoding } from "@ionic-native/google-maps";
+import { HTTP } from '@ionic-native/http';
+import { File } from '@ionic-native/file';
 
 import * as moment from 'moment';
 import { DatabaseProvider } from '../database/database';
@@ -20,7 +22,9 @@ export class APIProvider {
     constructor(
         private database: DatabaseProvider,
         private storage: StorageProvider,
-        private httpClient: HttpClient
+        private httpClient: HttpClient,
+        private http: HTTP,
+        private file: File
     ) {
         console.log('Hello ScoreSenderProvider Provider');
     }
@@ -217,6 +221,47 @@ export class APIProvider {
                 reject(error);
             });
         });
+    }
+
+    async sendPendingForms() {
+        const pendingForms = await this.storage.get('pendingForms');
+        const newPendingForms = [];
+
+        for(const pendingForm of pendingForms){
+            try {
+                await this.sendPendingForm(pendingForm);
+            } catch {
+                newPendingForms.push(pendingForm);
+            }
+        }
+        await this.storage.set('pendingForms', newPendingForms);
+    }
+
+    private async sendPendingForm(form: any) {
+        let fileName = 'AUTODIAGNÓSTICO';
+        if(form.type === 'initial') {
+            fileName = 'DATOS-PERSONALES';
+        }
+
+        const formattedDate = moment().format('DD-MM-YYYY_HH-mm-ss');
+        fileName = fileName + '_' + formattedDate + '.json';
+        const string_form = JSON.stringify(form, null, 2);
+        let carpeta: string;
+
+        try {
+            await this.file.createFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', fileName, true);
+            await this.file.writeFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', fileName, string_form, {replace:true, append:false});
+            carpeta = this.file.externalApplicationStorageDirectory+'AppCoronavirus/';
+            const ruta_completa = carpeta + fileName;
+            await this.http.uploadFile(
+                Constants.CREATE_RESOURCE_URL,
+                {package_id: form.dataset, name: fileName},
+                {'Content-Type': 'application/json', 'Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'},
+                ruta_completa, 'upload'
+            );
+        } finally {
+            carpeta && this.file.removeFile(carpeta, fileName);
+        }
     }
 
     getAreaByLocation(latitude: number, longitude: number) {
