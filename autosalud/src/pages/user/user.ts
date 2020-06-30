@@ -4,7 +4,6 @@ import { StorageProvider } from '../../providers/storage/storage';
 import { AuthPage } from '../auth/auth';
 import { ScoreProvider } from '../../providers/score/score';
 import { AlertProvider } from '../../providers/alert/alert';
-import { LocalNotifications } from '@ionic-native/local-notifications';
 
 import { DatabaseProvider } from '../../providers/database/database';
 import { HomeInformationComponent } from '../../components/home-information/home-information';
@@ -32,10 +31,9 @@ export class UserPage implements OnInit{
         private scoreProvider: ScoreProvider,
         private events: Events,
         private ngZone: NgZone,
-        private localNotifications: LocalNotifications,
         private alert: AlertProvider,
         private modalController: ModalController
-        ) {
+    ) {
             this.events.subscribe('scoreChanges', (score: number) => {
                 this.updateCurrentScore(score);
                 this.fillScores();

@@ -38,6 +38,7 @@ import { AlertProvider } from '../providers/alert/alert';
 import { DatabaseProvider } from '../providers/database/database';
 import { StorageProvider } from '../providers/storage/storage';
 import { AboutPage } from '../pages/about/about';
+import { NotificationsProvider } from '../providers/notifications/notifications';
 
 @NgModule({
   declarations: [
@@ -98,7 +99,8 @@ import { AboutPage } from '../pages/about/about';
     DatabaseProvider,
     ValidationsProvider,
     StorageProvider,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    NotificationsProvider
   ]
 })
 
