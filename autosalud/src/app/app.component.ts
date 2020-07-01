@@ -29,7 +29,8 @@ export class MyApp {
         private loadingCtrl: LoadingController,
         private storage: StorageProvider,
         private scoreProvider: ScoreProvider,
-        private api: APIProvider) {
+        private api: APIProvider
+    ) {
         this.platform.ready().then(() => {
             const loader = this.loadingCtrl.create({
                 content: "Espere...",

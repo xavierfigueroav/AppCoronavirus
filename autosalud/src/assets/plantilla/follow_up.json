@@ -4,25 +4,6 @@
         "type": "COMPUESTA",
         "name": "AutoSalud",
         "gps": "no",
-        "notifications": [
-            {
-                "type": "PERIÓDICA",
-                "interval_type": "day",
-                "interval_value": "1",
-                "children": [
-                    {
-                        "type": "start",
-                        "date": "2020-04-17",
-                        "time": "10:00"
-                    },
-                    {
-                        "type": "end",
-                        "date": "2020-05-16",
-                        "time": "10:00"
-                    }
-                ]
-            }
-        ],
         "data": {
             "follow_up": {
                 "children": [
