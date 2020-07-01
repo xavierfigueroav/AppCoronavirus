@@ -16,15 +16,19 @@ export class NotificationsProvider {
 
     constructor(private localNotifications: LocalNotifications, private storage: StorageProvider) {
         console.log('Hello NotificationsProvider Provider');
+        this.localNotifications.setDefaults({
+            title: 'REPORTE DE SALUD',
+            text: 'Se le recuerda que debe llenar un nuevo reporte diario de salud en caso de que no lo haya hecho el día de hoy',
+            vibrate: true,
+        });
     }
 
-    registerFormNotificationListeners() {
-        this.localNotifications.on('click').subscribe(something => {
-            console.log('clicked', something);
-        });
-        this.localNotifications.on('clear').subscribe(something => {
-            console.log('clear', something);
-        });
+    clearTriggeredNotifications() {
+        this.localNotifications.getTriggeredIds().then(ids => {
+            if(ids != null) {
+                this.localNotifications.clear(ids);
+            }
+        }).catch(console.log);
     }
 
     async setFollowUpNotifications(start: Date, duration: number, time: string) {
@@ -77,8 +81,6 @@ export class NotificationsProvider {
             const date = this.getDateFromNotificationChildren(notificationChildren);
             this.localNotifications.schedule({
                 id: new Date().getMilliseconds(),
-                title: 'REPORTE DE SALUD',
-                text: 'Se le recuerda que debe llenar un nuevo reporte diario de salud en caso de que no lo haya hecho el día de hoy',
                 trigger: { at: date }
             });
         }
@@ -94,8 +96,6 @@ export class NotificationsProvider {
         while(notificationDate.getTime() <= endDate.getTime()) {
             this.localNotifications.schedule({
                 id: new Date().getMilliseconds(),
-                title: 'REPORTE DE SALUD',
-                text: 'Se le recuerda que debe llenar un nuevo reporte diario de salud en caso de que no lo haya hecho el día de hoy',
                 trigger: { at: new Date(notificationDate) },
             });
             notificationDate.setTime(notificationDate.getTime() + interval);

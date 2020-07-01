@@ -9,7 +9,6 @@ import { FormPage } from '../pages/form/form';
 import { UserPage } from '../pages/user/user';
 import { ScoreProvider } from '../providers/score/score';
 import { APIProvider } from '../providers/api/api';
-import { NotificationsProvider } from '../providers/notifications/notifications';
 
 @Component({
     templateUrl: 'app.html'
@@ -30,8 +29,8 @@ export class MyApp {
         private loadingCtrl: LoadingController,
         private storage: StorageProvider,
         private scoreProvider: ScoreProvider,
-        private api: APIProvider,
-        private notifications: NotificationsProvider) {
+        private api: APIProvider
+    ) {
         this.platform.ready().then(() => {
             const loader = this.loadingCtrl.create({
                 content: "Espere...",
@@ -53,7 +52,6 @@ export class MyApp {
                                 { 'formType': 'initial' }
                             );
                         } else {
-                            this.notifications.registerFormNotificationListeners();
                             this.scoreProvider.restartTrackingIfKilled();
                             this.api.sendPendingForms();
                             this.app.getRootNav().setRoot(TabsPage);
