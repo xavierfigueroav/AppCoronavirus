@@ -16,8 +16,13 @@
 
     <div class="container">
 
-        <button ion-button icon-end full class="button" (click)="goToDiagnostic()">
-            <p> ENVIAR REPORTE DIARIO DE SALUD</p>
+        <p *ngIf="forms.length === 0" class="empty-message">
+            Cuando existan formularios que debas llenar, aparecerán aquí.
+        </p>
+
+        <button ion-button icon-end full class="button"
+        *ngFor="let form of forms" (click)="goToForm(form.type)">
+            <p> {{ form.title }}</p>
         </button>
 
     </div>

@@ -71,6 +71,10 @@ export class AlertProvider {
         this.showOkButtonAlert('Campo vacío o incorrecto.')
     }
 
+    showPositiveResultAlert() {
+        this.showOkButtonAlert("Obtuviste un resultado positivo en una de tus pruebas. Desde ahora se activará un formulario de seguimiento de síntomas que deberás llenar diariamente durante 15 días. Este formulario se encuentra en la pestaña 'Encuestas' de la aplicación.");
+    }
+
     scoreInformation(){
         const alert = this.alertController.create({
             title: '<p align="center">Información de casa</p>',

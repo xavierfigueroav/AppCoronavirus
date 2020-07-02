@@ -29,7 +29,7 @@ page-medical {
         margin-top: 10%;
         margin-bottom: 10%;
         border-radius: 10px !important;
-        
+
         .card-title {
             position: center;
             text-align: center;
@@ -55,5 +55,12 @@ page-medical {
     p{
         color: #eeeeee;
         margin-top: 4%;
+    }
+
+    .empty-message {
+        color: #999999;
+        text-align: center;
+        font-weight: bold;
+        font-size: 16px;
     }
 }
