@@ -280,6 +280,33 @@ export class APIProvider {
         });
     }
 
+    async getUserInformation(appId: string) {
+        const data = this.getUserInformationRequestBody(appId);
+        const httpOptions = {
+            headers: new HttpHeaders({ 'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'  })
+        };
+        const response = await this.httpClient.post(
+            Constants.READ_REGISTRY_URL,
+            data,
+            httpOptions
+        ).toPromise();
+        return response['data'][0];
+    }
+
+    getUserInformationRequestBody(appId: string) {
+        const data = {
+            "tabla": "integracion_usuario",
+            "condiciones": [
+                {
+                    "columna": "telefono_id",
+                    "comparador": "==",
+                    "valor": appId
+                }
+            ]
+        }
+        return JSON.stringify(data);
+    }
+
     generateValidationCodeBody(app_code: string) {
         const data = {
             "tabla": "integracion_claves_app",

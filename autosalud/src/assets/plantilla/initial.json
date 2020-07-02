@@ -3,6 +3,7 @@
         "uuid": "39f736d2-7fc4-49f3-ab0e-feefe1405d62",
         "type": "COMPUESTA",
         "name": "AutoSalud",
+        "description": "Formulario de información personal",
         "gps": "no",
         "data": {
             "initial": {

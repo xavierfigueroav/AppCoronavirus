@@ -11,12 +11,13 @@
 
 <ion-content>
 
+    <ion-refresher (ionRefresh)="searchTestResults($event)">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
     <div class="pin-container" margin>
         <h2 class="title" style="font-weight:bold">Resultados de las pruebas</h2>
         <p class="description">Aquí se mostraran los resultados de todas las pruebas que han sido realizadas.</p>
-        <button id="searchButton" ion-button (click)="searchTestResults()" color="primary">
-            <p id="actualizarButtonText">Actualizar resultados</p>
-        </button>
     </div>
 
     <div *ngIf="!testFound" class="not-found-message">
