@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { App } from 'ionic-angular';
+import { App, LoadingController } from 'ionic-angular';
 import { AuthPage } from '../auth/auth';
 import { StorageProvider } from '../../providers/storage/storage';
 import { FormPage } from '../form/form';
@@ -25,18 +25,21 @@ export class MedicalPage {
     constructor(
         private app: App,
         private storage: StorageProvider,
-        private scoreProvider: ScoreProvider
+        private scoreProvider: ScoreProvider,
+        private loadingController: LoadingController
     ) { }
 
     ionViewWillEnter() {
         this.forms = [];
+        const loader = this.loadingController.create({ content: 'Espere...' });
+        loader.present();
         this.storage.get('formTemplates').then(templates => {
             for(const type of Object.keys(templates)) {
                 const template = templates[type][0];
                 this.checkForActiveForms(template, type);
-
             }
-        });
+            loader.dismiss();
+        }).catch(() => loader.dismiss());
     }
 
     checkForActiveForms(template: any, formType: string) {
