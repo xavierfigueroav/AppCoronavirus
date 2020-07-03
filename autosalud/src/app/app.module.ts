@@ -39,6 +39,7 @@ import { DatabaseProvider } from '../providers/database/database';
 import { StorageProvider } from '../providers/storage/storage';
 import { AboutPage } from '../pages/about/about';
 import { NotificationsProvider } from '../providers/notifications/notifications';
+import { FormsProvider } from '../providers/forms/forms';
 
 @NgModule({
   declarations: [
@@ -100,7 +101,8 @@ import { NotificationsProvider } from '../providers/notifications/notifications'
     ValidationsProvider,
     StorageProvider,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    NotificationsProvider
+    NotificationsProvider,
+    FormsProvider
   ]
 })
 

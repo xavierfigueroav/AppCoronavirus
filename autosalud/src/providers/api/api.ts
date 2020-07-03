@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as Constants from '../../data/constants';
 import { StorageProvider } from '../../providers/storage/storage';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Encoding } from "@ionic-native/google-maps";
 import { HTTP } from '@ionic-native/http';
 import { File } from '@ionic-native/file';
@@ -291,6 +291,18 @@ export class APIProvider {
             httpOptions
         ).toPromise();
         return response['data'][0];
+    }
+
+    async getTemplatesDataset(templateType: string) {
+        const params = new HttpParams().set('id', Constants.FORMS_DATASETS[templateType]);
+        const response = await this.httpClient.get(Constants.READ_DATASET_URL, { params }).toPromise();
+        return response['result'];
+    }
+
+    async getFormTemplate(datasetId: string, templateId: string, templateName: string) {
+        const templateUrl = `${Constants.API_ENDPOINT}/dataset/${datasetId}/resource/${templateId}/download/${templateName}`;
+        const template = await this.httpClient.get(templateUrl).toPromise();
+        return template;
     }
 
     getUserInformationRequestBody(appId: string) {
