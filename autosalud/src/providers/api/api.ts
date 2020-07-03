@@ -224,7 +224,7 @@ export class APIProvider {
     }
 
     async sendPendingForms() {
-        const pendingForms = await this.storage.get('pendingForms');
+        const pendingForms = await this.storage.get('pendingForms') || [];
         const newPendingForms = [];
 
         for(const pendingForm of pendingForms){
