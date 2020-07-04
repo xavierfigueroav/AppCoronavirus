@@ -2,8 +2,7 @@
     {
         "uuid": "21ccca2f-322a-424f-bba5-b39c3c12c19a",
         "type": "COMPUESTA",
-        "name": "AutoSalud",
-        "description": "Formulario de seguimiento de síntomas",
+        "name": "Formulario de seguimiento de síntomas",
         "gps": "no",
         "data": {
             "follow_up": {

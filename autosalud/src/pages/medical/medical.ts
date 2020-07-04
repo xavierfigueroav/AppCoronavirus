@@ -54,7 +54,7 @@ export class MedicalPage {
                 const endDate = notification.children[1].date;
                 const currentDate = moment().format('YYYY-MM-DD');
                 if(currentDate >= startDate && currentDate <= endDate) {
-                    this.forms.push({ type: formType, title: template.description });
+                    this.forms.push({ type: formType, title: template.name });
                 }
             }
         }
