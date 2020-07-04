@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import * as Constants from '../../data/constants';
 import { StorageProvider } from '../../providers/storage/storage';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Encoding } from "@ionic-native/google-maps";
 import { HTTP } from '@ionic-native/http';
 import { File } from '@ionic-native/file';
 
 import * as moment from 'moment';
 import { DatabaseProvider } from '../database/database';
+import { FormPage } from '../../pages/form/form';
 
 
 /*
@@ -238,11 +239,7 @@ export class APIProvider {
     }
 
     private async sendPendingForm(form: any) {
-        let fileName = 'AUTODIAGNÓSTICO';
-        if(form.type === 'initial') {
-            fileName = 'DATOS-PERSONALES';
-        }
-
+        let  fileName = FormPage.FORMS_FILE_NAMES[form.type];
         const formattedDate = moment().format('DD-MM-YYYY_HH-mm-ss');
         fileName = fileName + '_' + formattedDate + '.json';
         const string_form = JSON.stringify(form, null, 2);
@@ -291,6 +288,18 @@ export class APIProvider {
             httpOptions
         ).toPromise();
         return response['data'][0];
+    }
+
+    async getTemplatesDataset(templateType: string) {
+        const params = new HttpParams().set('id', Constants.FORMS_DATASETS[templateType]);
+        const response = await this.httpClient.get(Constants.READ_DATASET_URL, { params }).toPromise();
+        return response['result'];
+    }
+
+    async getFormTemplate(datasetId: string, templateId: string, templateName: string) {
+        const templateUrl = `${Constants.API_ENDPOINT}/dataset/${datasetId}/resource/${templateId}/download/${templateName}`;
+        const template = await this.httpClient.get(templateUrl).toPromise();
+        return template;
     }
 
     getUserInformationRequestBody(appId: string) {

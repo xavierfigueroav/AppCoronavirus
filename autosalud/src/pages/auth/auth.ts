@@ -5,14 +5,11 @@ import { StorageProvider } from '../../providers/storage/storage';
 import { File } from '@ionic-native/file';
 import { APIProvider } from '../../providers/api/api';
 import { AlertProvider } from '../../providers/alert/alert';
-import { DatabaseProvider } from '../../providers/database/database';
 import { ValidationsProvider } from '../../providers/validations/validations';
 import { FormPage } from '../form/form';
 import { ScoreProvider } from '../../providers/score/score';
 
-import * as calculos from '../../assets/calculos/calculo.json';
-import * as initial from '../../assets/plantilla/initial.json';
-import * as followUp from '../../assets/plantilla/follow_up.json';
+import { FormsProvider } from '../../providers/forms/forms';
 
 @Component({
     selector: 'page-auth',
@@ -21,9 +18,6 @@ import * as followUp from '../../assets/plantilla/follow_up.json';
 
 export class AuthPage {
     appPIN: string;
-    formValidators = <any>calculos;
-    initialFormTemplate = <any>initial;
-    followUpFormTemplate = <any>followUp;
 
     constructor(
         private app: App,
@@ -31,11 +25,11 @@ export class AuthPage {
         private file: File,
         private loadingCtrl: LoadingController,
         private alertCtrl: AlertController,
-        private database: DatabaseProvider,
         private api: APIProvider,
         private alerts: AlertProvider,
         private validations: ValidationsProvider,
-        private scoreProvider: ScoreProvider) {
+        private scoreProvider: ScoreProvider,
+        private forms: FormsProvider) {
 
         this.storage.setNotifications(null);
         this.crearDirectorio();
@@ -98,7 +92,8 @@ export class AuthPage {
         }
 
         this.scoreProvider.restartTrackingIfStopped();
-        await this.copyTemplatesFromSourceToStorageIfAbsent();
+        await this.forms.copyTemplatesFromSourceToStorageIfAbsent();
+        await this.forms.checkForFormsUpdates();
 
         if(!datasetCreated) { // Already created
             this.app.getRootNav().setRoot(TabsPage);
@@ -109,19 +104,6 @@ export class AuthPage {
             });
         } else {
             this.app.getRootNav().setRoot(FormPage, { 'formType': 'initial' });
-        }
-    }
-
-    async copyTemplatesFromSourceToStorageIfAbsent() {
-        let formTemplates = await this.storage.get('formTemplates');
-
-        if(formTemplates == null) {
-            formTemplates = {};
-            formTemplates.initial = this.initialFormTemplate;
-            formTemplates.follow_up = this.followUpFormTemplate;
-
-            await this.storage.set('formTemplates', formTemplates);
-            await this.storage.set('formValidators', this.formValidators);
         }
     }
 
