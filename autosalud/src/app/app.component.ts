@@ -99,11 +99,10 @@ export class MyApp {
     confirmBackButtonAction() {
         const alert = this.alertController.create({
             title: 'Formulario incompleto',
-            subTitle: '¿Deseas continuar?',
-            message: 'Si continúas, el formulario no se enviará, pero se guardará para que lo edites más tarde.',
+            message: 'Si optas por salir, el formulario no se enviará, pero la información se guardará localmente para que la edites más tarde.',
             buttons: [
                 {
-                    text: 'Sí',
+                    text: 'Salir',
                     handler: () => {
                         const tabIndex = this.activePage.data.formType === 'initial' ? 0 : 1;
                         this.app.getRootNav().setRoot(
@@ -114,7 +113,7 @@ export class MyApp {
                     }
                 },
                 {
-                    text: 'No',
+                    text: 'Cancelar',
                     role: 'cancel'
                 }
             ]
