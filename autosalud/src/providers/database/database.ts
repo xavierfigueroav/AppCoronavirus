@@ -206,6 +206,7 @@ export class DatabaseProvider {
         return this.isReady().then(async () => {
             return this.database.executeSql(`INSERT INTO location(app_id,latitude,longitude,date,hour,distance_score,wifi_score,distance_home,time_away,time_score,population_density)
             VALUES ('${appId}','${latitude}','${longitude}','${dateString}','${hour}','${distanceScore}','${wifiScore}','${distanceHome}','${timeScore}','${timeAway}','${populationDensity}');`, {}).then(result => {
+                console.log("In addLocation function");
                 if(result.insertId){
                     return this.getScore(result.insertId);
                 }
