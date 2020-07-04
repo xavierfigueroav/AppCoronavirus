@@ -23,20 +23,15 @@ page-form {
 		max-height: 70%;
 	}
 
+	ion-icon {
+		pointer-events: none;
+	}
+
 	ion-select {
 		max-width: 100% !important;
-        max-height: 100% !important;
+		max-height: 100% !important;
 		//background: $color('secundary');
-    }
-    
-    ion-select-placeholder, 
-    ion-datetime,
-	ion-input,
-    ion-item ion-label,
-    .pregunta,
-    ion-textarea {
-        color: #23427C !important; 
-    }
+	}
 
 	.aviso {
 		animation: animationPageEnter 1.2s;
@@ -44,10 +39,12 @@ page-form {
 	@keyframes animationPageEnter {
 		0% {
 			max-height: 0;
+			opacity: 0.5;
 		}
 
 		100% {
 			max-height: 300px;
+			opacity: 1;
 		}
 	}
 
@@ -59,9 +56,7 @@ page-form {
 		border: think solid gray;
 	}
 
-    .invalid_label, 
-    .invalid_datepicker,
-    .error_message {
+	.invalid_label {
 		color: #f53d3d !important;
 	}
 
@@ -69,8 +64,13 @@ page-form {
 		border: 1px solid #f53d3d;
 	}
 
+	.invalid_datepicker {
+		color: #f53d3d !important;
+	}
+
 	.error_message {
 		display: block !important;
+		color: #f53d3d !important;
 		font-size: 16px;
 	}
 
@@ -80,6 +80,7 @@ page-form {
 	ion-item ion-label,
 	ion-list-header ion-label {
 		font-size: 16px !important;
+		color: black !important;
 	}
 
 	.item-md-secondary:hover .item-divider-md-secondary:hover {
@@ -102,6 +103,11 @@ page-form {
 
 	ion-textarea {
 		font-size: 16px !important;
+		color: black !important;
+	}
+
+	ion-select {
+		color: #999 !important;
 	}
 
 	ion-grid > ion-label {
@@ -125,6 +131,7 @@ page-form {
 
 	.placeholder-select > div {
 		color: $select-md-placeholder-color;
+		opacity: 1 !important;
 	}
 
 	.label_mets {
@@ -139,7 +146,7 @@ page-form {
 	// 	color: #333333 !important;
 	// }
 	ion-icon{
-        pointer-events: none;
+		color: #eeeeee !important;
 	}
 
 	#finalizarButtonText{
