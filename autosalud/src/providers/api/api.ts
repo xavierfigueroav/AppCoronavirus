@@ -8,6 +8,7 @@ import { File } from '@ionic-native/file';
 
 import * as moment from 'moment';
 import { DatabaseProvider } from '../database/database';
+import { FormPage } from '../../pages/form/form';
 
 
 /*
@@ -238,11 +239,7 @@ export class APIProvider {
     }
 
     private async sendPendingForm(form: any) {
-        let fileName = 'AUTODIAGNÓSTICO';
-        if(form.type === 'initial') {
-            fileName = 'DATOS-PERSONALES';
-        }
-
+        let  fileName = FormPage.FORMS_FILE_NAMES[form.type];
         const formattedDate = moment().format('DD-MM-YYYY_HH-mm-ss');
         fileName = fileName + '_' + formattedDate + '.json';
         const string_form = JSON.stringify(form, null, 2);

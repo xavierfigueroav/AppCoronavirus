@@ -7,6 +7,7 @@ import { StorageProvider } from '../storage/storage';
 import * as calculos from '../../assets/calculos/calculo.json';
 import * as initial from '../../assets/plantilla/initial.json';
 import * as followUp from '../../assets/plantilla/follow_up.json';
+import { NotificationsProvider } from '../notifications/notifications';
 
 /*
   Generated class for the FormsProvider provider.
@@ -21,7 +22,11 @@ export class FormsProvider {
     initialFormTemplate = <any>initial;
     followUpFormTemplate = <any>followUp;
 
-    constructor(private api: APIProvider, private storage: StorageProvider) {
+    constructor(
+        private api: APIProvider,
+        private storage: StorageProvider,
+        private notifications: NotificationsProvider
+    ) {
         console.log('Hello FormsProvider Provider');
     }
 
@@ -65,6 +70,9 @@ export class FormsProvider {
                 template[0].notifications = currentTemplate[0].notifications;
             }
             templates[formType] = template;
+            if(formType === 'initial_plus' || formType === 'follow_up_plus') {
+                this.notifications.setNotificaciones(template[0]);
+            }
             await this.storage.set('formTemplates', templates);
             await this.replaceForm(template[0], formType);
         }
