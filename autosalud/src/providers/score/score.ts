@@ -233,15 +233,22 @@ export class ScoreProvider {
         const homeLatitude = homeLocation.latitude;
         const homeLongitude = homeLocation.longitude;
 
-        const al = 0;
+        const censalArea = await this.storage.get('censalArea');
+        const homeArea = await this.storage.get('homeArea');
+        const homeRadius = Math.sqrt(homeArea) / 2;
+        const csRadius = Math.sqrt(censalArea) /2;
+
+        const al = -10;
         const bl = 0;
-        const cl = 100;
-        const am = 50;
-        const bm = 250;
-        const cm = 500;
-        const ah = 300;
-        const bh = 1000;
-        const ch = 2000;
+        const cl = 2*homeRadius;
+
+        const am = homeRadius;
+        const bm = homeRadius/2;
+        const cm = csRadius;
+
+        const ah = csRadius/2;
+        const bh = 2*csRadius; //out of censal sector
+        const ch = Number.MAX_VALUE;
 
         return {
             'homeLatitude': homeLatitude,
