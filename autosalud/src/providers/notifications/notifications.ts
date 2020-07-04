@@ -17,8 +17,7 @@ export class NotificationsProvider {
     constructor(private localNotifications: LocalNotifications, private storage: StorageProvider) {
         console.log('Hello NotificationsProvider Provider');
         this.localNotifications.setDefaults({
-            title: 'REPORTE DE SALUD',
-            text: 'Se le recuerda que debe llenar un nuevo reporte diario de salud en caso de que no lo haya hecho el día de hoy',
+            text: 'Se le recuerda que debe llenar un nuevo reporte en caso de que no lo haya hecho el día de hoy',
             vibrate: true,
         });
     }
@@ -69,24 +68,25 @@ export class NotificationsProvider {
     setNotificaciones(template: any) {
         for(let notification of template.notifications) {
             if(notification.type === 'SIMPLE') {
-                this.setSimpleFormNotification(notification);
+                this.setSimpleFormNotification(notification, template.name);
             } else if(notification.type === 'PERIÓDICA') {
-                this.setPeriodicFormNotification(notification);
+                this.setPeriodicFormNotification(notification, template.name);
             }
         }
     }
 
-    private setSimpleFormNotification(notification: any) {
+    private setSimpleFormNotification(notification: any, title: string) {
         for(const notificationChildren of notification.children) {
             const date = this.getDateFromNotificationChildren(notificationChildren);
             this.localNotifications.schedule({
                 id: new Date().getMilliseconds(),
+                title: title.toUpperCase(),
                 trigger: { at: date }
             });
         }
     }
 
-    private setPeriodicFormNotification(notification: any) {
+    private setPeriodicFormNotification(notification: any, title: string) {
         const startDate = this.getDateFromNotificationChildren(notification.children[0]);
         const endDate = this.getDateFromNotificationChildren(notification.children[1]);
 
@@ -96,6 +96,7 @@ export class NotificationsProvider {
         while(notificationDate.getTime() <= endDate.getTime()) {
             this.localNotifications.schedule({
                 id: new Date().getMilliseconds(),
+                title: title.toUpperCase(),
                 trigger: { at: new Date(notificationDate) },
             });
             notificationDate.setTime(notificationDate.getTime() + interval);
