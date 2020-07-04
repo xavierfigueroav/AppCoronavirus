@@ -22,6 +22,7 @@ export class HomeInformationComponent implements OnInit {
     longitude: number;
     area: number;
     homeWifiNetworks: number;
+    censalArea: number = 20000;
 
     constructor(
         private viewController: ViewController,
@@ -84,6 +85,7 @@ export class HomeInformationComponent implements OnInit {
             content: 'Guardando...',
         });
         loader.present();
+        await this.storage.set('censalArea', this.censalArea);
         await this.storage.set('homeWifiNetworks', this.homeWifiNetworks);
         await this.storage.set('homeLocation', {
             latitude: Number(this.latitude),
