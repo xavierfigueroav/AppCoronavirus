@@ -6,6 +6,7 @@ import { FormPage } from '../form/form';
 import { ScoreProvider } from '../../providers/score/score';
 
 import * as moment from 'moment';
+import { FormsProvider } from '../../providers/forms/forms';
 
 /**
  * Generated class for the MedicalPage page.
@@ -26,20 +27,24 @@ export class MedicalPage {
         private app: App,
         private storage: StorageProvider,
         private scoreProvider: ScoreProvider,
+        private formsProvider: FormsProvider,
         private loadingController: LoadingController
     ) { }
 
-    ionViewWillEnter() {
+    async ionViewWillEnter() {
         this.forms = [];
         const loader = this.loadingController.create({ content: 'Espere...' });
         loader.present();
-        this.storage.get('formTemplates').then(templates => {
+        try {
+            await this.formsProvider.checkForFormsUpdates();
+        } finally {
+            const templates = await this.storage.get('formTemplates');
             for(const type of Object.keys(templates)) {
                 const template = templates[type][0];
                 this.checkForActiveForms(template, type);
             }
             loader.dismiss();
-        }).catch(() => loader.dismiss());
+        }
     }
 
     checkForActiveForms(template: any, formType: string) {
