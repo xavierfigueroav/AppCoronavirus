@@ -24,6 +24,8 @@ export class UserPage implements OnInit{
     scores: any;
     colors: any;
 
+    log: any;
+
     constructor(
         private app: App,
         private storage: StorageProvider,
@@ -38,10 +40,17 @@ export class UserPage implements OnInit{
                 this.updateCurrentScore(score);
                 this.fillScores();
             });
+
+            this.events.subscribe('log', (log: any) => {
+                this.ngZone.run(() => {
+                    this.log = {... this.log, ...log };
+                });
+            });
          }
 
     ngOnInit() {
         console.log('ngOnInit UserPage');
+        this.log = {};
         this.colors = {'0':'#49BEAA','1': '#49BEAA', '2': '#EEB868', '3': '#EF767A', '-1': '#999999'};
         const scores = [];
         for(let i = 0; i < 24; i++) {

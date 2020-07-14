@@ -53,4 +53,19 @@
     <div id="score-bar">
         <div class="score-square" *ngFor="let score of scores"  [ngStyle]="{ 'background-color': score.color }"></div>
     </div>
+
+    <div class="logger" padding>
+        <p class="log-text">
+            <em class="log-text">Hora de la última ubicación enviada por el plugin: </em>
+            {{ log['pluginLocation'] == null ? 'No data yet' : log['pluginLocation'] }}
+        </p>
+        <p class="log-text">
+            <em class="log-text">Hora de la última ubicación generada por swiping down: </em>
+            {{ log['swipeDown'] == null ? 'No data yet' : log['swipeDown'] }}
+        </p>
+        <p class="log-text">
+            <em class="log-text">Hora del último score almacenado: </em>
+            {{ log['lastScore'] == null ? 'No data yet' : log['lastScore'] }}
+        </p>
+    </div>
 </ion-content>

@@ -88,20 +88,27 @@ export class ScoreProvider {
         }
         this.runningScoresCalculation = true;
 
+        const log = {};
+
         console.log('MOVEMENT DETECTED!');
         try {
             await this.backgroundGeolocation.deleteLocation(location.id);
+            log['pluginLocation'] = new Date(location.time).toLocaleString();
         } catch(error) {
             console.log('[EXPECTED ERROR]', error);
+            log['swipeDown'] = new Date(location.time).toLocaleString();
         } finally {
             const partialScores = await this.getPartialScores(location);
             await this.database.addLocation(partialScores.latitude, partialScores.longitude,
                                             partialScores.date, partialScores.distance_score,
                                             partialScores.distance_home, partialScores.time_away,
-                                            partialScores.time_score, partialScores.wifi_score, 
+                                            partialScores.time_score, partialScores.wifi_score,
                                             partialScores.population_score);
             await this.checkForPendingScores(location.time);
             await this.calculateCurrentScore();
+            const lastScore = await this.database.getLastScore();
+            log['lastScore'] = `${lastScore.date} ${lastScore.hour}h00`;
+            this.events.publish('log', log);
             this.runningScoresCalculation = false;
             this.api.sendPendingScoresToServer();
         }
@@ -271,17 +278,17 @@ export class ScoreProvider {
             await this.database.addLocation(locationsByHour[0].latitude, locationsByHour[0].longitude,
                                             scoreDate, locationsByHour[0].distance_score,
                                             locationsByHour[0].distance_home, locationsByHour[0].time_away,
-                                            locationsByHour[0].time_score, locationsByHour[0].wifi_score, 
+                                            locationsByHour[0].time_score, locationsByHour[0].wifi_score,
                                             locationsByHour[0].population_score);
         }else{
             locationsByHour = full ? locationsByHour : lastElement ? [lastElement] : [];
         }
         const completeScore = await this.calculateCompleteExposition(locationsByHour);
         const encodedRoute = this.getEncodedRoute(locationsByHour);
-        return {completeScore: completeScore.score, maxDistanceToHome: completeScore.maxDistanceToHome, 
+        return {completeScore: completeScore.score, maxDistanceToHome: completeScore.maxDistanceToHome,
                 maxTimeAway: completeScore.maxTimeAway, encodedRoute: encodedRoute};
     }
- 
+
     async calculateWifiScore(): Promise<number>{
         const numNetworks = await this.startScan();
         const wifiScore: WifiScore = new WifiScore();
