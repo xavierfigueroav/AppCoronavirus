@@ -24,6 +24,13 @@ export class FormPage {
     isSavedForm: boolean;
     formChanged: boolean;
 
+    static FORMS_FILE_NAMES = {
+        initial: 'DATOS-PERSONALES',
+        follow_up: 'DIAGNÓSTICO',
+        initial_plus: 'DATOS-PERSONALES-PLUS',
+        follow_up_plus: 'DIAGNÓSTICO-PLUS'
+    };
+
     constructor(
         private alertCtrl: AlertController,
         private navParams: NavParams,
@@ -199,11 +206,7 @@ export class FormPage {
     }
 
     subirArchivo(form: any) {
-        let fileName = 'AUTODIAGNÓSTICO';
-        if(form.type === 'initial') {
-            fileName = 'DATOS-PERSONALES';
-        }
-
+        let fileName = FormPage.FORMS_FILE_NAMES[form.type];
         const formattedDate = moment().format('DD-MM-YYYY_HH-mm-ss');
         fileName = fileName + '_' + formattedDate + '.json';
         form.finished = new Date();
@@ -246,9 +249,9 @@ export class FormPage {
 
     async storeDataAfterSend(form: any) {
         const lastForms = await this.storage.get('lastForms') || {};
-        if(form.type === 'follow_up') {
+        if(form.type === 'follow_up' || form.type === 'follow_up_plus') {
             const template = await this.storage.get('formTemplates');
-            form.form = template[form.type][0].data.follow_up;
+            form.form = template[form.type][0].data[form.type];
         }
         lastForms[form.type] = form;
         await this.storage.set('lastForms', lastForms);
