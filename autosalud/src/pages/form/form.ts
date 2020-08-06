@@ -191,7 +191,11 @@ export class FormPage {
     }
 
     async enviarFormulario() {
-        if(this.formChanged || this.isSavedForm) {
+        if(
+            this.formData.type === 'follow_up' ||
+            this.formData.type === 'follow_up_plus' ||
+            this.formChanged || this.isSavedForm
+        ){
             delete this.formData.saved;
             this.subirArchivo(this.formData);
         } else {
