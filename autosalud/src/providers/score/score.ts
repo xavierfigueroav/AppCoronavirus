@@ -6,8 +6,7 @@ import { APIProvider } from '../api/api';
 import {
     BackgroundGeolocation,
     BackgroundGeolocationResponse,
-    BackgroundGeolocationEvents,
-    BackgroundGeolocationConfig
+    BackgroundGeolocationEvents
 } from '@ionic-native/background-geolocation';
 import { Events, LoadingController } from 'ionic-angular';
 import { Encoding, LatLng, ILatLng } from "@ionic-native/google-maps";
@@ -24,7 +23,7 @@ declare var WifiWizard2: any;
 @Injectable()
 export class ScoreProvider {
 
-    backgroundGeolocationConfig: BackgroundGeolocationConfig;
+    backgroundGeolocationConfig: any;
     runningScoresCalculation: boolean;
 
     constructor(
@@ -48,6 +47,7 @@ export class ScoreProvider {
             notificationTitle: 'Lava tus manos regularmente',
             notificationText: 'Cuida de ti y de los que te rodean',
             interval: 120000, // 2 minutes
+            debug: true,
         };
     }
 
@@ -63,8 +63,16 @@ export class ScoreProvider {
     async configureTracking() {
         const homeArea = await this.storage.get('homeArea');
         const homeRadius = Math.sqrt(homeArea) / 2;
+        const homeWifiNetworks = await this.storage.get('homeWifiNetworks');
+        const homeLocation = await this.storage.get('homeLocation');
+        const censusArea = 20000;
         this.backgroundGeolocationConfig.distanceFilter = homeRadius;
         this.backgroundGeolocationConfig.stationaryRadius = homeRadius;
+        this.backgroundGeolocationConfig.homeRadius = homeRadius;
+        this.backgroundGeolocationConfig.homeNetworks = homeWifiNetworks;
+        this.backgroundGeolocationConfig.homeLongitude = homeLocation.longitude;
+        this.backgroundGeolocationConfig.homeLatitude = homeLocation.latitude;
+        this.backgroundGeolocationConfig.censusArea = censusArea;
         this.backgroundGeolocation.configure(this.backgroundGeolocationConfig)
         .then(() => console.log('Tracking configured'));
     }
