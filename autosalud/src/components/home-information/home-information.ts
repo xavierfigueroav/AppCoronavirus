@@ -22,6 +22,7 @@ export class HomeInformationComponent implements OnInit {
     longitude: number;
     area: number;
     homeWifiNetworks: number;
+    censusArea: number = 20000;
 
     constructor(
         private viewController: ViewController,
@@ -84,6 +85,7 @@ export class HomeInformationComponent implements OnInit {
             content: 'Guardando...',
         });
         loader.present();
+        await this.storage.set('censusArea', this.censusArea);
         await this.storage.set('homeWifiNetworks', this.homeWifiNetworks);
         await this.storage.set('homeLocation', {
             latitude: Number(this.latitude),
@@ -97,7 +99,7 @@ export class HomeInformationComponent implements OnInit {
         loader.dismiss();
         this.viewController.dismiss();
 
-        this.updateScores();
+        // this.updateScores();
     }
 
     cancel() {
@@ -109,11 +111,11 @@ export class HomeInformationComponent implements OnInit {
             content: 'Actualizando niveles de exposición...',
         });
         loader.present();
-        this.scoreProvider.updateScores().then(() => {
-            loader.dismiss();
-        }).catch(() => {
-            loader.dismiss();
-        });
+        // this.scoreProvider.updateScores().then(() => {
+        //     loader.dismiss();
+        // }).catch(() => {
+        //     loader.dismiss();
+        // });
     }
 
     onEnterKey(e: any) {

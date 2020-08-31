@@ -79,8 +79,8 @@ export class ScoreProvider {
 
     registerTrackingListeners() {
         console.log('Registering tracking listeners...');
-        this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
-        .subscribe(location => this.locationHandler(location));
+        // this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
+        // .subscribe(location => this.locationHandler(location));
 
         this.backgroundGeolocation.on(BackgroundGeolocationEvents.stop)
         .subscribe(() => console.log('TRACKING STOPPED!'));
@@ -139,7 +139,7 @@ export class ScoreProvider {
                     content: 'Calculando niveles de exposición durante tu ausencia...',
                 });
                 loader.present();
-                await this.checkForPendingLocations(); // IT MUST BE CALLED FIRST. DO NOT MOVE THIS LINE
+                //await this.checkForPendingLocations(); // IT MUST BE CALLED FIRST. DO NOT MOVE THIS LINE
             } finally {
                 loader.dismiss();
             }

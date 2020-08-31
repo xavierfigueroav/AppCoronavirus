@@ -8,6 +8,8 @@ import { AlertProvider } from '../../providers/alert/alert';
 import { DatabaseProvider } from '../../providers/database/database';
 import { HomeInformationComponent } from '../../components/home-information/home-information';
 
+declare var BackgroundGeolocation: any;
+
 @Component({
 	selector: 'page-user',
     templateUrl: 'user.html',
@@ -57,15 +59,31 @@ export class UserPage implements OnInit{
 
     async refreshScores(refresher = undefined) {
         console.log('refreshing scores...');
+        console.log("CORDOVA PLUGIN", BackgroundGeolocation);
+        console.log("CUALQUIER COSA");
+        console.log("CORDOVA PLUGIN", BackgroundGeolocation);
+        console.log("ENTERO",BackgroundGeolocation.ACTIVITY_PROVIDER);
+        // BackgroundGeolocation.getScores((location) => {
+        //     console.log("ESTA ES UNA PRUEBA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", location);
+        // },(location) => {
+        //     console.log("ESTA ES UNA PRUEBA ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", location);
+        // });
+        BackgroundGeolocation.getConfig((location) => {
+            console.log("ESTA ES UNA PRUEBA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", location);
+        },(location) => {
+            console.log("ESTA ES UNA PRUEBA ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", location);
+        });
+        console.log("CUALQUIER COSA 2");
         const homeArea = await this.storage.get('homeArea');
         if(homeArea) {
             this.ableToTrack = true;
             const currentScore = await this.storage.getCurrentScore();
             this.updateCurrentScore(currentScore);
             this.fillScores();
-            await this.scoreProvider.updateScores();
+            // await this.scoreProvider.updateScores();
         }
         await this.fillScores();
+        //refresher && this.scoreProvider.getScores();
         refresher && refresher.complete();
     }
 
