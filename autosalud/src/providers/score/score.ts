@@ -3,12 +3,10 @@ import { StorageProvider } from '../../providers/storage/storage';
 import { WifiScore } from '../../utils_score/wifi_score';
 import { DistanceScore } from '../../utils_score/distance_score';
 import { APIProvider } from '../api/api';
-import {
-    BackgroundGeolocation,
-    BackgroundGeolocationResponse,
-    BackgroundGeolocationEvents
-} from '@ionic-native/background-geolocation';
-import { Events, LoadingController } from 'ionic-angular';
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
+import { BackgroundGeolocationResponse } from '@ionic-native/background-geolocation';
+import { BackgroundGeolocationEvents } from '@ionic-native/background-geolocation';
+import { Events } from 'ionic-angular';
 import { Encoding, LatLng, ILatLng } from "@ionic-native/google-maps";
 import { DatabaseProvider } from '../database/database';
 
@@ -28,7 +26,6 @@ export class ScoreProvider {
 
     constructor(
         private storage: StorageProvider,
-        private loadingController: LoadingController,
         public backgroundGeolocation: BackgroundGeolocation,
         private database: DatabaseProvider,
         private api: APIProvider,
@@ -55,7 +52,6 @@ export class ScoreProvider {
         await this.configureTracking();
         const backgroundGeolocationStatus = await this.backgroundGeolocation.checkStatus();
         if(!backgroundGeolocationStatus.isRunning){
-            this.registerTrackingListeners();
             this.backgroundGeolocation.start();
         }
     }
@@ -65,22 +61,25 @@ export class ScoreProvider {
         const homeRadius = Math.sqrt(homeArea) / 2;
         const homeWifiNetworks = await this.storage.get('homeWifiNetworks');
         const homeLocation = await this.storage.get('homeLocation');
-        const censusArea = 20000;
-        this.backgroundGeolocationConfig.distanceFilter = homeRadius;
-        this.backgroundGeolocationConfig.stationaryRadius = homeRadius;
+        const censusArea = await this.storage.get('censusArea');
+        const user = await this.storage.getUser();
+
+        this.backgroundGeolocationConfig.user = user;
         this.backgroundGeolocationConfig.homeRadius = homeRadius;
         this.backgroundGeolocationConfig.homeNetworks = homeWifiNetworks;
         this.backgroundGeolocationConfig.homeLongitude = homeLocation.longitude;
         this.backgroundGeolocationConfig.homeLatitude = homeLocation.latitude;
         this.backgroundGeolocationConfig.censusArea = censusArea;
+        this.backgroundGeolocationConfig.distanceFilter = homeRadius;
+        this.backgroundGeolocationConfig.stationaryRadius = homeRadius;
         this.backgroundGeolocation.configure(this.backgroundGeolocationConfig)
         .then(() => console.log('Tracking configured'));
     }
 
     registerTrackingListeners() {
         console.log('Registering tracking listeners...');
-        // this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
-        // .subscribe(location => this.locationHandler(location));
+        this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
+        .subscribe(location => this.locationHandler(location));
 
         this.backgroundGeolocation.on(BackgroundGeolocationEvents.stop)
         .subscribe(() => console.log('TRACKING STOPPED!'));
@@ -133,18 +132,7 @@ export class ScoreProvider {
         console.log('RESTARTING IF KILLED...');
         const homeArea = await this.storage.get('homeArea');
         if(homeArea != null) {
-            let loader: any;
-            try {
-                loader = this.loadingController.create({
-                    content: 'Calculando niveles de exposición durante tu ausencia...',
-                });
-                loader.present();
-                //await this.checkForPendingLocations(); // IT MUST BE CALLED FIRST. DO NOT MOVE THIS LINE
-            } finally {
-                loader.dismiss();
-            }
             this.backgroundGeolocation.stop();
-            this.registerTrackingListeners();
             await this.configureTracking();
             this.backgroundGeolocation.start();
         }

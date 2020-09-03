@@ -98,24 +98,10 @@ export class HomeInformationComponent implements OnInit {
 
         loader.dismiss();
         this.viewController.dismiss();
-
-        // this.updateScores();
     }
 
     cancel() {
         this.viewController.dismiss();
-    }
-
-    updateScores() {
-        const loader = this.loadingController.create({
-            content: 'Actualizando niveles de exposición...',
-        });
-        loader.present();
-        // this.scoreProvider.updateScores().then(() => {
-        //     loader.dismiss();
-        // }).catch(() => {
-        //     loader.dismiss();
-        // });
     }
 
     onEnterKey(e: any) {
