@@ -153,7 +153,7 @@ export class ScoreProvider {
         const currentHour = date.getHours();
         const score = await this.calculateCompleteScore(currentHour, date, false);
         await this.storage.setCurrentScore(score.completeScore);
-        this.events.publish('scoreChanges', core.completeScore);
+        this.events.publish('scoreChanges', score.completeScore);
     }
 
     // Calculate and save the scores only for complete hours

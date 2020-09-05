@@ -31,7 +31,6 @@ export class UserPage implements OnInit{
         private alert: AlertProvider,
         private modalController: ModalController,
         private events: Events,
-        this.events.suscribe('scoreChanges', () => this.refreshScores())
     ) { }
 
     ngOnInit() {
@@ -42,6 +41,7 @@ export class UserPage implements OnInit{
             scores.push(missingScore);
         }
         this.scores = scores; // Default score bar while waiting for stored scores
+        this.events.subscribe('scoreChanges', () => this.refreshScores());
     }
 
     ionViewWillEnter() {
@@ -83,10 +83,24 @@ export class UserPage implements OnInit{
                 }
 
                 // Add real scores
-                for(const score of scores) {
-                    score.color = this.getColorByScore(score.value);
-                    scoresToShow.push(score);
+                for(let i = 1; i < scores.length; i++) {
+                    const prevScore = {...scores[i - 1]};
+                    const score = {...scores[i]};
+                    //Check for missing scores when no locations had been recorded and add them
+                    const diffHours = (score.hour) - (prevScore.hour);
+                    if(diffHours > 1){
+                        for(let x = 1; x < diffHours; x++){
+                            const missingScore = prevScore;
+                            missingScore.color = this.getColorByScore(missingScore.value);
+                            missingScore.hour += x;
+                            scoresToShow.push(missingScore);
+                        }
+                    }
+                    prevScore.color = this.getColorByScore(prevScore.value);
+                    scoresToShow.push(prevScore);
                 }
+                lastScore.color = this.getColorByScore(lastScore.value);
+                scoresToShow.push(lastScore);
 
                 // Fill missing scores at the end
                 for(let i = scoresToShow.length; i < 24; i++){
@@ -95,7 +109,7 @@ export class UserPage implements OnInit{
                 }
                 this.updateScores(scoresToShow);
             }
-        }, console.log);
+        });
     }
 
     getMissingScore(hour: number) {
