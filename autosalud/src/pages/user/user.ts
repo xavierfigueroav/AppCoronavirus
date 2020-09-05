@@ -34,7 +34,6 @@ export class UserPage implements OnInit{
     ) { }
 
     ngOnInit() {
-        console.log('ngOnInit UserPage');
         const scores = [];
         for(let i = 0; i < 24; i++) {
             const missingScore = this.getMissingScore(i);
@@ -45,19 +44,10 @@ export class UserPage implements OnInit{
     }
 
     ionViewWillEnter() {
-        console.log('ionViewWillEnter UserPage');
         this.refreshScores();
     }
 
     async refreshScores(refresher = undefined) {
-        if(refresher) {
-            BackgroundGeolocation.getScores(scores => {
-                console.log("ESTA ES UNA PRUEBA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                console.table(scores);
-            }, error => {
-                console.log("ESTA ES UNA PRUEBA ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", error);
-            });
-        }
         const homeArea = await this.storage.get('homeArea');
         if(homeArea) {
             this.ableToTrack = true;

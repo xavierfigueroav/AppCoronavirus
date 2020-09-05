@@ -10,10 +10,7 @@ import { AlertController } from 'ionic-angular';
 @Injectable()
 export class AlertProvider {
 
-    constructor(private alertController: AlertController) {
-        console.log('Hello AlertProvider Provider');
-
-    }
+    constructor(private alertController: AlertController) { }
 
     private showOkButtonAlert(subTitle: string){
         const alert = this.alertController.create({

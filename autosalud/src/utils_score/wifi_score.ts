@@ -8,7 +8,6 @@ export class WifiScore{
             console.log("Number of networks available: "+number_networks_available)
         
             for(let network of available_networks){
-                console.log("Network "+ network["BSSID"] +": "+network["level"]);
                 signal_intensity += network["level"];
             }
             
@@ -17,8 +16,6 @@ export class WifiScore{
             console.log("Final(average) score: "+signal_intensity_score)
             return Number(signal_intensity_score);
         }
-        else 
-            console.log("No WiFi networks detected at the moment.");
         return 1;
     }
     
@@ -33,8 +30,6 @@ export class WifiScore{
                 return Number(networks_available_score);
             }
         }
-        else
-            console.log("No WiFi networks detected at the moment.");
         return 1;
     }
 }
