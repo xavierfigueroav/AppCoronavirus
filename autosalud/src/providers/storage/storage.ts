@@ -10,19 +10,15 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class StorageProvider {
 
-    constructor(private storage: Storage) {
-        console.log('Hello StorageManagerProvider Provider');
-    }
+    constructor(private storage: Storage) { }
 
     async get(key: string) {
         try {
             const user = await this.storage.get('user');
             let users = await this.storage.get('users');
             users = JSON.parse(users);
-            console.log('[GET]', key, users[user][key]);
             return users[user][key];
         } catch(error) {
-            console.log('[GET ERROR]', error);
             throw error;
         }
     }
@@ -50,10 +46,8 @@ export class StorageProvider {
             users = JSON.parse(users);
             users[user][key] = value;
             const result = await this.storage.set('users', JSON.stringify(users));
-            console.log('[SET]', key, JSON.parse(result));
             return result;
         } catch(error) {
-            console.log('[SET ERROR]', error);
             throw error;
         }
     }
@@ -76,7 +70,6 @@ export class StorageProvider {
             const result = await this.storage.set('users', JSON.stringify(newUsers));
             return result;
         } catch(error) {
-            console.log('[setUserData ERROR]', error);
             throw error;
         }
     }

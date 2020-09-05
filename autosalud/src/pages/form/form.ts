@@ -80,7 +80,7 @@ export class FormPage {
                     this.isSavedForm = this.isSavedForm || form.saved;
                     this.editForm(form);
                 }
-            }).catch(console.log);
+            });
         }
     }
 
@@ -220,7 +220,6 @@ export class FormPage {
             this.file.writeFile(this.file.externalApplicationStorageDirectory+'AppCoronavirus', fileName, string_form, {replace:true, append:false}).then(() => {
                 const carpeta = this.file.externalApplicationStorageDirectory+'AppCoronavirus/';
                 const ruta_completa = carpeta + fileName;
-                console.log('RUTA ARCHIVO:', ruta_completa);
 
                 this.http.setRequestTimeout(10);
                 this.http.uploadFile(Constants.CREATE_RESOURCE_URL, {package_id: form.dataset, name: fileName}, {'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'}, ruta_completa, 'upload').then(() => {
@@ -235,20 +234,15 @@ export class FormPage {
                         this.loader.dismiss();
                         this.alerts.showFormSentAlert();
                     });
-                }).catch(async error => {
-                    console.log(error);
+                }).catch(async () => {
                     await this.storeDataAfterSend(form);
                     await this.addFormToPendingForms(form);
                     this.app.getRootNav().setRoot(TabsPage);
                     this.loader.dismiss()
                     this.alerts.showFormSentAlert();
                 });
-            }).catch(error => {
-                console.log(error);
-            });
-        }).catch(error => {
-            console.log(error);
-        });
+            }).catch(console.log);
+        }).catch(console.log);
     }
 
     async storeDataAfterSend(form: any) {
@@ -286,8 +280,8 @@ export class FormPage {
                 parametrosMapeados.push(this.getObjects(this.editingForm, 'id', parameters[i])[0]);
             }
             return parametrosMapeados;
-        } catch(error){
-            console.log('[ERROR] mappingParametros', error);
+        } catch(error) {
+            console.log(error);
         }
     }
 
@@ -304,7 +298,7 @@ export class FormPage {
             }
             return funcionString;
         } catch(error){
-            console.log('[ERROR] construirFuncionDinamicaString', error);
+            console.log(error);
         }
     }
 
@@ -317,7 +311,7 @@ export class FormPage {
             eval(stringFuncionMapeada);
         }
         catch (error) {
-            console.log('[ERROR] triggerFunction', error);
+            console.log(error);
             const alert = this.alertCtrl.create({
                 title: 'Error',
                 subTitle: 'La funcion de calculo tiene un error interno',
@@ -349,7 +343,7 @@ export class FormPage {
             }
             return objects;
         } catch(error){
-            console.log('[ERROR] getObjects', error);
+            console.log(error);
         }
     }
 
@@ -369,7 +363,7 @@ export class FormPage {
                 buttons: ['ok']
             });
             alert.present();
-            console.log('[ERROR] triggerFunctionValidation', error);
+            console.log(error);
         }
     }
 
@@ -396,7 +390,7 @@ export class FormPage {
                 buttonElement.getElementsByTagName('ion-icon')[0].setAttribute('class', 'icon icon-md ion-md-arrow-dropright item-icon');
             }
         } catch(error) {
-            console.log('[ERROR] clickCollapseButton', error);
+            console.log(error);
         }
     }
 
@@ -406,7 +400,7 @@ export class FormPage {
             param.selectedTemplate = item2;
             this.navCtrl.push(FormPage, param);
         } catch(error){
-            console.log('[ERROR] clickNextPage', error);
+            console.log(error);
         }
     }
 

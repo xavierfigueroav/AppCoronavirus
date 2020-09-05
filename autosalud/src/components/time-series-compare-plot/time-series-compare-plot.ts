@@ -22,14 +22,10 @@ export class TimeSeriesComparePlotComponent implements OnChanges {
   @Input() parameter2: string;
   chart: Chart;
 
-  constructor() {
-    console.log('Hello TimeSeriesComparePlotComponent Component');
-  }
+  constructor() { }
 
   ngOnChanges() {
-      console.log('change-ts');
       if (this.canvas !== undefined) {
-          console.log('hay canvas');
           this.generateGraph();
       }
   }
@@ -50,7 +46,6 @@ export class TimeSeriesComparePlotComponent implements OnChanges {
   }
 
   async generateGraph() {
-      console.log('ts');
 
       let chartData1: any[];
       let chartData2: any[];

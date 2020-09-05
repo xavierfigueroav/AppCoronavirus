@@ -20,7 +20,6 @@ export class MapComponent implements OnInit {
   provincia: any;
 
   constructor() {
-    console.log('Hello MapComponent Component');
     this.text = 'Hello World';
     this.colors = {}
     this.clicked = false;

@@ -43,9 +43,7 @@ export class StatsSegmentComponent implements OnInit {
     selectedParameter1: string;
     selectedParameter2: string;
 
-  constructor() {
-    console.log('Hello StatsSegmentComponent Component');
-  }
+  constructor() { }
 
     ngOnInit() {
 

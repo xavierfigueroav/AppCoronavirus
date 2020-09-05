@@ -21,14 +21,10 @@ export class TimeSeriesPlotComponent implements OnChanges {
     chart: Chart;
     loading: boolean;
 
-    constructor() {
-        console.log('const-ts');
-    }
+    constructor() { }
 
     ngOnChanges() {
-        console.log('change-ts');
         if (this.canvas !== undefined) {
-            console.log('hay canvas');
             this.loading = true;
             this.generateGraph().then(() => {
                 this.loading = false;
@@ -49,7 +45,6 @@ export class TimeSeriesPlotComponent implements OnChanges {
     }
 
     async generateGraph() {
-        console.log('ts');
         const chartData = this.transform(this.data, this.parameter, this.area);
 
         this.chart = new Chart(this.canvas.nativeElement, {

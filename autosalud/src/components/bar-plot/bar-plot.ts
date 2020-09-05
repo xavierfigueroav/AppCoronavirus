@@ -19,14 +19,10 @@ export class BarPlotComponent {
     chart: Chart;
     loading: boolean;
 
-    constructor() {
-        console.log('const-br');
-    }
+    constructor() { }
 
     ngOnChanges() {
-        console.log('change-br');
         if (this.canvas !== undefined) {
-            console.log('hay canvas');
             this.loading = true;
             this.generateGraph().then(() => {
                 this.loading = false;
@@ -47,7 +43,6 @@ export class BarPlotComponent {
     }
 
     async generateGraph() {
-        console.log('br');
         const chartData = this.transform(this.data, this.parameter);
 
         this.chart = new Chart(this.canvas.nativeElement, {

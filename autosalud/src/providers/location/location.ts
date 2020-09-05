@@ -17,11 +17,7 @@ export class LocationProvider {
   constructor(
     private diagnostic: Diagnostic,
     private locationAccuracy: LocationAccuracy,
-    private geoLocation: Geolocation) {
-
-    console.log('Hello LocationProvider Provider');
-
-  }
+    private geoLocation: Geolocation) { }
 
   getCurrentLocation() {
     return new Promise<any>((resolve, reject) => {
@@ -41,7 +37,6 @@ export class LocationProvider {
                 switch(status){
                     case this.diagnostic.permissionStatus.GRANTED:
                     case this.diagnostic.permissionStatus.GRANTED_WHEN_IN_USE:
-                        console.log("Permission granted");
                         this.requestGPSAccess()
                         .then(location => resolve(location))
                         .catch(error => reject(error));
@@ -51,13 +46,11 @@ export class LocationProvider {
                         reject('error');
                         break;
                     case this.diagnostic.permissionStatus.RESTRICTED:
-                        console.log('Sin permisos para usar tu ubicación');
                         reject('error');
                         break;
                 }
 
             }).catch(error => {
-                console.log('Error al solicitar permisos para usar tu ubicación');
                 reject(error);
             });
 
@@ -75,11 +68,9 @@ export class LocationProvider {
                     .catch((error) => reject(error));
 
                 } else {
-                    console.log('Sin permisos para acceder a la ubicación');
                     reject('Sin permisos para acceder a la ubicación');
                 }
             }).catch(error => {
-                console.log('Error al iniciar la petición de tu ubucación');
                 reject(error);
             });
         });
@@ -93,7 +84,6 @@ export class LocationProvider {
             }).then((location) => {
                 resolve(location);
             }).catch(error => {
-                console.log('Error al obtener la ubicación');
                 reject(error);
             });
         });

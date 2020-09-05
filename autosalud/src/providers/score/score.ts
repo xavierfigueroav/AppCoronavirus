@@ -3,13 +3,10 @@ import { StorageProvider } from '../../providers/storage/storage';
 import { WifiScore } from '../../utils_score/wifi_score';
 import { DistanceScore } from '../../utils_score/distance_score';
 import { APIProvider } from '../api/api';
-import {
-    BackgroundGeolocation,
-    BackgroundGeolocationResponse,
-    BackgroundGeolocationEvents,
-    BackgroundGeolocationConfig
-} from '@ionic-native/background-geolocation';
-import { Events, LoadingController } from 'ionic-angular';
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
+import { BackgroundGeolocationResponse } from '@ionic-native/background-geolocation';
+import { BackgroundGeolocationEvents } from '@ionic-native/background-geolocation';
+import { Events } from 'ionic-angular';
 import { Encoding, LatLng, ILatLng } from "@ionic-native/google-maps";
 import { DatabaseProvider } from '../database/database';
 
@@ -24,18 +21,16 @@ declare var WifiWizard2: any;
 @Injectable()
 export class ScoreProvider {
 
-    backgroundGeolocationConfig: BackgroundGeolocationConfig;
+    backgroundGeolocationConfig: any;
     runningScoresCalculation: boolean;
 
     constructor(
         private storage: StorageProvider,
-        private loadingController: LoadingController,
         public backgroundGeolocation: BackgroundGeolocation,
         private database: DatabaseProvider,
         private api: APIProvider,
         private events: Events
     ) {
-        console.log('Hello ScoreProvider Provider');
         this.runningScoresCalculation = false;
         this.backgroundGeolocationConfig = {
             stationaryRadius: 1,
@@ -47,7 +42,8 @@ export class ScoreProvider {
             startForeground: true,
             notificationTitle: 'Lava tus manos regularmente',
             notificationText: 'Cuida de ti y de los que te rodean',
-            interval: 120000, // 2 minutes
+            interval: 300000, // 5 minutes
+            debug: true,
         };
     }
 
@@ -63,46 +59,42 @@ export class ScoreProvider {
     async configureTracking() {
         const homeArea = await this.storage.get('homeArea');
         const homeRadius = Math.sqrt(homeArea) / 2;
+        const homeWifiNetworks = await this.storage.get('homeWifiNetworks');
+        const homeLocation = await this.storage.get('homeLocation');
+        const censusArea = await this.storage.get('censusArea');
+        const user = await this.storage.getUser();
+
+        this.backgroundGeolocationConfig.user = user;
+        this.backgroundGeolocationConfig.homeRadius = homeRadius;
+        this.backgroundGeolocationConfig.homeNetworks = homeWifiNetworks;
+        this.backgroundGeolocationConfig.homeLongitude = homeLocation.longitude;
+        this.backgroundGeolocationConfig.homeLatitude = homeLocation.latitude;
+        this.backgroundGeolocationConfig.censusArea = censusArea;
         this.backgroundGeolocationConfig.distanceFilter = homeRadius;
         this.backgroundGeolocationConfig.stationaryRadius = homeRadius;
-        this.backgroundGeolocation.configure(this.backgroundGeolocationConfig)
-        .then(() => console.log('Tracking configured'));
+        this.backgroundGeolocation.configure(this.backgroundGeolocationConfig);
+        this.registerTrackingListeners();
     }
 
     registerTrackingListeners() {
-        console.log('Registering tracking listeners...');
         this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
-        .subscribe(location => this.locationHandler(location));
-
-        this.backgroundGeolocation.on(BackgroundGeolocationEvents.stop)
-        .subscribe(() => console.log('TRACKING STOPPED!'));
-
-        this.backgroundGeolocation.on(BackgroundGeolocationEvents.error)
-        .subscribe(() => console.log('[ERROR] Tracking'));
+        .subscribe(location => this.events.publish('scoreChanges', ""));
     }
 
     async locationHandler(location: BackgroundGeolocationResponse){
         // This prevents race conditions between pending locations and new locations
         if(this.runningScoresCalculation){
-            console.log('score calculation PREVENTED');
             return;
         }
         this.runningScoresCalculation = true;
 
-        console.log('MOVEMENT DETECTED!');
         try {
             await this.backgroundGeolocation.deleteLocation(location.id);
-        } catch(error) {
-            console.log('[EXPECTED ERROR]', error);
         } finally {
             const distanceScore = await this.calculateDistanceScore(location);
-            console.log("distanceScore",distanceScore);
             const wifiScore = await this.calculateWifiScore();
-            console.log("wifiScore",wifiScore);
             const timeScore = this.calculateTimeScore();
-            console.log("timeScore",timeScore);
             const populationDensityScore = await this.calculatePopulationDensityScore();
-            console.log("populationDensityScore",populationDensityScore);
             await this.database.addLocation(location.latitude, location.longitude, new Date(location.time), distanceScore.score, distanceScore.distance, timeScore.time, timeScore.score, wifiScore, populationDensityScore);
 
             await this.checkForPendingScores(location.time);
@@ -113,7 +105,6 @@ export class ScoreProvider {
     }
 
     async restartTrackingIfStopped() {
-        console.log('RESTARTING IF STOPPED...');
         const homeArea = await this.storage.get('homeArea');
         if(homeArea != null) {
             await this.configureTracking();
@@ -122,19 +113,8 @@ export class ScoreProvider {
     }
 
     async restartTrackingIfKilled() {
-        console.log('RESTARTING IF KILLED...');
         const homeArea = await this.storage.get('homeArea');
         if(homeArea != null) {
-            let loader: any;
-            try {
-                loader = this.loadingController.create({
-                    content: 'Calculando niveles de exposición durante tu ausencia...',
-                });
-                loader.present();
-                await this.checkForPendingLocations(); // IT MUST BE CALLED FIRST. DO NOT MOVE THIS LINE
-            } finally {
-                loader.dismiss();
-            }
             this.backgroundGeolocation.stop();
             this.registerTrackingListeners();
             await this.configureTracking();
@@ -143,7 +123,6 @@ export class ScoreProvider {
     }
 
     async checkForPendingLocations() {
-        console.log('Checking for pending locations...');
         const locations = await this.backgroundGeolocation.getLocations();
         // FIXME: these scores might be calcultated upon
         // inconsistent parameters: location and num of wifi networks
@@ -167,7 +146,6 @@ export class ScoreProvider {
 
     // Calculate and save the scores only for complete hours
     async checkForPendingScores(locationTime: number) {
-        console.log('checkForPendingScores...');
         const locationDate = new Date(locationTime);
         const locationHour = locationDate.getHours();
         const lastScore = await this.database.getLastScore();
@@ -318,23 +296,14 @@ export class ScoreProvider {
 
     async startScan(): Promise<number> {
         let num_networks: number;
-        if (typeof WifiWizard2 !== 'undefined') {
-            console.log("WifiWizard2 loaded: ");
-            console.log(WifiWizard2);
-        } else {
-            console.warn('WifiWizard2 not loaded.');
-        }
         await WifiWizard2.scan().then((wifiNetworks: any[]) => {
-            console.log("Inside Scan function");
             for (let wifiNetwork of wifiNetworks) {
                 const level = wifiNetwork['level'];
                 const ssid = wifiNetwork['SSID'];
                 const timestamp = wifiNetwork['timestamp'];
-                console.log(`Level: ${level} SSID: ${ssid} Timestamp: ${timestamp}`);
             }
             num_networks = wifiNetworks.length;
         }).catch((error: any) => {
-            console.log('ERROR SCAN', JSON.stringify(error));
             num_networks = 0;
         });
 

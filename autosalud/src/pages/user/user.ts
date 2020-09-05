@@ -1,12 +1,14 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { App, Events, ModalController } from 'ionic-angular';
+import { App, ModalController } from 'ionic-angular';
 import { StorageProvider } from '../../providers/storage/storage';
 import { AuthPage } from '../auth/auth';
 import { ScoreProvider } from '../../providers/score/score';
 import { AlertProvider } from '../../providers/alert/alert';
+import { Events } from 'ionic-angular';
 
-import { DatabaseProvider } from '../../providers/database/database';
 import { HomeInformationComponent } from '../../components/home-information/home-information';
+
+declare var BackgroundGeolocation: any;
 
 @Component({
 	selector: 'page-user',
@@ -18,72 +20,92 @@ export class UserPage implements OnInit{
     currentScore: number;
     currentScoreColor: string;
     ableToTrack: boolean;
-    latitude: number;
-    longitude: number;
-    homeArea: number;
     scores: any;
-    colors: any;
+    colors = {'1': '#49BEAA', '2': '#EEB868', '3': '#EF767A', '-1': '#999999'};
 
     constructor(
         private app: App,
         private storage: StorageProvider,
-        private database: DatabaseProvider,
         private scoreProvider: ScoreProvider,
-        private events: Events,
         private ngZone: NgZone,
         private alert: AlertProvider,
-        private modalController: ModalController
-    ) {
-            this.events.subscribe('scoreChanges', (score: number) => {
-                this.updateCurrentScore(score);
-                this.fillScores();
-            });
-         }
+        private modalController: ModalController,
+        private events: Events,
+    ) { }
 
     ngOnInit() {
-        console.log('ngOnInit UserPage');
-        this.colors = {'1': '#49BEAA', '2': '#EEB868', '3': '#EF767A', '-1': '#999999'};
         const scores = [];
         for(let i = 0; i < 24; i++) {
-            scores.push({ color: '#999999' });
+            const missingScore = this.getMissingScore(i);
+            scores.push(missingScore);
         }
         this.scores = scores; // Default score bar while waiting for stored scores
+        this.events.subscribe('scoreChanges', () => this.refreshScores());
     }
 
     ionViewWillEnter() {
-        console.log('ionViewWillEnter UserPage');
         this.refreshScores();
     }
 
     async refreshScores(refresher = undefined) {
-        console.log('refreshing scores...');
         const homeArea = await this.storage.get('homeArea');
         if(homeArea) {
             this.ableToTrack = true;
-            const currentScore = await this.storage.getCurrentScore();
-            this.updateCurrentScore(currentScore);
+            this.updateCurrentScore(1); // Default current score while waiting for stored scores
             this.fillScores();
-            await this.scoreProvider.updateScores();
         }
-        await this.fillScores();
         refresher && refresher.complete();
     }
 
-    async fillScores() {
-        const scores = await this.database.getTodayScores();
-        scores.forEach(score => {
-            score.color = this.getColorByScore(score.score);
+    fillScores() {
+        BackgroundGeolocation.getScores(scores => {
+            if(scores.length > 0) {
+                // Update current score based on the last score retrieved
+                const lastScore = scores[scores.length - 1];
+                this.updateCurrentScore(lastScore.value);
+
+                // Fill missing scores at the beginning
+                const scoresToShow = [];
+                const firstScore = scores[0];
+                for(let i = 0; i < firstScore.hour; i++){
+                    const missingScore = this.getMissingScore(i);
+                    scoresToShow.push(missingScore);
+                }
+
+                // Add real scores
+                for(let i = 1; i < scores.length; i++) {
+                    const prevScore = {...scores[i - 1]};
+                    const score = {...scores[i]};
+                    //Check for missing scores when no locations had been recorded and add them
+                    const diffHours = (score.hour) - (prevScore.hour);
+                    if(diffHours > 1){
+                        for(let x = 1; x < diffHours; x++){
+                            const missingScore = prevScore;
+                            missingScore.color = this.getColorByScore(missingScore.value);
+                            missingScore.hour += x;
+                            scoresToShow.push(missingScore);
+                        }
+                    }
+                    prevScore.color = this.getColorByScore(prevScore.value);
+                    scoresToShow.push(prevScore);
+                }
+                lastScore.color = this.getColorByScore(lastScore.value);
+                scoresToShow.push(lastScore);
+
+                // Fill missing scores at the end
+                for(let i = scoresToShow.length; i < 24; i++){
+                    const missingScore = this.getMissingScore(i);
+                    scoresToShow.push(missingScore);
+                }
+                this.updateScores(scoresToShow);
+            }
         });
+    }
 
-        let scoresToShow = scores;
-
-        for(let i = scoresToShow.length; i < 24; i++){
-            const missingScore = {'hour': i, 'score': -1};
-            missingScore['color'] = this.getColorByScore(missingScore.score);
-            scoresToShow.push(missingScore);
-        }
-
-        this.updateScores(scoresToShow);
+    getMissingScore(hour: number) {
+        const missingScore = {'hour': hour, 'score': -1};
+        missingScore['color'] = this.getColorByScore(missingScore.score);
+        return missingScore;
     }
 
     updateCurrentScore(score: number) {
@@ -113,13 +135,7 @@ export class UserPage implements OnInit{
     showHomeInfoModal() {
         const modal = this.modalController.create(HomeInformationComponent);
         modal.present();
-        modal.onWillDismiss(() => {
-            this.storage.get('homeLocation').then(location => {
-                if(location) {
-                    this.ableToTrack = true;
-                }
-            });
-        });
+        modal.onWillDismiss(() => this.refreshScores());
     }
 
     scoreInformation(){

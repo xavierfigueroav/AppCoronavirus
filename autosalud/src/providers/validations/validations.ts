@@ -9,9 +9,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class ValidationsProvider {
 
-  constructor() {
-    console.log('Hello ValidationsProvider Provider');
-  }
+  constructor() { }
 
   validateHomeRadius(radius:string){
     if(Number(radius)>=2 && Number(radius)<=30){

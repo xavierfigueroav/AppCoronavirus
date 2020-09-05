@@ -44,10 +44,6 @@ export class TestResultsPage implements OnInit {
         this.searchTestResults();
     }
 
-    ionViewDidLoad() {
-        console.log('ionViewDidLoad TestResultsPage');
-    }
-
     logout() {
         this.storage.setUser(null).then(() => {
             this.scoreProvider.backgroundGeolocation.stop();
@@ -84,7 +80,7 @@ export class TestResultsPage implements OnInit {
                 this.testFound = false;
             }
         } catch(error) {
-            console.log('[ERROR] searchTestResults', error);
+            console.log(error);
         } finally {
             refresher && refresher.complete();
             loader.dismiss();

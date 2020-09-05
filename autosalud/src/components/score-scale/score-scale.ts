@@ -14,12 +14,9 @@ export class ScoreScaleComponent implements OnInit {
 
     scores: any;
 
-  constructor() {
-    console.log('Hello ScoreScaleComponent Component');
-  }
+  constructor() { }
 
   ngOnInit() {
-    console.log('ngOnInit UserPage');
     this.scores = [
         {hour: 1, score: 0.5 },
         {hour: 2, score: 0.3 },
