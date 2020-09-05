@@ -20,11 +20,8 @@ import { IntelSecurity } from '@ionic-native/intel-security';
 import { DatePicker } from '@ionic-native/date-picker';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { UserPage } from '../pages/user/user';
-import { NetworkPage } from '../pages/network/network';
-import { InformationPage } from '../pages/information/information';
 import { TabsPage } from '../pages/tabs/tabs';
 import { ComponentsModule } from '../components/components.module';
-import { ProfilePage } from '../pages/profile/profile';
 import { Clipboard } from '@ionic-native/clipboard';
 import { LocationProvider } from '../providers/location/location';
 import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
@@ -47,10 +44,7 @@ import { FormsProvider } from '../providers/forms/forms';
     FormPage,
     AuthPage,
     UserPage,
-    NetworkPage,
-    InformationPage,
     TabsPage,
-    ProfilePage,
     MedicalPage,
     TestResultsPage,
     AboutPage
@@ -68,10 +62,7 @@ import { FormsProvider } from '../providers/forms/forms';
     FormPage,
     AuthPage,
     UserPage,
-    NetworkPage,
-    InformationPage,
     TabsPage,
-    ProfilePage,
     MedicalPage,
     TestResultsPage,
     AboutPage
