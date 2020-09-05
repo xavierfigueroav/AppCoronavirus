@@ -74,18 +74,19 @@ export class ScoreProvider {
         this.backgroundGeolocationConfig.stationaryRadius = homeRadius;
         this.backgroundGeolocation.configure(this.backgroundGeolocationConfig)
         .then(() => console.log('Tracking configured'));
+        this.registerTrackingListeners();
     }
 
     registerTrackingListeners() {
-        console.log('Registering tracking listeners...');
+        // console.log('Registering tracking listeners...');
         this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
-        .subscribe(location => this.locationHandler(location));
+        .subscribe(location => console.log('MOVEMENT DETECTED!'));
 
-        this.backgroundGeolocation.on(BackgroundGeolocationEvents.stop)
-        .subscribe(() => console.log('TRACKING STOPPED!'));
+        // this.backgroundGeolocation.on(BackgroundGeolocationEvents.stop)
+        // .subscribe(() => console.log('TRACKING STOPPED!'));
 
-        this.backgroundGeolocation.on(BackgroundGeolocationEvents.error)
-        .subscribe(() => console.log('[ERROR] Tracking'));
+        // this.backgroundGeolocation.on(BackgroundGeolocationEvents.error)
+        // .subscribe(() => console.log('[ERROR] Tracking'));
     }
 
     async locationHandler(location: BackgroundGeolocationResponse){

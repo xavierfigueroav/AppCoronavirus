@@ -49,7 +49,8 @@ export class UserPage implements OnInit{
     async refreshScores(refresher = undefined) {
         if(refresher) {
             BackgroundGeolocation.getScores(scores => {
-                console.log("ESTA ES UNA PRUEBA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", scores);
+                console.log("ESTA ES UNA PRUEBA !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                console.table(scores);
             }, error => {
                 console.log("ESTA ES UNA PRUEBA ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", error);
             });
