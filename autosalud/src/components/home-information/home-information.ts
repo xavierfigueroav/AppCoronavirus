@@ -31,9 +31,7 @@ export class HomeInformationComponent implements OnInit {
         private storage: StorageProvider,
         private location: LocationProvider,
         private api: APIProvider,
-        private alerts: AlertProvider) {
-        console.log('Hello HomeInformationComponent Component');
-    }
+        private alerts: AlertProvider) { }
 
     ngOnInit() {
         this.storage.get('homeLocation').then(homeLocation => {

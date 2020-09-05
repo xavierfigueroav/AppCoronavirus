@@ -24,10 +24,6 @@ export class NetworkPage implements OnInit{
         this.people = [{'name': 'Maria'}, {'name': 'Papá'}, {'name': 'Mamá'}, {'name': 'Pedro'}]
     }
 
-	ionViewDidLoad() {
-		console.log('ionViewDidLoad NetworkPage');
-	}
-
 	logout() {
         this.storage.setUser(null).then(() => {
             this.scoreProvider.backgroundGeolocation.stop();

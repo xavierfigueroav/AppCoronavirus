@@ -36,16 +36,9 @@ export class AuthPage {
     }
 
     crearDirectorio() {
-        this.file.checkDir(this.file.externalApplicationStorageDirectory, 'AppCoronavirus').then(response => {
-            console.log('EL DIRECTORIO YA EXISTE');
-            console.log(this.file.externalApplicationStorageDirectory + "/AppCoronavirus");
-        }).catch(() => {
-            console.log('EL DIRECTORIO NO EXISTE');
-            this.file.createDir(this.file.externalApplicationStorageDirectory, 'AppCoronavirus', false).then(response => {
-                console.log('SE CREÓ EL DIRECTORIO');
-            }).catch(() => {
-                console.log('ERROR AL CREAR EL DIRECTORIO');
-            });
+        this.file.checkDir(this.file.externalApplicationStorageDirectory, 'AppCoronavirus').catch(() => {
+            this.file.createDir(this.file.externalApplicationStorageDirectory, 'AppCoronavirus', false)
+            .catch(console.log);
         });
     }
 
@@ -131,17 +124,14 @@ export class AuthPage {
             ],
             buttons: [
               {
-                text: 'Cancelar',
-                handler: () => { console.log('Cancel envio de correo.');}
+                text: 'Cancelar'
               },
               {
                 text: 'Enviar',
                 handler: data => {
                     if (this.validations.validateEmail(data.email) && this.validations.validateIdentificationCard(data.id)) {
-                        console.log('Enviar correo.');
                         this.confirmacionEnvioCorreo(data.cedula, data.email);
                     }else{
-                        console.log((this.validations.validateEmail(data.email)));
                         this.alerts.showPairEmailIdentifierErrorAlert();
                     }
                 }

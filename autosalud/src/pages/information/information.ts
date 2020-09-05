@@ -24,10 +24,6 @@ export class InformationPage implements OnInit{
         this.segment = 'maps';
     }
 
-	ionViewDidLoad() {
-		console.log('ionViewDidLoad InformationPage');
-	}
-
 	logout() {
         this.storage.setUser(null).then(() => {
             this.scoreProvider.backgroundGeolocation.stop();

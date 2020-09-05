@@ -48,7 +48,6 @@ export class MyApp {
                 if (user !== null) {
                     this.storage.get('firstUseDate').then(firstUseDate => {
                         if(firstUseDate == null) {
-                            console.log('NO FIRST USE DATE');
                             this.app.getRootNav().setRoot(
                                 FormPage,
                                 { 'formType': 'initial' }

@@ -32,10 +32,6 @@ export class ProfilePage implements OnInit {
         this.hideCopyMessage = true;
     }
 
-    ionViewDidLoad() {
-        console.log('ionViewDidLoad ProfilePage');
-    }
-
     logout() {
         this.storage.setUser(null).then(() => {
             this.scoreProvider.backgroundGeolocation.stop();
