@@ -73,7 +73,7 @@ export class UserPage implements OnInit{
 
                 // Fill missing scores at the beginning
                 const scoresToShow = [];
-                const firstScore = scores[scores.length - 1];
+                const firstScore = scores[0];
                 for(let i = 0; i < firstScore.hour; i++){
                     const missingScore = this.getMissingScore(i);
                     scoresToShow.push(missingScore);
