@@ -4,6 +4,7 @@ import { StorageProvider } from '../../providers/storage/storage';
 import { AuthPage } from '../auth/auth';
 import { ScoreProvider } from '../../providers/score/score';
 import { AlertProvider } from '../../providers/alert/alert';
+import { Events } from 'ionic-angular';
 
 import { HomeInformationComponent } from '../../components/home-information/home-information';
 
@@ -28,7 +29,9 @@ export class UserPage implements OnInit{
         private scoreProvider: ScoreProvider,
         private ngZone: NgZone,
         private alert: AlertProvider,
-        private modalController: ModalController
+        private modalController: ModalController,
+        private events: Events,
+        this.events.suscribe('scoreChanges', () => this.refreshScores())
     ) { }
 
     ngOnInit() {

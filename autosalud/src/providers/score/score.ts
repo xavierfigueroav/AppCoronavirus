@@ -43,8 +43,7 @@ export class ScoreProvider {
             startForeground: true,
             notificationTitle: 'Lava tus manos regularmente',
             notificationText: 'Cuida de ti y de los que te rodean',
-            interval: 120000, // 2 minutes
-            debug: true,
+            interval: 300000, // 5 minutes
         };
     }
 
@@ -52,6 +51,7 @@ export class ScoreProvider {
         await this.configureTracking();
         const backgroundGeolocationStatus = await this.backgroundGeolocation.checkStatus();
         if(!backgroundGeolocationStatus.isRunning){
+            this.registerTrackingListeners();
             this.backgroundGeolocation.start();
         }
     }
@@ -78,15 +78,8 @@ export class ScoreProvider {
     }
 
     registerTrackingListeners() {
-        // console.log('Registering tracking listeners...');
         this.backgroundGeolocation.on(BackgroundGeolocationEvents.location)
-        .subscribe(location => console.log('MOVEMENT DETECTED!'));
-
-        // this.backgroundGeolocation.on(BackgroundGeolocationEvents.stop)
-        // .subscribe(() => console.log('TRACKING STOPPED!'));
-
-        // this.backgroundGeolocation.on(BackgroundGeolocationEvents.error)
-        // .subscribe(() => console.log('[ERROR] Tracking'));
+        .subscribe(location => this.events.publish('scoreChanges', ""));
     }
 
     async locationHandler(location: BackgroundGeolocationResponse){
@@ -134,6 +127,7 @@ export class ScoreProvider {
         const homeArea = await this.storage.get('homeArea');
         if(homeArea != null) {
             this.backgroundGeolocation.stop();
+            this.registerTrackingListeners();
             await this.configureTracking();
             this.backgroundGeolocation.start();
         }
@@ -159,7 +153,7 @@ export class ScoreProvider {
         const currentHour = date.getHours();
         const score = await this.calculateCompleteScore(currentHour, date, false);
         await this.storage.setCurrentScore(score.completeScore);
-        this.events.publish('scoreChanges', score.completeScore);
+        this.events.publish('scoreChanges', core.completeScore);
     }
 
     // Calculate and save the scores only for complete hours
