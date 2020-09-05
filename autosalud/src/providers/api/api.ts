@@ -26,9 +26,7 @@ export class APIProvider {
         private httpClient: HttpClient,
         private http: HTTP,
         private file: File
-    ) {
-        console.log('Hello ScoreSenderProvider Provider');
-    }
+    ) { }
 
     async sendPendingScoresToServer(){
         const pendingScores = await this.database.getPendingScores();
@@ -56,36 +54,25 @@ export class APIProvider {
 
         this.httpClient.post(Constants.UPDATE_REGISTRY_URL, data, httpOptions)
         .toPromise().then((response: any) => {
-            console.log('UPDATE RESPONSE', response);
             const updated = response.data.rows_updated;
             if(updated) {
-                console.log('UPDATE ON SERVER');
                 pendingScores.forEach(score => {
                     this.database.updateScoreStatus(score.id, 'SENT').then(result => {
-                        console.log('SUCCESS UPDATE SCORE IN LOCAL DATABASE', result);
-                    }).catch(error => {
-                        console.log('ERROR UPDATE SCORE IN LOCAL DATABASE', error);
-                    });
+                    }).catch(console.log);
                 });
 
             } else {
                 const data = this.generateInsertScoreBody(phone_id, date);
                 this.httpClient.post(Constants.CREATE_REGISTRY_URL, data, httpOptions)
                 .toPromise().then(response => {
-                    console.log('SUCCESS CREATE', response);
                     this.sendPostRequest(pendingScores, phone_id, date);
-                }).catch(error => {
-                    console.log('error when creating scores', error);
-                });
+                }).catch(console.log);
             }
-        }).catch(error => {
-            console.log("Error when updating", error);
-        });
+        }).catch(console.log);
     }
 
     getTestResultsByAppId(appId: string) {
         return new Promise<any>((resolve, reject) => {
-            console.log('Requesting tests...');
             const data = this.generateReadTestBody(appId);
             const httpOptions = {
                 headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -120,7 +107,6 @@ export class APIProvider {
 
         this.httpClient.post(Constants.UPDATE_REGISTRY_URL, data, httpOptions)
         .toPromise().then((response: any) => {
-            console.log('UPDATE HOME RESPONSE', response);
             const updated = response.data.rows_updated;
             if(!updated) {
                 const data = this.generateInsertHomeBody(
@@ -132,14 +118,9 @@ export class APIProvider {
                 );
                 this.httpClient.post(Constants.CREATE_REGISTRY_URL, data, httpOptions)
                 .toPromise().then((response: any) => {
-                    console.log('SUCCESS HOME CREATE', response);
-                }).catch(error => {
-                    console.log('error when creating home', error);
-                });
+                }).catch(console.log);
             }
-        }).catch(error => {
-            console.log("Error when updating home", error);
-        });
+        }).catch(console.log);
     }
 
     validateAppCode(app_code: string) {
@@ -148,11 +129,9 @@ export class APIProvider {
                 headers: new HttpHeaders({ 'Content-Type':'application/json','Authorization':'491c5713-dd3e-4dda-adda-e36a95d7af77'  })
             };
             const data = this.generateValidationCodeBody(app_code);
-            console.log("ENTRO A VALIDAR");
             this.httpClient.post(Constants.READ_REGISTRY_URL, data, httpOptions)
             .toPromise().then((response: any) => {
                 if(response.data.length > 0 && response['data'][0].en_uso === 1) {
-                    console.log('SUCCESS READ', response['data'][0].en_uso);
                     resolve(true);
                 } else {
                     resolve(false);
@@ -163,7 +142,6 @@ export class APIProvider {
 
     createFormsDataSet(datasetId: string | number) {
         return new Promise<any>((resolve, reject) => {
-
             const data = this.generateCreateDatasetBody(datasetId);
             const httpOptions = {
                 headers: new HttpHeaders({
@@ -182,7 +160,6 @@ export class APIProvider {
                 }
                 reject(error);
             });
-
         });
     }
 

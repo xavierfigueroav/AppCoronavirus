@@ -58,7 +58,7 @@ export class DatabaseProvider {
             time_away FLOAT,
             population_density FLOAT
             );`, {})
-        }).catch(error => console.log("Error while creating tables", error));
+        }).catch(console.log);
     }
 
     private isReady(){

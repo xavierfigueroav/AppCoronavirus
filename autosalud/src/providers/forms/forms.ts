@@ -26,9 +26,7 @@ export class FormsProvider {
         private api: APIProvider,
         private storage: StorageProvider,
         private notifications: NotificationsProvider
-    ) {
-        console.log('Hello FormsProvider Provider');
-    }
+    ) { }
 
     async copyTemplatesFromSourceToStorageIfAbsent() {
         let formTemplates = await this.storage.get('formTemplates');
@@ -56,9 +54,7 @@ export class FormsProvider {
                     const formTemplate = await this.api.getFormTemplate(latestTemplate.package_id, latestTemplate.id, latestTemplate.name);
                     await this.replaceTemplate(formTemplate, formType);
                 }
-            } catch(error) {
-                console.log('[ERROR] checkForFormsUpdates', error);
-            }
+            } catch(error) {console.log(error)}
         }
     }
 

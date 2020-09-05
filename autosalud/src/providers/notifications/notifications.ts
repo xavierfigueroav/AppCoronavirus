@@ -15,7 +15,6 @@ import { StorageProvider } from '../storage/storage';
 export class NotificationsProvider {
 
     constructor(private localNotifications: LocalNotifications, private storage: StorageProvider) {
-        console.log('Hello NotificationsProvider Provider');
         this.localNotifications.setDefaults({
             text: 'Se le recuerda que debe llenar un nuevo reporte en caso de que no lo haya hecho el día de hoy',
             vibrate: true,
