@@ -43,7 +43,7 @@ export class ScoreProvider {
             notificationTitle: 'Lava tus manos regularmente',
             notificationText: 'Cuida de ti y de los que te rodean',
             interval: 300000, // 5 minutes
-            debug: true;
+            debug: true,
         };
     }
 
