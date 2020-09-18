@@ -88,7 +88,7 @@ export class APIProvider {
         const user = await this.storage.getUser();
         const homeLocation = await this.storage.get('homeLocation');
         const homeArea = await this.storage.get('homeArea');
-        const homeRadius = Math.sqrt(homeArea) / 2;
+        const homeRadius = Math.sqrt(homeArea); // remove /2 cause we want diameter
         const scores = await this.database.getScores();
         // FIXME: Pass in current max distance and time to compare to previous days
         const maxDistanceAway = this.getMaxDistanceAway(scores);

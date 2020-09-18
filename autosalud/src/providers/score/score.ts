@@ -58,7 +58,7 @@ export class ScoreProvider {
 
     async configureTracking() {
         const homeArea = await this.storage.get('homeArea');
-        const homeRadius = Math.sqrt(homeArea) / 2;
+        const homeRadius = Math.sqrt(homeArea); // remove /2 cause we want diameter
         const homeWifiNetworks = await this.storage.get('homeWifiNetworks');
         const homeLocation = await this.storage.get('homeLocation');
         const censusArea = await this.storage.get('censusArea');
